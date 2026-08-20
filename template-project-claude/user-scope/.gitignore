@@ -1,0 +1,14 @@
+# user-scope/ は全プロジェクト共通資産の原本である。派生物と秘匿情報だけを除外する。
+
+# Python バイトコード
+__pycache__/
+*.pyc
+
+# notion_docs_ingest の実行時 state（取り込み済みページの記録。マシンごとに変わる）
+scripts/notion_docs_ingest/ingest_state.json
+
+# 秘匿情報。配置先の <config-dir>/.env にだけ実値を置き、原本には雛形しか置かない
+.env
+
+# macOS
+.DS_Store

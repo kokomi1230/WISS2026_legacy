@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "unityMCP": {
+      "command": "npx",
+      "args": ["-y", "anklebreaker-unity-mcp@latest"],
+      "env": {
+        "UNITY_HUB_PATH": "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub",
+        "UNITY_BRIDGE_PORT": "7890",
+        "UNITY_BRIDGE_HOST": "127.0.0.1"
+      }
+    },
+    "figma": {
+      "type": "http",
+      "url": "https://mcp.figma.com/mcp"
+    }
+  }
+}

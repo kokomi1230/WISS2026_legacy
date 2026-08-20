@@ -1,0 +1,671 @@
+[
+  {
+    "page_id": "3afb6e7e-18a2-813a-8125-de728e0b58f9",
+    "note_title": "素材・意味を持つターゲットへの拡張",
+    "kind": "アイデア",
+    "sources": [
+      "Kake_VR_pseudohaptics/docs/NextImplementationBacklog.md"
+    ],
+    "primary": "Kake_VR_pseudohaptics/docs/NextImplementationBacklog.md",
+    "source_title": "Next Implementation Backlog",
+    "lead": "次に何を実装するかの正典メモ。優先度 0〜4 のバックログに加え、抽象的な立方体ではなく段ボール・金属・木材やダンベルといった素材・形状の文脈を与え、知覚が変わるかを比較する研究拡張案を含む。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-8140-9da5-d2c9b4c6b264",
+    "note_title": "Claude Code 活用ガイド（2026 年版）",
+    "kind": "メモ",
+    "sources": [
+      "python-bci-system/docs/CLAUDE_CODE_GUIDE.md"
+    ],
+    "primary": "python-bci-system/docs/CLAUDE_CODE_GUIDE.md",
+    "source_title": "Claude Code 効率的活用ガイド - 2026年版完全版",
+    "lead": "公式ベストプラクティス・実践パターン・Serena MCP・コンテキスト管理を 3 つの黄金則として整理し、後半で python-bci-system 向けのタスク分割テンプレや前処理モジュール設計書を示す。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-8155-8c7b-f2af6f44fc9c",
+    "note_title": "Notion 連携機能の解説資料",
+    "kind": "メモ",
+    "sources": [
+      "template-project-claude/docs/NOTION_FEATURE_OVERVIEW.md"
+    ],
+    "primary": "template-project-claude/docs/NOTION_FEATURE_OVERVIEW.md",
+    "source_title": "Notion 知識ベース連携 ― 追加機能の解説",
+    "lead": "Notion をローカル Markdown へ一方向ミラーして Grep で走査する設計を、なぜ MCP で毎回読まないのかという理由から説明した資料。仕組みと使い方を含む。",
+    "html": null,
+    "mermaid": [
+      {
+        "anchor": "notion_sync.py が REST API で pull",
+        "code": "flowchart TD\n  N[\"Notion<br/>人間が書く・探す・読む\"] -->|notion_sync.py が REST API で pull<br/>一方向・増分| M[\"~/.notion-mirror/<br/>全プロジェクト共通・派生物・手編集禁止\"]\n  M -->|Grep / Read で走査| W[\"整理・要約・照合\"]\n  W -->|Notion MCP で書き戻し| N"
+      }
+    ],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-812c-95fb-f583e21617c0",
+    "note_title": "実データ 84 設定の解析マトリクス",
+    "kind": "実験",
+    "sources": [
+      "python-bci-platform/docs/ANALYSIS_REAL_DATA_MATRIX.md"
+    ],
+    "primary": "python-bci-platform/docs/ANALYSIS_REAL_DATA_MATRIX.md",
+    "source_title": "analysis モード 実データ設定マトリクス実行レポート",
+    "lead": "analysis モードを motor imagery 実データに対し 84 設定パターンで通し実行した検証キャンペーンの記録。単一被験者 82/84 成功、77 名展開で 6209/6468 成功。特徴量×分類器の互換ルールと想定内エラーの内訳を確定させた。",
+    "html": "_html/研究ノート_DB/実験/ANALYSIS_REAL_DATA_MATRIX.html",
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-81de-a276-c393ef364fdf",
+    "note_title": "ExperimentController 運用マニュアル",
+    "kind": "実験",
+    "sources": [
+      "Kake_VR_pseudohaptics/docs/ExperimentControllerManual.md"
+    ],
+    "primary": "Kake_VR_pseudohaptics/docs/ExperimentControllerManual.md",
+    "source_title": "Experiment Controller Manual",
+    "lead": "1 つの Inspector から Push / Lift 試行を反復実行し、インタラクション用オブジェクトと質問紙オブジェクトを SetActive で切り替え、最終試行後に CSV 出力する手順。Demo モードも持つ。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-8142-b9b6-c3aad2a4f64f",
+    "note_title": "Grab Lift のシーンセットアップ手順",
+    "kind": "実験",
+    "sources": [
+      "Kake_VR_pseudohaptics/docs/GrabLiftSetupManual.md"
+    ],
+    "primary": "Kake_VR_pseudohaptics/docs/GrabLiftSetupManual.md",
+    "source_title": "Grab Lift Setup Manual",
+    "lead": "BoneJudge / GrabJudge / PushController / LiftController / ProgressController / SwitchInteraction の役割分担と、HandGrabInteractable を含むシーン必須設定、Push/Lift の切替手順。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-81e0-a61f-d45f81ff2a60",
+    "note_title": "重量知覚実験の試行フロー設計",
+    "kind": "実験",
+    "sources": [
+      "Kake_VR_pseudohaptics/docs/ExperimentControllerPlan.md"
+    ],
+    "primary": "Kake_VR_pseudohaptics/docs/ExperimentControllerPlan.md",
+    "source_title": "Experiment Controller Plan",
+    "lead": "Push / Lift の課題で全ターゲットが共通閾値に達したら、シーンを変えずに質問紙フェーズへ遷移し、2AFC または Likert7 で回答させる実験デザインと記録項目の設計。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-818d-b0f0-f1e649de60d0",
+    "note_title": "Motor_MRI 実験プロトコル",
+    "kind": "実験",
+    "sources": [
+      "python-mri-experiment-kk/docs/PROTOCOL.md"
+    ],
+    "primary": "python-mri-experiment-kk/docs/PROTOCOL.md",
+    "source_title": "Motor_MRI 実験プロトコル",
+    "lead": "Ready 画面→トリガ待ち→ベースライン安静→課題ブロック×n_reps という 5 段階の進行と、各パラメータがどこに効くかの対応をまとめた実験手順。TR の整数倍関係と Builder 版との差分も含む。",
+    "html": "_html/研究ノート_DB/実験/PROTOCOL.html",
+    "mermaid": [
+      {
+        "anchor": "1. Ready 画面        keys.start のキー入力を待つ",
+        "code": "flowchart TD\n  A[\"1. Ready 画面<br/>keys.start のキー入力を待つ\"] --> B[\"2. トリガ待ち<br/>最初の TR トリガを待つ\"]\n  B --> C[\"3. ベースライン安静<br/>baseline_rest_sec だけ + を提示\"]\n  C --> D[\"4. 課題ブロック<br/>課題ごとに block の並びを n_reps 回\"]\n  D --> E[\"5. 終了画面<br/>end_sec だけ空白画面\"]"
+      },
+      {
+        "anchor": "繰り返し 1 周目",
+        "code": "flowchart TD\n  R1[\"繰り返し 1 周目\"] --> A1[\"課題 A のブロック<br/>トリガ待ち → 課題 → 安静\"]\n  R1 --> B1[\"課題 B のブロック<br/>トリガ待ち → 課題 → 安静\"]\n  A1 --> R2[\"繰り返し 2 周目\"]\n  B1 --> R2\n  R2 --> A2[\"課題 A のブロック\"]\n  R2 --> B2[\"課題 B のブロック\"]\n  A2 --> RN[\"…（n_reps 周まで）\"]\n  B2 --> RN"
+      },
+      {
+        "anchor": "Ready                    space キー入力待ち",
+        "code": "flowchart TD\n  S[\"Ready<br/>space キー入力待ち\"] --> T0[\"トリガ待ち\"]\n  T0 --> BL[\"+ ベースライン安静<br/>20.8 s\"]\n  BL --> L{\"繰り返し × 8\"}\n  L --> T1[\"トリガ待ち\"] --> M1[\"Motor 21.0 s\"] --> P1[\"+ 20.8 s\"]\n  P1 --> T2[\"トリガ待ち\"] --> O1[\"Onomatopoeia 21.0 s\"] --> P2[\"+ 20.8 s\"]\n  P2 --> L\n  L --> END[\"空白画面 5.0 s\"]"
+      }
+    ],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-8198-8753-e95a84e1f6c0",
+    "note_title": "Motor_MRI 解析ガイド",
+    "kind": "実験",
+    "sources": [
+      "python-mri-experiment-kk/docs/ANALYSIS.md"
+    ],
+    "primary": "python-mri-experiment-kk/docs/ANALYSIS.md",
+    "source_title": "Motor_MRI 解析ガイド",
+    "lead": "記録データを fMRI 解析へつなぐ手順。onset の作り方、BIDS events.tsv への変換、GLM の組み方、品質チェック、さらに旧 Builder 版 117 セッションの読み方（列名対応と 6 つの落とし穴）を含む。",
+    "html": "_html/研究ノート_DB/実験/ANALYSIS.html",
+    "mermaid": [],
+    "edits": [
+      {
+        "old": "実測した TR は **1.5000 秒**です（`data/kk/` の既存セッションで、1 セッション 465 パルスから算出）。既定設定では次の関係が成り立ちます。\n\n| 項目 | 値 | TR 換算 |\n|---|---|---|\n| `task_sec` | 21.0 s | 14 TR |\n| `rest_sec` | 20.8 s | 13.87 TR |\n| 1 ブロックの正味 | 41.8 s | 27.87 TR |\n| **1 ブロックの実測** | **42.0 s** | **28 TR** |\n\n課題と安静の正味は 41.8 秒で、28 TR の 42.0 秒をわずかに下回ります。**この 0.2 秒の差をトリガ待ちが吸収します。** 安静が終わった時点ではまだ次のトリガが来ておらず、0.2 秒ほど `+` を提示したまま待ってから次のブロックに入るため、結果として全ブロックがきっちり 28 TR 間隔で並びます。\n\n実測でも、最初のトリガを 0 として課題の提示開始は 14 / 28 / 42 / 56 TR 目に並んでいました。",
+        "new": "実測した TR は **1.5000 秒**で、`task_sec` + `rest_sec` の正味 41.8 秒に対し、トリガ待ちを含めた 1 ブロックの実測長が 42.0 秒（28 TR）になります。**対応表と導出は「Motor_MRI 実験プロトコル」ノートの「TR との対応」に記載があるため、ここでは繰り返しません。**"
+      }
+    ]
+  },
+  {
+    "page_id": "3afb6e7e-18a2-8128-a795-d449b1755906",
+    "note_title": "発想の原理は遠い結合・生成と評価の分離・固着回避",
+    "kind": "文献",
+    "sources": [
+      "python-idea-generator/docs/アイデア発想法_調査レポート.md"
+    ],
+    "primary": "python-idea-generator/docs/アイデア発想法_調査レポート.md",
+    "source_title": "アイデア発想法の現在地 ― 認知メカニズム・実践手法・生成AIを結ぶ調査レポート",
+    "lead": "アイデア発想を認知メカニズム・実践手法・生成 AI の 3 層で調べた査読論文中心の文献レビュー。定番手法の多くはエビデンスに乏しく、有効な手法と AI 設計はいずれも 3 原理を制度的に強制するものだという筋を導いた。",
+    "html": "_html/研究ノート_DB/文献/アイデア発想法_調査レポート.html",
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-81da-9773-f051ec4c893b",
+    "note_title": "デザインは目的→情報→レイアウト→装飾の順",
+    "kind": "知見",
+    "sources": [
+      "claude-figma-slide/docs/SLIDE_DESIGN_TIPS.md"
+    ],
+    "primary": "claude-figma-slide/docs/SLIDE_DESIGN_TIPS.md",
+    "source_title": "スライドデザインTIPS",
+    "lead": "『ノンデザイナーズ・デザインブック』と学内講義をもとにしたスライドデザインの実践指針。4 層モデルを大前提に、デザイン 4 原則・視線誘導・配色・タイポグラフィ・仕上げチェックを並べる。",
+    "html": "_html/研究ノート_DB/知見/SLIDE_DESIGN_TIPS.html",
+    "mermaid": [
+      {
+        "anchor": "装飾        ← いちばん最後",
+        "code": "flowchart BT\n  M[\"目的<br/>根本。これが弱いと全部無意味\"] --> I[\"情報<br/>何を載せ、何を削るか\"]\n  I --> L[\"レイアウト<br/>4 原則・視線誘導で整える\"]\n  L --> D[\"装飾<br/>いちばん最後。なくても成立する\"]"
+      }
+    ],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-818c-b05d-f2438a03f31c",
+    "note_title": "EEGLAB 相当の解析は MNE ラッパで載せられる",
+    "kind": "知見",
+    "sources": [
+      "python-bci-platform/docs/ROADMAP.md"
+    ],
+    "primary": "python-bci-platform/docs/ROADMAP.md",
+    "source_title": "ロードマップ（ROADMAP）— 総合 EEG 解析プラットフォーム化計画",
+    "lead": "EEG 解析を 1 プラットフォームで完結させるためのギャップ分析。BCI/ML 側は未実装の標準・最新手法を 3 フェーズに分け、EEGLAB 相当の記述・推論解析側はほぼゼロ実装だが MNE-Python への薄いラッパで賄えると結論した。",
+    "html": "_html/研究ノート_DB/知見/ROADMAP.html",
+    "mermaid": [
+      {
+        "anchor": "本書は両柱のギャップを網羅的に列挙し",
+        "code": "flowchart TD\n  G[\"総合 EEG 解析プラットフォーム\"]\n  G --> A[\"Part A — BCI / 機械学習パイプライン<br/>前処理・特徴抽出・分類・適応・評価\"]\n  G --> B[\"Part B — 解析・可視化・統計<br/>EEGLAB 相当（MNE ラッパ）\"]\n  A --> A1[\"Phase 1<br/>高 ROI・低リスク\"] --> A2[\"Phase 2<br/>標準手法の拡充\"] --> A3[\"Phase 3<br/>最新手法・高難度\"]\n  B --> B1[\"Phase A<br/>基盤・図ファイル出力\"] --> B2[\"Phase B<br/>時間周波数・統計・レポート\"] --> B3[\"Phase C<br/>群解析・ソース推定・GUI\"]"
+      }
+    ],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-81e6-8b03-fe80505365a0",
+    "note_title": "claude -p は cwd のリポジトリ設定を継承する",
+    "kind": "知見",
+    "sources": [
+      "python-idea-generator/docs/superpowers/spike-notes/claude-cli-findings.md"
+    ],
+    "primary": "python-idea-generator/docs/superpowers/spike-notes/claude-cli-findings.md",
+    "source_title": "claude CLI spike findings（フェーズ 0）",
+    "lead": "claude CLI を headless でサブプロセス起動する際の実測知見。cwd がリポジトリ内だと MCP サーバ・プラグイン・hooks を継承し 120k tokens・$0.84/回に膨らむが、--strict-mcp-config と --setting-sources 空で 12k・$0.18 になる。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-81c7-beb5-d50af88517d4",
+    "note_title": "固定長ブロックなら同期点は最初の 1 回で足りる",
+    "kind": "知見",
+    "sources": [
+      "python-mri-experiment/docs/MRI_TRIGGER_METHODS.md"
+    ],
+    "primary": "python-mri-experiment/docs/MRI_TRIGGER_METHODS.md",
+    "source_title": "MRI トリガ同期方式の比較と信頼性",
+    "lead": "fMRI ブロックデザインで刺激 onset を TR パルスにロックする 4 方式を PsychoPy 公式文書と機器仕様から比較し、同期戦略（毎ブロック vs 最初だけ＋非スリップ）と合わせて推奨順を示した。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-8146-bc3f-eea9e4f00a22",
+    "note_title": "アクティブ電極の差はノイズ耐性と準備速度",
+    "kind": "知見",
+    "sources": [
+      "python-bci-platform/docs/BrainProducts.md"
+    ],
+    "primary": "python-bci-platform/docs/BrainProducts.md",
+    "source_title": "Brain Products EEG計測システム 調査まとめ",
+    "lead": "Brain Products の 4 製品（BrainAmp MR / BrainCap MR / actiCAP slim・snap / ControlBox）の役割分担と、パッシブ・アクティブ電極の本質的な違い、食塩水テストの安全性、LSL / RDA / SDK による Python 接続方式を整理した調査。",
+    "html": "_html/研究ノート_DB/知見/BrainProducts.html",
+    "mermaid": [
+      {
+        "anchor": "電極キャップ（BrainCap MR または actiCAP）",
+        "code": "flowchart LR\n  C[\"電極キャップ<br/>BrainCap MR / actiCAP\"] --> A[\"アンプ<br/>BrainAmp\"] --> P[\"PC\"]\n  CB[\"actiCAP ControlBox<br/>インピーダンス確認・給電\"] -.補助.-> C"
+      }
+    ],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-8125-9cf4-d9e965f032ae",
+    "note_title": "bci-system 新構成への移行対応表",
+    "kind": "開発",
+    "sources": [
+      "python-bci-system/template/bci_system_next/docs/architecture/migration_map.md"
+    ],
+    "primary": "python-bci-system/template/bci_system_next/docs/architecture/migration_map.md",
+    "source_title": "Migration Map",
+    "lead": "現行 python-bci-system からレイヤー分離した新構成（interfaces / application / domain / infrastructure）へのファイル対応表と、既存機能を壊さずに進めるための先行移植 3 点。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-8141-b5e0-e076fe6663be",
+    "note_title": "全ファイルコードレビュー報告",
+    "kind": "開発",
+    "sources": [
+      "python-bci-platform/docs/CODE_REVIEW.md"
+    ],
+    "primary": "python-bci-platform/docs/CODE_REVIEW.md",
+    "source_title": "コードベース レビュー報告書",
+    "lead": "2026-06-11 時点のコードベース全ファイルを 9 バッチ並列でレビューした 912 行の報告書。横断課題 11 件と優先度付きバックログ、高優先候補 12 件への敵対的検証記録を含む。T-024〜T-034 のリファクタ前スナップショット。",
+    "html": "_html/研究ノート_DB/開発/CODE_REVIEW.html",
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-81f5-a2b8-dffc23a4b26d",
+    "note_title": "設定マトリクスの回帰検証",
+    "kind": "開発",
+    "sources": [
+      "python-bci-platform/docs/CONFIG_VERIFICATION.md"
+    ],
+    "primary": "python-bci-platform/docs/CONFIG_VERIFICATION.md",
+    "source_title": "設定マトリクス検証レポート（CONFIG VERIFICATION）",
+    "lead": "acquisition / analysis 両モードを合成データと pytest ハーネスで headless 駆動した回帰検証レポート。161 passed / 3 xfailed、全スイート 465 passed・coverage 85.84%。Qt ダイアログのみをモックし実 run() を駆動する手法を確立した。",
+    "html": "_html/研究ノート_DB/開発/CONFIG_VERIFICATION.html",
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-81c9-9bb8-d74239d14c12",
+    "note_title": "論文要約の Notion 登録仕様",
+    "kind": "開発",
+    "sources": [
+      "claude-paper-summary/docs/paper_summary_notion_spec.md"
+    ],
+    "primary": "claude-paper-summary/docs/paper_summary_notion_spec.md",
+    "source_title": "論文要約Notion登録システム 仕様書",
+    "lead": "論文 PDF から情報を抽出・要約し Notion の Reference List DB へ登録するシステムの仕様。BibTeX 生成、重複防止、Figure 1 の抽出・添付、Slack 振り分けなどを規定する。",
+    "html": "_html/研究ノート_DB/開発/paper_summary_notion_spec.html",
+    "mermaid": [
+      {
+        "anchor": "入力（PDF/フォルダ）→ 重複チェック",
+        "code": "flowchart LR\n  A[\"入力<br/>PDF / フォルダ\"] --> B[\"重複チェック\"] --> C[\"情報抽出\"] --> D[\"要約生成\"]\n  D --> E[\"BibTeX 整形\"] --> F[\"Notion 登録\"] --> G[\"references.md / .bib 追記\"] --> H[\"完了報告\"]"
+      }
+    ],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-818f-89df-c29e7abc0eba",
+    "note_title": "PyInstaller スモークバンドル",
+    "kind": "開発",
+    "sources": [
+      "python-bci-platform/docs/BUNDLE_SMOKE.md"
+    ],
+    "primary": "python-bci-platform/docs/BUNDLE_SMOKE.md",
+    "source_title": "Phase 0-6: 最小 import スモークバンドル 結果",
+    "lead": "torch / pylsl(liblsl) / PyQt6 という重いネイティブ依存を PyInstaller でバンドルできるか確認したスパイク。offscreen 起動で SMOKE_OK を得て exit 0。onedir は約 801MB でサイズが次の課題と判明した。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-81f1-962e-eb5b8afa09c4",
+    "note_title": "リファクタ前の振る舞いベースライン",
+    "kind": "開発",
+    "sources": [
+      "python-bci-platform/docs/REFACTOR_BASELINE.md"
+    ],
+    "primary": "python-bci-platform/docs/REFACTOR_BASELINE.md",
+    "source_title": "リファクタリング振る舞いベースライン",
+    "lead": "大規模リファクタ着手前（2026-07-02、コミット d8e67e3）の pytest / mypy / flake8 / pydocstyle / GUI headless 起動 / pip-audit の実測値と再実行コマンドを固定し、以降の全フェーズで劣化判定に使う基準とした。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-81ae-a9d2-ea54c1281c5b",
+    "note_title": "設定の書込先を user dir へ分離",
+    "kind": "開発",
+    "sources": [
+      "python-bci-platform/docs/CONFIG_STRATEGY.md"
+    ],
+    "primary": "python-bci-platform/docs/CONFIG_STRATEGY.md",
+    "source_title": "ADR: 設定・書込可能ランタイム状態の配置戦略",
+    "lead": "PyInstaller フリーズ時に sys._MEIPASS が read-only になる問題を背景に、同梱 read-only マスタと platformdirs で解決するユーザ書込 state の二層モデルへ移行する ADR。Python 3.14 ピン留めの補遺付き。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-81f5-b8ff-f5d7a0d84470",
+    "note_title": "発想ツール Phase 0-1 実装プラン",
+    "kind": "開発",
+    "sources": [
+      "python-idea-generator/docs/superpowers/plans/2026-07-03-idea-generator-phase0-1.md"
+    ],
+    "primary": "python-idea-generator/docs/superpowers/plans/2026-07-03-idea-generator-phase0-1.md",
+    "source_title": "アイデア発想支援ツール 実装プラン（フェーズ 0・1 詳細）",
+    "lead": "骨格＋claude -p spike（フェーズ 0）と手動グラフ（フェーズ 1）の実装プラン。「AI なしでキャンバスが使える」状態までを目標にし、サーバを single source of truth とする REST＋SSE 構成を固めた。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-8156-a75c-f28f6d14a512",
+    "note_title": "大規模リファクタ計画書",
+    "kind": "開発",
+    "sources": [
+      "python-bci-platform/docs/CLAUDE_CODE_REFACTOR_PROMPTS.md"
+    ],
+    "primary": "python-bci-platform/docs/CLAUDE_CODE_REFACTOR_PROMPTS.md",
+    "source_title": "大規模リファクタリング計画書",
+    "lead": "Phase 0（基盤固め）→ 1a（src-layout 機械変換）→ 2（品質監査 9 観点）→ 1b（構造再編）→ 3（デスクトップアプリ化）の順序を、各ステップ検証可能な完了条件付きで記述した 768 行の実行計画。",
+    "html": "_html/研究ノート_DB/開発/CLAUDE_CODE_REFACTOR_PROMPTS.html",
+    "mermaid": [
+      {
+        "anchor": "Phase 0  基盤固め（座標を固定）",
+        "code": "flowchart TD\n  P0[\"Phase 0<br/>基盤固め（座標を固定）＋最小 import スモークバンドル\"]\n  P1A[\"Phase 1a<br/>機械的パッケージ化（振る舞い保存の機械変換）\"]\n  P2A[\"Phase 2a<br/>境界監査 #7 のみ（1b の設計入力。実装はしない）\"]\n  P1B[\"Phase 1b<br/>構造再編（設計判断を伴う。#7 監査後）\"]\n  P2B[\"Phase 2b<br/>残り 8 観点の監査 → チケット化\"]\n  P2C[\"Phase 2c<br/>起票チケットの実装（依存 DAG 順）\"]\n  P3[\"Phase 3<br/>デスクトップアプリ化（サイズ最適化＋署名/notarization）\"]\n  P0 --> P1A --> P2A --> P1B --> P2B --> P2C --> P3"
+      }
+    ],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-81f3-8d99-cce0da4f74fb",
+    "note_title": "発想ツール Phase 2 多ペルソナ並列発散",
+    "kind": "開発",
+    "sources": [
+      "python-idea-generator/docs/superpowers/plans/2026-07-04-idea-generator-phase2.md"
+    ],
+    "primary": "python-idea-generator/docs/superpowers/plans/2026-07-04-idea-generator-phase2.md",
+    "source_title": "アイデア発想支援ツール 実装プラン（フェーズ 2: 多ペルソナ並列発散）",
+    "lead": "ペルソナごとに claude -p を並列起動し、ファセット付きアイデアノードをキャンバスへ生やす MVP の心臓部の実装プラン。spike の実測知見 D1〜D6 をエラー分類と並列制御の設計へ反映している。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-819e-98b0-e1985f4ed586",
+    "note_title": "発想ツール Phase 3 ノード介入操作",
+    "kind": "開発",
+    "sources": [
+      "python-idea-generator/docs/superpowers/plans/2026-07-04-idea-generator-phase3.md"
+    ],
+    "primary": "python-idea-generator/docs/superpowers/plans/2026-07-04-idea-generator-phase3.md",
+    "source_title": "T-005 フェーズ 3: ノード介入操作 実装プラン",
+    "lead": "deepen / expand / blend / question / decompose の介入 5 種を実装するプラン。各介入が dual-pathway 理論や PopBlends 型 bisociation に対応することを明示し、DivergenceService を GenerationService へ一般化する。",
+    "html": "_html/研究ノート_DB/開発/idea-generator-phase3.html",
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-810e-990a-cade60a44843",
+    "note_title": "発想ツール Phase 4 収束とエクスポート",
+    "kind": "開発",
+    "sources": [
+      "python-idea-generator/docs/superpowers/plans/2026-07-04-idea-generator-phase4.md"
+    ],
+    "primary": "python-idea-generator/docs/superpowers/plans/2026-07-04-idea-generator-phase4.md",
+    "source_title": "T-006 フェーズ 4: 収束 + 先行研究チェック + エクスポート 実装プラン",
+    "lead": "発散⇄収束のフェーズ状態機械を完成させ、star / クラスタ / AI 要約 / 先行研究チェック / Markdown エクスポートで MVP を締めるプラン。要約がノード生成経路を通らないことをモジュール境界で保証する。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-81c8-b5a8-e8240759c6f3",
+    "note_title": "発想支援ツールの仕様書",
+    "kind": "開発",
+    "sources": [
+      "python-idea-generator/docs/superpowers/specs/2026-07-03-idea-generator-design.md"
+    ],
+    "primary": "python-idea-generator/docs/superpowers/specs/2026-07-03-idea-generator-design.md",
+    "source_title": "AI 研究アイデア発想支援ツール 仕様書",
+    "lead": "研究アイデア発想を支援する個人用ローカル Web アプリの仕様。文献調査が導いた 3 原理をプロンプトではなくアーキテクチャ制約として実装する点が中核で、API キーを使わず claude -p を並列起動する。",
+    "html": "_html/研究ノート_DB/開発/idea-generator-design.html",
+    "mermaid": [
+      {
+        "anchor": "ブラウザ (React Flow UI)",
+        "code": "flowchart TD\n  BR[\"ブラウザ<br/>React Flow UI\"] -->|REST 操作系| FA\n  BR -->|SSE イベント購読| FA\n  FA[\"FastAPI<br/>uvicorn 127.0.0.1:8000 / 1 プロセス\"]\n  FA --> API[\"api/<br/>REST + SSE\"]\n  FA --> SV[\"services/<br/>発散・介入・収束。ガードはここ\"]\n  FA --> CL[\"claude/<br/>subprocess 管理・Semaphore・タイムアウト\"]\n  FA --> PR[\"prompts/<br/>Jinja2 + personas.yaml\"]\n  FA --> ST[\"storage/<br/>SessionStore（JSON アトミック保存）\"]\n  CL -->|asyncio.create_subprocess_exec × N| CP[\"claude -p --output-format stream-json<br/>ペルソナごとに 1 プロセス\"]"
+      }
+    ],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-81f1-b84a-ddb9c9b69403",
+    "note_title": "次トークン予測の可視化仕様",
+    "kind": "開発",
+    "sources": [
+      "processing-ep-exercises/docs/processing-next-token-prediction-spec.md"
+    ],
+    "primary": "processing-ep-exercises/docs/processing-next-token-prediction-spec.md",
+    "source_title": "仕様書：次トークン予測 ― 確率の雲から一語が決まる",
+    "lead": "LLM の next-token prediction を、文末右側に確率に応じたサイズ・濃さで漂うトークン候補から softmax サンプリング風に一語が確定する映像として可視化する Processing 作品の仕様書。",
+    "html": "_html/研究ノート_DB/開発/processing-next-token-prediction-spec.html",
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-81eb-bef1-d694300b5744",
+    "note_title": "develop_base を単一の開発枝にする規約",
+    "kind": "開発",
+    "sources": [
+      "Kake_VR_pseudohaptics/docs/BranchStrategy.md"
+    ],
+    "primary": "Kake_VR_pseudohaptics/docs/BranchStrategy.md",
+    "source_title": "develop_base を単一の開発枝にする規約",
+    "lead": "develop_base を唯一の長期開発ブランチとする運用規約。長期 / 短期 / アーカイブの役割、スナップショットタグ、worktree、main ブランチポリシーを定める。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-81a3-bbc4-d3642d8a9b8e",
+    "note_title": "ブランチ棚卸しと選択移植計画",
+    "kind": "開発",
+    "sources": [
+      "Kake_VR_pseudohaptics/docs/BranchInventoryAndMigrationPlan.md"
+    ],
+    "primary": "Kake_VR_pseudohaptics/docs/BranchInventoryAndMigrationPlan.md",
+    "source_title": "Branch Inventory And Migration Plan",
+    "lead": "実質最新版だった demo_pushinig の成果を基盤 develop_base へ戻すための棚卸し。丸ごと取り込まず、コミット 5 本の差分を分類して「基盤へ戻すべきもの」だけを 3 層で段階移植する方針を導いた。",
+    "html": null,
+    "mermaid": [
+      {
+        "anchor": "└─ 共通基盤候補",
+        "code": "flowchart TD\n  MAIN[\"main<br/>README / 入口整理\"]\n  DB[\"develop_base<br/>共通基盤候補\"]\n  DB --> DP[\"demo_pushinig<br/>実質最新版\"]\n  DB --> DPG[\"demo_pushinggame\"]\n  OLD[\"旧基点からの別系統\"]\n  OLD --> R1[\"demo_rotatehand2distance\"]\n  OLD --> R2[\"demo_windowselect\"]\n  OLD --> R3[\"experiment2_new\"]\n  OLD --> R4[\"MediaArt\"]\n  OLD --> R5[\"context1\"]\n  OLD --> R6[\"realistic\"]"
+      },
+      {
+        "anchor": "└─ 接触判定 / 進行度 / 色変化 / 汎用 interaction の基盤",
+        "code": "flowchart TD\n  MAIN[\"main<br/>入口と説明のみ\"]\n  DB[\"develop_base<br/>接触判定 / 進行度 / 色変化 / 汎用 interaction の基盤\"]\n  DB --> A1[\"demo_pushinig\"]\n  DB --> A2[\"demo_windowselect\"]\n  DB --> A3[\"demo_rotatehand2distance\"]\n  DB --> A4[\"context1\"]\n  DB --> A5[\"MediaArt\"]\n  DB --> A6[\"realistic\"]\n  DEB[\"develop_experiment_base（必要なら新設）<br/>実験フロー・質問票・CSV 出力の共通基盤\"]\n  DEB --> E1[\"experiment1\"]\n  DEB --> E2[\"experiment2\"]"
+      }
+    ],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-8119-922f-d96d26f6287d",
+    "note_title": "共通基盤の参照ハブ導入記録",
+    "kind": "開発",
+    "sources": [
+      "Kake_VR_pseudohaptics/docs/CommonBaseRefactorNotes.md"
+    ],
+    "primary": "Kake_VR_pseudohaptics/docs/CommonBaseRefactorNotes.md",
+    "source_title": "共通基盤の参照ハブ導入記録",
+    "lead": "ExperimentSceneReferences / ExperimentTargetRegistry / ExperimentVisualReferences という参照ハブを新設し、12 コンポーネントを移行させたスライスの記録。各ファイルが独立にシーン探索する状態を解消した。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-8103-b818-db84ff2686be",
+    "note_title": "肥大スクリプトのリファクタ監査",
+    "kind": "開発",
+    "sources": [
+      "Kake_VR_pseudohaptics/docs/DevelopBaseRefactorAudit.md"
+    ],
+    "primary": "Kake_VR_pseudohaptics/docs/DevelopBaseRefactorAudit.md",
+    "source_title": "DevelopBase Refactor Audit",
+    "lead": "demo_pushinig の実装を標準基盤へ整理するための監査メモ。ExperimentController の God Object 化や BoneJudge の責務混在など 7 件を指摘し、目標構造と Phase 0〜6 のリファクタ順を提示する。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-8150-a889-fd6e84b18348",
+    "note_title": "BoneJudge 接触判定マニュアル",
+    "kind": "開発",
+    "sources": [
+      "Kake_VR_pseudohaptics/docs/BoneJudgeManual.md"
+    ],
+    "primary": "Kake_VR_pseudohaptics/docs/BoneJudgeManual.md",
+    "source_title": "BoneJudge Manual",
+    "lead": "左右の OVRHandPrefab スケルトンの手指ボーンとターゲットの接触をリアルタイム判定し、接触の有無・手・ボーン・接触点を出力するコンポーネントの使い方。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-8188-a103-c3436e01102c",
+    "note_title": "Grab Lift インタラクションの設計",
+    "kind": "開発",
+    "sources": [
+      "Kake_VR_pseudohaptics/docs/GrabLiftInteractionPlan.md"
+    ],
+    "primary": "Kake_VR_pseudohaptics/docs/GrabLiftInteractionPlan.md",
+    "source_title": "Grab Lift Interaction Plan",
+    "lead": "y 軸方向へ掴んで持ち上げる新インタラクションを、既存の push と衝突させずに追加する設計。push は接触・z 軸、lift は把持・y 軸と起動条件も軸も違うため、分けて実装すると判断した。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-812d-8921-dc601e102a61",
+    "note_title": "ProgressController マニュアル",
+    "kind": "開発",
+    "sources": [
+      "Kake_VR_pseudohaptics/docs/ProgressControllerManual.md"
+    ],
+    "primary": "Kake_VR_pseudohaptics/docs/ProgressControllerManual.md",
+    "source_title": "ProgressController Manual",
+    "lead": "接触中の前腕の z 方向移動量をシェーダーの _Progress へ変換し、左右手を独立に扱ってマテリアルを更新するコンポーネントの使い方。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-8117-84d7-de21fd94a566",
+    "note_title": "PushController マニュアル",
+    "kind": "開発",
+    "sources": [
+      "Kake_VR_pseudohaptics/docs/PushControllerManual.md"
+    ],
+    "primary": "Kake_VR_pseudohaptics/docs/PushControllerManual.md",
+    "source_title": "PushController Manual",
+    "lead": "接触中かつ ContactWithVisualFeedback 型のターゲットのみを +z 方向へ移動させるコンポーネント。pushSpeed は手の z 移動量をターゲットの z 移動量へ変換する追従倍率で、疑似触覚の Control/Display 比に相当する。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-81d4-94fb-d339ec707d2a",
+    "note_title": "ハンド視覚フィードバックの段階改善計画",
+    "kind": "開発",
+    "sources": [
+      "Kake_VR_pseudohaptics/docs/HandVisualFeedbackPlan.md"
+    ],
+    "primary": "Kake_VR_pseudohaptics/docs/HandVisualFeedbackPlan.md",
+    "source_title": "Hand Visual Feedback Plan",
+    "lead": "マテリアル遷移システムを 5 ステップで安全に改善する計画。左右手のマテリアルインスタンス分離、グラデーション幅とエッジの柔らかさ、同時接触時のルール、progress 算出源の精緻化を扱う。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-81d8-b464-d978592bfa9a",
+    "note_title": "疑似触覚基盤の開発テンプレート",
+    "kind": "開発",
+    "sources": [
+      "Kake_VR_pseudohaptics/docs/DevelopmentTemplate.md"
+    ],
+    "primary": "Kake_VR_pseudohaptics/docs/DevelopmentTemplate.md",
+    "source_title": "develop_base 開発テンプレート",
+    "lead": "接触判定→接触後の手の移動量を progress として解釈→ハンドモデルのシェーダーを段階変化させるというコア体験の定義と、それを支える 3 システム・設計原則・推奨構成をまとめたもの。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-818c-b47e-e124f6c48388",
+    "note_title": "PsychoPy 環境の Python 版互換性調査",
+    "kind": "開発",
+    "sources": [
+      "python-mri-experiment/docs/PYTHON_ENV_INVESTIGATION.md"
+    ],
+    "primary": "python-mri-experiment/docs/PYTHON_ENV_INVESTIGATION.md",
+    "source_title": "Python 環境まわりの調査記録",
+    "lead": "uv / .venv で起きた pyright の未解決 import と psychopy.visual の OverflowError の原因調査。Apple Silicon Mac ではどの Python 版でも実験本番を完結できず、Windows ＋ Python 3.8 なら prebuilt wheel が揃うと結論した。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3afb6e7e-18a2-81d6-ab0a-e73c1e81a056",
+    "note_title": "モジュール別の実装状況マップ",
+    "kind": "開発",
+    "sources": [
+      "python-bci-platform/docs/IMPLEMENTATION_STATUS.md"
+    ],
+    "primary": "python-bci-platform/docs/IMPLEMENTATION_STATUS.md",
+    "source_title": "実装状況（IMPLEMENTATION STATUS）",
+    "lead": "前処理・特徴抽出・分類器・評価・ドメイン適応の実装クラスと設定キーをモジュール別に一覧化したリファレンス。Strategy パターン + keyed & enabled 形式の設定駆動と、特徴×分類器の可否マトリクスを含む。",
+    "html": "_html/研究ノート_DB/開発/IMPLEMENTATION_STATUS.html",
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3b0b6e7e-18a2-811d-9176-f84743939dd5",
+    "note_title": "BCI基盤の機能総覧と使い方",
+    "kind": "開発",
+    "sources": [
+      "python-bci-platform/docs/PLATFORM_GUIDE.md"
+    ],
+    "primary": "python-bci-platform/docs/PLATFORM_GUIDE.md",
+    "source_title": "BCI Platform 機能総覧と使い方",
+    "lead": "python-bci-platform の全機能と設定方法を 1 本で通読できるようにまとめた総覧。3 実行モード・前処理 7 種・特徴抽出 10 種・メトリクス 7 種・分類器 11 種・評価 4 方式・ドメイン適応 2 種について、YAML でどう書けば有効化できるかまで記述する。",
+    "html": null,
+    "mermaid": [],
+    "edits": []
+  },
+  {
+    "page_id": "3b2b6e7e-18a2-8197-ab4d-e1098044cb7a",
+    "note_title": "被験者間解析と個人最適化の設定",
+    "kind": "開発",
+    "sources": [
+      "python-bci-platform/docs/CROSS_SUBJECT_GUIDE.md"
+    ],
+    "primary": "python-bci-platform/docs/CROSS_SUBJECT_GUIDE.md",
+    "source_title": "被験者間解析ガイド — 大規模データで事前学習し個人へ最適化する",
+    "lead": "複数被験者を pooled 入力でまとめて事前学習し、新規被験者へ fine-tune するまでのパラメータ設定手順をまとめたガイド。あわせて幾何整合・ドメイン一般化・基盤モデル・効率的個人適応・テスト時適応の 5 系統を調査し、実装候補を優先順位つきで示す。実装済みだが未配線の資産（per-subject EA・hybrid SSL・MMD）を最上位に置いた。",
+    "html": "_html/研究ノート_DB/開発/CROSS_SUBJECT_GUIDE.html",
+    "mermaid": [
+      {
+        "anchor": "被験者間解析は「測る → 作る → 合わせる」の 3 段で進める",
+        "code": "flowchart TD\n  A[\"1. 測る<br/>pooled + loso<br/>被験者間ベースライン\"] --> B[\"2. 作る<br/>pooled + cross_validation<br/>事前学習モデル .pt\"]\n  B --> C[\"3. 合わせる<br/>single + transfer.enabled<br/>個人最適化 fine-tune\"]"
+      }
+    ],
+    "edits": []
+  }
+]

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WISS2026 論文構成・段落トピックセンテンス抽出</title>
+<style>
+  :root{
+    --ink:#1a1f24; --sub:#5b6670; --line:#e2e6ea; --bg:#fbfcfd;
+    --accent:#1f6feb; --accent-weak:#eef4ff; --note:#8a5a00; --note-bg:#fff8e6;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,system-ui,sans-serif;
+    color:var(--ink); background:var(--bg); line-height:1.85;
+    margin:0; padding:0 20px;
+  }
+  main{max-width:960px; margin:0 auto; padding:48px 0 96px;}
+  h1{font-size:1.7rem; line-height:1.5; margin:0 0 8px; letter-spacing:.01em;}
+  .subtitle{color:var(--sub); font-size:.95rem; margin:0 0 28px;}
+  h2{
+    font-size:1.3rem; margin:44px 0 14px; padding:8px 0 8px 14px;
+    border-left:5px solid var(--accent); background:linear-gradient(90deg,var(--accent-weak),transparent);
+  }
+  h3{font-size:1.06rem; margin:26px 0 8px; color:#243b53;}
+  p{margin:.5em 0;}
+  .lead{background:#fff; border:1px solid var(--line); border-radius:10px; padding:18px 22px; margin:0 0 22px;}
+  .contrib{list-style:none; padding:0; margin:8px 0 0; counter-reset:c;}
+  .contrib li{position:relative; padding:8px 0 8px 40px; border-top:1px dashed var(--line);}
+  .contrib li:first-child{border-top:none;}
+  .contrib li::before{
+    counter-increment:c; content:counter(c);
+    position:absolute; left:0; top:8px; width:26px; height:26px; border-radius:50%;
+    background:var(--accent); color:#fff; text-align:center; line-height:26px; font-weight:700; font-size:.9rem;
+  }
+  .note{background:var(--note-bg); border:1px solid #f0dfa8; color:#5c4a12; border-radius:8px; padding:12px 16px; margin:14px 0; font-size:.92rem;}
+  table{width:100%; border-collapse:collapse; margin:10px 0 8px; font-size:.95rem; background:#fff;}
+  th,td{border:1px solid var(--line); padding:9px 12px; vertical-align:top; text-align:left;}
+  thead th{background:#f2f5f8; font-weight:700; color:#33424f;}
+  td.id{width:44px; text-align:center; color:var(--sub); font-weight:700; white-space:nowrap;}
+  td.ts{width:auto;}
+  td.ev{width:34%; color:var(--sub); font-size:.88rem;}
+  .planned{display:inline-block; font-size:.72rem; font-weight:700; color:#8a5a00; background:var(--note-bg); border:1px solid #f0dfa8; border-radius:4px; padding:1px 7px; margin-left:6px; vertical-align:middle;}
+  .figs{background:#fff; border:1px solid var(--line); border-radius:10px; padding:8px 22px;}
+  .figs li{margin:6px 0;}
+  footer{margin-top:48px; padding-top:16px; border-top:1px solid var(--line); color:var(--sub); font-size:.85rem;}
+  @media(max-width:640px){ td.ev{width:100%; display:block; border-top:none;} }
+</style>
+</head>
+<body>
+<main>
+
+<h1>運動準備電位の先読みによる想起オンセット同期<br>—— 運動イメージと仮想手の動き出しのラグをなくす VR システム</h1>
+<p class="subtitle">WISS 2026 投稿予定 ／ 論文構成・段落トピックセンテンス抽出（仮タイトル・著者未定）</p>
+
+<div class="lead">
+  <p><strong>本論文の貢献</strong></p>
+  <ol class="contrib">
+    <li>運動準備電位の先読みにより、運動想起の開始と仮想手の動き出しを同期させる VR システムを提案する。</li>
+    <li>運動イメージに物理的な開始時刻がないことを踏まえ、動作の一致を主観的同時性で定義し、それをデコーダ調整の目標に据える。</li>
+    <li>起動の判定を提示側に分離し、判定条件を明示したまま追試できる再現可能な実験基盤を構築する。</li>
+  </ol>
+</div>
+
+<p class="note">本構成は各段落のトピックセンテンス（段落の主張を言い切った一文）と根拠を対にして示したものであり、本文は未執筆である。第 4 章の結果および 5.1 節は、実験実施前の<strong>想定</strong>として記述している。</p>
+
+<!-- 1 -->
+<h2>1. はじめに</h2>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">ブレインコンピュータインターフェース（BCI）は脳活動から外部機器を直接操作する技術であり、非侵襲な脳波（EEG）計測の普及とともに医療・リハビリテーションから VR/HCI まで応用が広がっている。</td><td class="ev">BCI の定義（脳と外部機器の直接通信）。非侵襲脳波 BCI の応用拡大（医療・リハ・VR/HCI）。</td></tr>
+    <tr><td class="id">P2</td><td class="ts">特に運動イメージ（MI）に基づく BCI は、身体を動かす想像に伴う感覚運動リズムを特徴量とするため、身体運動と対応づけやすい直感的な操作モダリティとして広く用いられている。</td><td class="ev">運動イメージ（MI）パラダイム。身体運動との対応・直感性。</td></tr>
+    <tr><td class="id">P3</td><td class="ts">しかし MI-BCI では、脳波から意図を推定するのに一定の解析時間窓を必要とするため、イメージ想起の開始から操作が反映されるまでに遅延が避けられず、これが身体所有感や操作感を損なう。</td><td class="ev">ラグ解剖（生理的遅延・解析窓長・フィルタ群遅延が支配項で、計算系を削っても越えられない。典型的に数百 ms 以上）。Shibuya 2016（190ms 超で身体所有感が消失）。</td></tr>
+    <tr><td class="id">P4</td><td class="ts">この遅延をなくす試みの多くは信号処理の高速化によって遅延を縮めてきたが、その主要因は処理では削れず、加えて対処はイメージ想起の開始の一点にとどまるため、操作の維持まで遅延をなくす構成は十分に確立していない。</td><td class="ev">遅延低減の方向＝処理の高速化（短窓・因果フィルタ・動的停止／計算系は実測 117ms 程度で支配項は窓長〜1000ms・フィルタ〜500ms）、運動開始前の先読み検出、遅延に耐える共有制御。いずれも動き出し（発火）への対処が中心。発火と維持を役割分離して両立させる構成・具体的な信号や融合研究は関連研究で扱う。</td></tr>
+    <tr><td class="id">P5</td><td class="ts">そこで本研究では、イメージ想起の開始と維持で役割を分けた 2 つの分類器を用い、遅延をなくしつつ操作を維持する VR システムを提案する。</td><td class="ev">運動想起の開始と仮想手の動き出しを同期させ、続いて操作の維持を判別する、想起開始の前後で役割を分けた 2 つの分類器の組み合わせ。具体的な信号（運動準備電位・事象関連脱同期）はシステム章で述べる。貢献の列挙は省く（実証実験前のため）。</td></tr>
+  </tbody>
+</table>
+
+<!-- 2 -->
+<h2>2. 関連研究</h2>
+
+<h3>2.1 運動関連の皮質活動による運動前検出</h3>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">事象関連脱同期は、運動の準備・実行・イメージに伴って感覚運動野における μ/β 帯律動のパワーが低下する現象であり、運動イメージ（MI）に基づく BCI で標準的に用いられる特徴量である。</td><td class="ev">感覚運動野、μ/β 帯のパワー低下、対側優位性。</td></tr>
+    <tr><td class="id">P2</td><td class="ts">ただし事象関連脱同期は帯域パワー、すなわち分散の推定に基づく特徴量であるため、運動やイメージの開始後の時間窓を要し、運動開始に先行して検出することは原理的にできない。</td><td class="ev">分散推定という特徴量の定義自体に内在する遅れ。MRCP（0.05–5Hz）とは周波数帯域が重ならず、独立に抽出できる。</td></tr>
+    <tr><td class="id">P3</td><td class="ts">一方、運動準備電位は随意運動の約 1.5〜2 秒前から始まる緩やかな陰性電位であり、運動が始まる前に運動の準備を検出できる唯一の生理的特徴量である。</td><td class="ev">時間構造（早期→急峻化→ピーク陰性）、周波数 0.05–5Hz、中心部電極（C3/Cz/C4）、振幅数 µV。</td></tr>
+    <tr><td class="id">P4</td><td class="ts">単一試行での運動準備電位の検出手法は、空間フィルタから部分空間学習、信号源分離、深層学習へと世代を重ね、検出の潜時を縮めてきた。</td><td class="ev">第1世代＝空間フィルタ（Niazi 2011, TPR82.5%）／第2世代＝部分空間学習（Xu 2014, オンライン評価）／第3世代＝信号源分離（Karimi 2017, cICA）／第4世代＝深層学習・多信号融合（Lin 2024）。世代を追うごとに前処理は複雑化している。</td></tr>
+    <tr><td class="id">P5</td><td class="ts">ただし、こうした検出手法によって運動開始より前に検出することは、オンライン環境では依然として難しく、検出は運動開始後にとどまる。</td><td class="ev">Xu 2014 のオンライン潜時 +315ms。</td></tr>
+  </tbody>
+</table>
+
+<h3>2.2 BCI における遅延の影響</h3>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">実身体を伴う操作では、遅延はまず運動パフォーマンスと同時性知覚を 75ms という早い段階から損なう。</td><td class="ev">Impact of latency on perceptual judgments and motor performance in closed-loop VR（ACM VRST 2016）。遅延 75ms から、操作の正確さ・速さ（運動パフォーマンス）と、動作と結果の同時性判断（同時性知覚）の双方が低下し始める。</td></tr>
+    <tr><td class="id">P2</td><td class="ts">さらに遅延が大きくなると、行為主体感・身体所有感といった身体化の感覚が 125ms から低下し始め、300ms を超えると顕著に劣化する。</td><td class="ev">同研究の閾値：125ms で行為主体感・身体所有感が低下開始、300ms 超で顕著に劣化。Shibuya et al. (2016) のロボット手錯覚実験（PLOS ONE、健常16名、遅延90〜590ms）：身体所有感は190ms超で消失、主体感は290〜490msまで残存。</td></tr>
+    <tr><td class="id">P3</td><td class="ts">一方で、BCI を介した操作では遅延の許容度が大きく、脳と視覚のあいだの遅延には 1 秒近くまで鈍感であるという相反する報告がある。</td><td class="ev">Visual feedback dominates the sense of agency for brain-machine actions（PLOS ONE 2015）：BMI由来の遅延には脳−視覚間で1秒近くまで鈍感であり、主体感は視覚フィードバックに支配される。EEGカーソル制御では750msで主体感の明確な低下が報告されている。</td></tr>
+    <tr><td class="id">P4</td><td class="ts">この許容度の二重性は、遅延の許容が固定された値ではなく、操作の文脈によって変わりうることを示唆する。</td><td class="ev">Ziadeh et al. (2021)：一人称視点のVRアバターによる身体化が強いほど、二値運動イメージタスクにおける行為主体感が高まる（R²=0.41）。遅延量そのものではなく身体化の程度が主体感を左右することを示す一例。</td></tr>
+    <tr><td class="id">P5</td><td class="ts">ただし、遅延したニューロフィードバックは学習そのものを阻害することが報告されており、BCI の較正・訓練フェーズでは遅延を減らすことの優先度が一段と高くなる。</td><td class="ev">Delayed neurofeedback impedes training of parietal alpha-band power（bioRxiv）：遅延したフィードバックはニューロフィードバック訓練の成立自体を妨げる。EEGデコーディングの遅延は実装系の目安として200ms以下に抑えるべきとされる。</td></tr>
+  </tbody>
+</table>
+
+<!-- 3 -->
+<h2>3. システム</h2>
+
+<h3>3.1 システム構成</h3>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">本システムは、脳波の計測を EMOTIV EPOC Flex 2 で、VR上の仮想手の制御を Meta Quest 3 上の Unity アプリケーションで行った。</td><td class="ev">いつ手を動かすかという判定は提示側に委ね、デコーダは推定結果と確信度を送るのみとする。判定条件がデコーダの実装に依存しないため、被験者ごとの調整を提示側だけで完結できる。32ch・ゲル電極・256Hz、LSLで取得。</td></tr>
+  </tbody>
+</table>
+
+<h3>3.2 信号処理・特徴量</h3>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">本システムは、運動開始前から生じる運動準備電位を主な特徴量として用いる。</td><td class="ev">生理的な遅延は信号処理の高速化では削れず、運動開始前の先読みでしか越えられない。先読みによって体感ラグを負にできる唯一の生理的経路。</td></tr>
+    <tr><td class="id">P2</td><td class="ts">脳波はリアルタイム推定に適した計測系で取得し、0.1〜3Hzの因果的フィルタで前処理する。</td><td class="ev">電極FCz/Cz/C3/C4、眼電除去にFp1/Fp2。零位相フィルタ（filtfilt）は非因果的でリアルタイム処理に使えない。</td></tr>
+    <tr><td class="id">P3</td><td class="ts">この生波形から、運動準備電位はキュー直前の時間窓のベースライン補正後振幅を、事象関連脱同期はμ/β帯のバンドパワーを特徴量として、それぞれ独立に抽出する。</td><td class="ev">MRCPは0.05–5Hz、ERDはμ/β帯で周波数帯域が重ならないため同一の脳波から独立に取り出せる。特徴融合（Lin 2024）と異なり目的で分離する点が差分。</td></tr>
+  </tbody>
+</table>
+
+<h3>3.3 起動・維持の分類</h3>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">本システムは、手を握り始める起動の判定と、握りを保ち続ける維持の判定を別々の分類器に分ける役割分離のアンサンブルを核とする。</td><td class="ev">運動準備電位は一過性で、握りを持続的に駆動する信号には使えないため。</td></tr>
+    <tr><td class="id">P2</td><td class="ts">起動は運動準備電位から安静と握るイメージの開始を判別する分類器が担い、手の動き出しを引き起こす。</td><td class="ev">安静／握るイメージ開始の二値判別が起動の引き金。</td></tr>
+    <tr><td class="id">P3</td><td class="ts">起動後の維持は事象関連脱同期から握るイメージの継続と安静への復帰を判別する分類器が担い、握りの保持と解放を制御する。</td><td class="ev">継続／復帰の判別で保持・解放を切り替える。</td></tr>
+    <tr><td class="id">P4</td><td class="ts">いずれの分類器も、較正データが少なく実時間制約に適合する軽量な線形分類器として、正則化線形判別分析（shrinkage LDA）を用いる。</td><td class="ev">1セッション約150試行、約20Hzでの推論。深層学習ではなく古典的手法を選ぶ根拠。</td></tr>
+  </tbody>
+</table>
+
+<h3>3.4 調整目標</h3>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">本システムは、キューを基準とした起動時刻の誤差に加えて、被験者自身が回答する主観的なタイミング一致度を対にして測る。</td><td class="ev">運動イメージには物理的な開始時刻がなく、筋電などの物理指標だけでは一致を測れないという構造的困難。早すぎ〜ちょうど〜遅すぎの主観判断を客観的な起動誤差と対にする。</td></tr>
+    <tr><td class="id">P2</td><td class="ts">本システムは、この主観的な一致度をデコーダを調整する目標として用いる。</td><td class="ev">主観を結果変数としてのみ扱う既存研究との差分（新規性の核）。</td></tr>
+  </tbody>
+</table>
+
+<h3>3.5 VR提示</h3>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">提示側は、確信度が閾値を超える状態が一定回数連続したときに手の動き出しを起こして不応期を設けることで、単発の跳ねに左右されず再現可能な起動条件を保つ。</td><td class="ev">閾値と連続回数は較正データ上で決め、本番では固定。判定条件を外から見える形にし、既定条件を検証で押さえる。</td></tr>
+    <tr><td class="id">P2</td><td class="ts">仮想手は一人称視点で提示し、起動判定に応じて開閉させることで、運動開始の約2秒前から始まる運動準備電位の陰性化を運動開始前に検出した時点で、想起の開始と仮想手の動き出しが同期する。</td><td class="ev">起動判定はP1で述べた閾値超え連続でトリガーされる。</td></tr>
+    <tr><td class="id">P3</td><td class="ts">開閉動作は一定速度に制限して把持到達時刻を計測できるようにし、試行ごとに起動時刻と主観評価を記録する。</td><td class="ev">Meta Quest 3、Unity 6000.4.8f1 + XR Hands、ハンドトラッキング。</td></tr>
+  </tbody>
+</table>
+
+<!-- 4 -->
+<h2>4. ユーザスタディ</h2>
+<p class="note">単一被験者・複数日の予備的な検討として、システムが多日運用に耐えることの確認を目的とする。以下の結果（4.5〜4.8）は実験実施前の<strong>想定</strong>である。</p>
+
+<h3>4.1 参加者</h3>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">本研究の評価は、システムが多日運用に耐えることを実証する単一被験者・複数日のユーザスタディとして行う。</td><td class="ev">参加者1名。目的は多日運用の実証。統計的な母集団推定は目的としない。</td></tr>
+  </tbody>
+</table>
+
+<h3>4.2 手順</h3>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">各日のセッションは、装着と較正、トレーニング計測、モデル構築、タスク、事後アンケートという同一の手順を反復する。</td><td class="ev">トレーニング約150試行、タスク4ブロック×20試行。複数日にわたり同一手順。</td></tr>
+  </tbody>
+</table>
+
+<h3>4.3 タスク</h3>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">各試行は、安静（0.5秒の揺らぎを含む3.0秒）、予告2.0秒、キュー、保持3.0秒、復帰という構造で進行し、予告からキューまでの間隔は運動前活動の減弱を避けるため固定する。</td><td class="ev">Cui &amp; MacKinnon 2009（不規則な予告で運動前活動が減弱）。安静区間の揺らぎは周期的な起動との区別のため。</td></tr>
+    <tr><td class="id">P2</td><td class="ts">トレーニングとタスクは同一の試行構造を共有し、起動の有無と主観回答の有無だけが異なる。</td><td class="ev">学習したモデルの入力分布をタスクでずらさないための設計。</td></tr>
+    <tr><td class="id">P3</td><td class="ts">各試行の直後に、被験者は早すぎから遅すぎまでの7段階で主観的なタイミング一致度を回答する。</td><td class="ev">−3（早すぎ）〜0（ちょうど）〜+3（遅すぎ）。遅い回答を切り捨てない。</td></tr>
+  </tbody>
+</table>
+
+<h3>4.4 評価指標と解析</h3>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">評価指標は、キューを基準とした起動時刻の誤差を主要指標とし、あわせて検出率、誤起動率、把持到達時刻の誤差、試行成功率、主観的一致度、行為主体感、身体所有感、作業負荷、シミュレータ酔いを日ごとに記録する。</td><td class="ev">起動時刻誤差Δtが主要評価項目。作業負荷はNASA-TLX、酔いはSSQ。起動しなかった試行は検出率の分母に含める一方、起動時刻誤差の分布からは除外する（3割前後は反応しないが反応時は要求精度に入る、を正しく記述するため）。</td></tr>
+    <tr><td class="id">P2</td><td class="ts">解析では、起動時刻誤差の分布、起動時刻誤差と主観的一致度の被験者内相関、日およびブロック間の推移、周期起動・試行間シャッフルとの対照比較を検討する。</td><td class="ev">中央値・信頼区間、Spearman相関、Friedman検定、並べ替え検定。</td></tr>
+  </tbody>
+</table>
+
+<h3>4.5 タイミング精度<span class="planned">想定</span></h3>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">起動時刻誤差の分布は、要求精度である ±100ms と、身体所有感が消失する 190ms に照らして評価する。</td><td class="ev">図：起動時刻誤差のヒストグラムに両基準線を重ねる。</td></tr>
+    <tr><td class="id">P2</td><td class="ts">検出率、誤起動率、把持到達時刻の誤差、試行成功率を報告し、対照ベースラインと比較して検出が脳波に由来することを確かめる。</td><td class="ev">周期起動・試行間シャッフルとの並べ替え検定。</td></tr>
+  </tbody>
+</table>
+
+<h3>4.6 主観評価<span class="planned">想定</span></h3>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">起動時刻誤差と主観的一致度の対応を散布図で示し、被験者内の相関から主観的な一致の傾向を推定する。</td><td class="ev">図：起動時刻誤差×主観的一致度の散布図。</td></tr>
+    <tr><td class="id">P2</td><td class="ts">行為主体感、身体所有感、一致感、苛立ち、作業負荷、シミュレータ酔いの結果を報告する。</td><td class="ev">ブロックごとの主観評価、NASA-TLX、SSQ。</td></tr>
+  </tbody>
+</table>
+
+<h3>4.7 多日にわたる推移<span class="planned">想定</span></h3>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">要求精度を満たした試行の割合の推移は、電極位置や覚醒度などの非定常性のため、単調な向上にはならないと想定する。</td><td class="ev">図：日別・ブロック別の要求精度達成率の推移。</td></tr>
+    <tr><td class="id">P2</td><td class="ts">本研究はこれを精度が向上したという主張にはせず、多日にわたる相互適応を追跡できる基盤の実証として提示する。</td><td class="ev">被験者とデコーダの相互適応を記録できることの実証。</td></tr>
+  </tbody>
+</table>
+
+<h3>4.8 脳波波形の確認<span class="planned">想定</span></h3>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">中心部電極の加算平均波形から、運動準備に伴う陰性シフトの時刻と、予告への時間的期待に由来する成分の混入を確認する。</td><td class="ev">分類器が何を捉えているかの傍証。図：加算平均の脳波波形。</td></tr>
+  </tbody>
+</table>
+
+<!-- 5 -->
+<h2>5. 議論と限界</h2>
+
+<h3>5.1 結果の解釈<span class="planned">想定</span></h3>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">起動時刻誤差の分布が要求精度に収まり、かつ起動時刻誤差と主観的一致度の相関が有意であれば、主観を調整目標に据える設計の妥当性が裏付けられる。</td><td class="ev">客観的な起動誤差と主観的一致感の対応が、3.4 節の設計を支持する。</td></tr>
+  </tbody>
+</table>
+
+<h3>5.2 限界</h3>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">運動イメージでの検出率は運動実行より低くとどまり、3 割前後の試行では起動しないことを前提としている。</td><td class="ev">運動イメージの検出率 65–75%。</td></tr>
+    <tr><td class="id">P2</td><td class="ts">キューを基準とした起動時刻誤差は、被験者の想起開始のばらつきを含むため、真値そのものにノイズがある。</td><td class="ev">Jochumsen et al. 2019（想起開始のばらつき ±165ms 程度）が要求精度を上回りうる。</td></tr>
+    <tr><td class="id">P3</td><td class="ts">本実験の構成では、運動準備に由来する成分と、予告への時間的期待に由来する成分を分離できない。</td><td class="ev">緩電位に随伴陰性変動が混入する（CNV）。</td></tr>
+    <tr><td class="id">P4</td><td class="ts">準備電位の解釈には論争があるため、本研究は意図の先読みを主張せず、運動準備に伴う皮質活動の検出にとどめる。</td><td class="ev">Schurger et al. 2012（準備電位の再解釈）。工学的には検出できれば十分。</td></tr>
+    <tr><td class="id">P5</td><td class="ts">対照が脳波と無関係なタイミングでの起動条件を伴わないため、随伴性そのものの効果までは示せない。</td><td class="ev">Xu et al. 2014 は非随伴起動条件を実施済み。査読で問われうる点。</td></tr>
+  </tbody>
+</table>
+
+<h3>5.3 今後の展望</h3>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">取り除けない残余の遅延を、疑似触覚による重さの知覚を用いて、システムの遅さではなく物体の重さとして意味づけ直す拡張が考えられる。</td><td class="ev">Samad et al. 2019（C/D 比による重さ知覚）。運動準備電位の同期の上に載せる構成は前例がない。</td></tr>
+    <tr><td class="id">P2</td><td class="ts">単一被験者のケーススタディを、より多人数での検証へ拡張することが今後の課題である。</td><td class="ev">統計的な一般化可能性の確認。</td></tr>
+  </tbody>
+</table>
+
+<!-- 6 -->
+<h2>6. まとめ</h2>
+<table>
+  <thead><tr><th>#</th><th>トピックセンテンス</th><th>根拠・書く要素</th></tr></thead>
+  <tbody>
+    <tr><td class="id">P1</td><td class="ts">本研究は、運動準備電位の先読みによって運動想起の開始と仮想手の動き出しを同期させるシステムを提案した。</td><td class="ev">貢献 1 の再掲。</td></tr>
+    <tr><td class="id">P2</td><td class="ts">要素技術そのものに新規性はないが、それらの組み合わせと、一致を主観で定義してデコーダの調整目標に据えた問いの立て方に新規性がある。</td><td class="ev">貢献 2・3 の再掲。率直に要素技術の既知性を認める。</td></tr>
+    <tr><td class="id">P3</td><td class="ts">単一被験者・複数日のケーススタディにより多日運用への耐性を確認し、想定される限界を設計に織り込んだ。</td><td class="ev">誠実さの表明。</td></tr>
+    <tr><td class="id">P4</td><td class="ts">残された遅延の扱いと多人数への拡張を今後の展望として示した。</td><td class="ev">詳細は 5.3 節に述べる。</td></tr>
+  </tbody>
+</table>
+
+<!-- 図表 -->
+<h2>図表案</h2>
+<ul class="figs">
+  <li>図1　起動時刻誤差のヒストグラム（±100ms・±190ms の基準線を重ねる）</li>
+  <li>図2　遅延成分の内訳（取得・伝送／フィルタ／推論／描画）</li>
+  <li>図3　日別・ブロック別の要求精度達成率の推移</li>
+  <li>図4　中心部電極の加算平均脳波波形（予告時刻とキュー時刻を基準線に）</li>
+  <li>図5　起動時刻誤差と主観的一致度の散布図</li>
+  <li>図6　システム構成図（取得→前処理→推論→起動判定→提示→描画）</li>
+</ul>
+
+<footer>
+  WISS2026 論文構成ドラフト。各段落はトピックセンテンス（主張を言い切った一文）と根拠を対にして示す。第 4 章の結果および 5.1 節は実験実施前の想定である。数値・出典は一次資料の報告値に基づき、本文執筆時に一次文献で確認する。
+</footer>
+
+</main>
+</body>
+</html>

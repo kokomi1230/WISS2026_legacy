@@ -1,0 +1,132 @@
+{
+  "template-project-claude/docs/NOTION_FEATURE_OVERVIEW.md": {
+    "mermaid": [
+      {
+        "anchor": "notion_sync.py が REST API で pull",
+        "code": "flowchart TD\n  N[\"Notion<br/>人間が書く・探す・読む\"] -->|notion_sync.py が REST API で pull<br/>一方向・増分| M[\"~/.notion-mirror/<br/>全プロジェクト共通・派生物・手編集禁止\"]\n  M -->|Grep / Read で走査| W[\"整理・要約・照合\"]\n  W -->|Notion MCP で書き戻し| N"
+      }
+    ]
+  },
+  "python-mri-experiment-kk/docs/PROTOCOL.md": {
+    "html": "_html/研究ノート_DB/実験/PROTOCOL.html",
+    "mermaid": [
+      {
+        "anchor": "1. Ready 画面        keys.start のキー入力を待つ",
+        "code": "flowchart TD\n  A[\"1. Ready 画面<br/>keys.start のキー入力を待つ\"] --> B[\"2. トリガ待ち<br/>最初の TR トリガを待つ\"]\n  B --> C[\"3. ベースライン安静<br/>baseline_rest_sec だけ + を提示\"]\n  C --> D[\"4. 課題ブロック<br/>課題ごとに block の並びを n_reps 回\"]\n  D --> E[\"5. 終了画面<br/>end_sec だけ空白画面\"]"
+      },
+      {
+        "anchor": "繰り返し 1 周目",
+        "code": "flowchart TD\n  R1[\"繰り返し 1 周目\"] --> A1[\"課題 A のブロック<br/>トリガ待ち → 課題 → 安静\"]\n  R1 --> B1[\"課題 B のブロック<br/>トリガ待ち → 課題 → 安静\"]\n  A1 --> R2[\"繰り返し 2 周目\"]\n  B1 --> R2\n  R2 --> A2[\"課題 A のブロック\"]\n  R2 --> B2[\"課題 B のブロック\"]\n  A2 --> RN[\"…（n_reps 周まで）\"]\n  B2 --> RN"
+      },
+      {
+        "anchor": "Ready                    space キー入力待ち",
+        "code": "flowchart TD\n  S[\"Ready<br/>space キー入力待ち\"] --> T0[\"トリガ待ち\"]\n  T0 --> BL[\"+ ベースライン安静<br/>20.8 s\"]\n  BL --> L{\"繰り返し × 8\"}\n  L --> T1[\"トリガ待ち\"] --> M1[\"Motor 21.0 s\"] --> P1[\"+ 20.8 s\"]\n  P1 --> T2[\"トリガ待ち\"] --> O1[\"Onomatopoeia 21.0 s\"] --> P2[\"+ 20.8 s\"]\n  P2 --> L\n  L --> END[\"空白画面 5.0 s\"]"
+      }
+    ]
+  },
+  "python-mri-experiment-kk/docs/ANALYSIS.md": {
+    "html": "_html/研究ノート_DB/実験/ANALYSIS.html",
+    "edits": [
+      {
+        "old": "実測した TR は **1.5000 秒**です（`data/kk/` の既存セッションで、1 セッション 465 パルスから算出）。既定設定では次の関係が成り立ちます。\n\n| 項目 | 値 | TR 換算 |\n|---|---|---|\n| `task_sec` | 21.0 s | 14 TR |\n| `rest_sec` | 20.8 s | 13.87 TR |\n| 1 ブロックの正味 | 41.8 s | 27.87 TR |\n| **1 ブロックの実測** | **42.0 s** | **28 TR** |\n\n課題と安静の正味は 41.8 秒で、28 TR の 42.0 秒をわずかに下回ります。**この 0.2 秒の差をトリガ待ちが吸収します。** 安静が終わった時点ではまだ次のトリガが来ておらず、0.2 秒ほど `+` を提示したまま待ってから次のブロックに入るため、結果として全ブロックがきっちり 28 TR 間隔で並びます。\n\n実測でも、最初のトリガを 0 として課題の提示開始は 14 / 28 / 42 / 56 TR 目に並んでいました。",
+        "new": "実測した TR は **1.5000 秒**で、`task_sec` + `rest_sec` の正味 41.8 秒に対し、トリガ待ちを含めた 1 ブロックの実測長が 42.0 秒（28 TR）になります。**対応表と導出は「Motor_MRI 実験プロトコル」ノートの「TR との対応」に記載があるため、ここでは繰り返しません。**"
+      }
+    ]
+  },
+  "python-bci-platform/docs/BrainProducts.md": {
+    "html": "_html/研究ノート_DB/知見/BrainProducts.html",
+    "mermaid": [
+      {
+        "anchor": "電極キャップ（BrainCap MR または actiCAP）",
+        "code": "flowchart LR\n  C[\"電極キャップ<br/>BrainCap MR / actiCAP\"] --> A[\"アンプ<br/>BrainAmp\"] --> P[\"PC\"]\n  CB[\"actiCAP ControlBox<br/>インピーダンス確認・給電\"] -.補助.-> C"
+      }
+    ]
+  },
+  "claude-figma-slide/docs/SLIDE_DESIGN_TIPS.md": {
+    "html": "_html/研究ノート_DB/知見/SLIDE_DESIGN_TIPS.html",
+    "mermaid": [
+      {
+        "anchor": "装飾        ← いちばん最後",
+        "code": "flowchart BT\n  M[\"目的<br/>根本。これが弱いと全部無意味\"] --> I[\"情報<br/>何を載せ、何を削るか\"]\n  I --> L[\"レイアウト<br/>4 原則・視線誘導で整える\"]\n  L --> D[\"装飾<br/>いちばん最後。なくても成立する\"]"
+      }
+    ]
+  },
+  "claude-paper-summary/docs/paper_summary_notion_spec.md": {
+    "html": "_html/研究ノート_DB/開発/paper_summary_notion_spec.html",
+    "mermaid": [
+      {
+        "anchor": "入力（PDF/フォルダ）→ 重複チェック",
+        "code": "flowchart LR\n  A[\"入力<br/>PDF / フォルダ\"] --> B[\"重複チェック\"] --> C[\"情報抽出\"] --> D[\"要約生成\"]\n  D --> E[\"BibTeX 整形\"] --> F[\"Notion 登録\"] --> G[\"references.md / .bib 追記\"] --> H[\"完了報告\"]"
+      }
+    ]
+  },
+  "python-idea-generator/docs/superpowers/specs/2026-07-03-idea-generator-design.md": {
+    "html": "_html/研究ノート_DB/開発/idea-generator-design.html",
+    "mermaid": [
+      {
+        "anchor": "ブラウザ (React Flow UI)",
+        "code": "flowchart TD\n  BR[\"ブラウザ<br/>React Flow UI\"] -->|REST 操作系| FA\n  BR -->|SSE イベント購読| FA\n  FA[\"FastAPI<br/>uvicorn 127.0.0.1:8000 / 1 プロセス\"]\n  FA --> API[\"api/<br/>REST + SSE\"]\n  FA --> SV[\"services/<br/>発散・介入・収束。ガードはここ\"]\n  FA --> CL[\"claude/<br/>subprocess 管理・Semaphore・タイムアウト\"]\n  FA --> PR[\"prompts/<br/>Jinja2 + personas.yaml\"]\n  FA --> ST[\"storage/<br/>SessionStore（JSON アトミック保存）\"]\n  CL -->|asyncio.create_subprocess_exec × N| CP[\"claude -p --output-format stream-json<br/>ペルソナごとに 1 プロセス\"]"
+      }
+    ]
+  },
+  "Kake_VR_pseudohaptics/docs/BranchInventoryAndMigrationPlan.md": {
+    "mermaid": [
+      {
+        "anchor": "└─ 共通基盤候補",
+        "code": "flowchart TD\n  MAIN[\"main<br/>README / 入口整理\"]\n  DB[\"develop_base<br/>共通基盤候補\"]\n  DB --> DP[\"demo_pushinig<br/>実質最新版\"]\n  DB --> DPG[\"demo_pushinggame\"]\n  OLD[\"旧基点からの別系統\"]\n  OLD --> R1[\"demo_rotatehand2distance\"]\n  OLD --> R2[\"demo_windowselect\"]\n  OLD --> R3[\"experiment2_new\"]\n  OLD --> R4[\"MediaArt\"]\n  OLD --> R5[\"context1\"]\n  OLD --> R6[\"realistic\"]"
+      },
+      {
+        "anchor": "└─ 接触判定 / 進行度 / 色変化 / 汎用 interaction の基盤",
+        "code": "flowchart TD\n  MAIN[\"main<br/>入口と説明のみ\"]\n  DB[\"develop_base<br/>接触判定 / 進行度 / 色変化 / 汎用 interaction の基盤\"]\n  DB --> A1[\"demo_pushinig\"]\n  DB --> A2[\"demo_windowselect\"]\n  DB --> A3[\"demo_rotatehand2distance\"]\n  DB --> A4[\"context1\"]\n  DB --> A5[\"MediaArt\"]\n  DB --> A6[\"realistic\"]\n  DEB[\"develop_experiment_base（必要なら新設）<br/>実験フロー・質問票・CSV 出力の共通基盤\"]\n  DEB --> E1[\"experiment1\"]\n  DEB --> E2[\"experiment2\"]"
+      }
+    ]
+  },
+  "python-bci-platform/docs/CLAUDE_CODE_REFACTOR_PROMPTS.md": {
+    "html": "_html/研究ノート_DB/開発/CLAUDE_CODE_REFACTOR_PROMPTS.html",
+    "mermaid": [
+      {
+        "anchor": "Phase 0  基盤固め（座標を固定）",
+        "code": "flowchart TD\n  P0[\"Phase 0<br/>基盤固め（座標を固定）＋最小 import スモークバンドル\"]\n  P1A[\"Phase 1a<br/>機械的パッケージ化（振る舞い保存の機械変換）\"]\n  P2A[\"Phase 2a<br/>境界監査 #7 のみ（1b の設計入力。実装はしない）\"]\n  P1B[\"Phase 1b<br/>構造再編（設計判断を伴う。#7 監査後）\"]\n  P2B[\"Phase 2b<br/>残り 8 観点の監査 → チケット化\"]\n  P2C[\"Phase 2c<br/>起票チケットの実装（依存 DAG 順）\"]\n  P3[\"Phase 3<br/>デスクトップアプリ化（サイズ最適化＋署名/notarization）\"]\n  P0 --> P1A --> P2A --> P1B --> P2B --> P2C --> P3"
+      }
+    ]
+  },
+  "python-bci-platform/docs/ROADMAP.md": {
+    "html": "_html/研究ノート_DB/知見/ROADMAP.html",
+    "mermaid": [
+      {
+        "anchor": "本書は両柱のギャップを網羅的に列挙し",
+        "code": "flowchart TD\n  G[\"総合 EEG 解析プラットフォーム\"]\n  G --> A[\"Part A — BCI / 機械学習パイプライン<br/>前処理・特徴抽出・分類・適応・評価\"]\n  G --> B[\"Part B — 解析・可視化・統計<br/>EEGLAB 相当（MNE ラッパ）\"]\n  A --> A1[\"Phase 1<br/>高 ROI・低リスク\"] --> A2[\"Phase 2<br/>標準手法の拡充\"] --> A3[\"Phase 3<br/>最新手法・高難度\"]\n  B --> B1[\"Phase A<br/>基盤・図ファイル出力\"] --> B2[\"Phase B<br/>時間周波数・統計・レポート\"] --> B3[\"Phase C<br/>群解析・ソース推定・GUI\"]"
+      }
+    ]
+  },
+  "python-bci-platform/docs/ANALYSIS_REAL_DATA_MATRIX.md": {
+    "html": "_html/研究ノート_DB/実験/ANALYSIS_REAL_DATA_MATRIX.html"
+  },
+  "python-bci-platform/docs/CONFIG_VERIFICATION.md": {
+    "html": "_html/研究ノート_DB/開発/CONFIG_VERIFICATION.html"
+  },
+  "python-bci-platform/docs/IMPLEMENTATION_STATUS.md": {
+    "html": "_html/研究ノート_DB/開発/IMPLEMENTATION_STATUS.html"
+  },
+  "python-bci-platform/docs/CODE_REVIEW.md": {
+    "html": "_html/研究ノート_DB/開発/CODE_REVIEW.html"
+  },
+  "python-idea-generator/docs/アイデア発想法_調査レポート.md": {
+    "html": "_html/研究ノート_DB/文献/アイデア発想法_調査レポート.html"
+  },
+  "python-idea-generator/docs/superpowers/plans/2026-07-04-idea-generator-phase3.md": {
+    "html": "_html/研究ノート_DB/開発/idea-generator-phase3.html"
+  },
+  "processing-ep-exercises/docs/processing-next-token-prediction-spec.md": {
+    "html": "_html/研究ノート_DB/開発/processing-next-token-prediction-spec.html"
+  },
+  "python-bci-platform/docs/CROSS_SUBJECT_GUIDE.md": {
+    "html": "_html/研究ノート_DB/開発/CROSS_SUBJECT_GUIDE.html",
+    "mermaid": [
+      {
+        "anchor": "被験者間解析は「測る → 作る → 合わせる」の 3 段で進める",
+        "code": "flowchart TD\n  A[\"1. 測る<br/>pooled + loso<br/>被験者間ベースライン\"] --> B[\"2. 作る<br/>pooled + cross_validation<br/>事前学習モデル .pt\"]\n  B --> C[\"3. 合わせる<br/>single + transfer.enabled<br/>個人最適化 fine-tune\"]"
+      }
+    ]
+  }
+}

@@ -1,0 +1,2660 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>catalog/ — Claude Code 統合カタログ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+JP:wght@400;500;700&display=swap">
+<style>
+  :root {
+    --bg: #0a0a0c;
+    --bg-elev: #111114;
+    --bg-row: #16161a;
+    --bg-row-hover: #1c1c22;
+    --fg: #ededed;
+    --fg-soft: #b3b3b8;
+    --muted: #6e6e76;
+    --rule: #26262c;
+    --rule-soft: #1c1c22;
+    --accent: #5eead4;       /* teal */
+    --accent-deep: #14b8a6;
+    --accent-soft: rgba(94, 234, 212, 0.12);
+    --self: #fbbf24;         /* amber */
+    --official: #60a5fa;     /* blue */
+    --restricted: #f472b6;   /* pink */
+    --community: #a78bfa;    /* purple */
+    --danger: #f87171;
+    --sans: "IBM Plex Sans", "IBM Plex Sans JP", "Hiragino Sans", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection { background: var(--accent); color: var(--bg); }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  /* Top bar */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10, 10, 12, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .topbar-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 14px 24px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 16px;
+  }
+  .brand {
+    font-family: var(--mono); font-weight: 700;
+    font-size: 0.92rem; letter-spacing: -0.02em;
+    color: var(--fg);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .brand .prompt { color: var(--accent); }
+  .brand .path { color: var(--fg-soft); }
+
+  .topbar-status {
+    font-family: var(--mono); font-size: 0.78rem;
+    color: var(--muted); justify-self: end;
+    display: flex; gap: 18px; align-items: center;
+  }
+  .topbar-status .live { color: var(--accent); }
+  .topbar-status .kbd {
+    display: inline-block;
+    border: 1px solid var(--rule);
+    border-bottom-width: 2px;
+    padding: 1px 6px; border-radius: 4px;
+    background: var(--bg-elev);
+    color: var(--fg-soft);
+    font-size: 0.7rem;
+  }
+
+  /* Search inline in topbar */
+  .search-wrap {
+    position: relative;
+    display: flex; align-items: center;
+  }
+  .search-wrap .sigil {
+    position: absolute; left: 12px;
+    font-family: var(--mono);
+    color: var(--accent);
+    font-size: 0.86rem;
+    pointer-events: none;
+  }
+  #search {
+    width: 100%;
+    background: var(--bg-elev);
+    border: 1px solid var(--rule);
+    color: var(--fg);
+    padding: 9px 12px 9px 28px;
+    border-radius: 6px;
+    font: inherit;
+    font-family: var(--mono);
+    font-size: 0.84rem;
+  }
+  #search:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .search-hint {
+    position: absolute; right: 10px;
+    font-family: var(--mono); font-size: 0.7rem;
+    color: var(--muted);
+    pointer-events: none;
+  }
+
+  /* Hero */
+  .hero {
+    max-width: 1200px; margin: 0 auto;
+    padding: 48px 24px 24px;
+  }
+  .hero-top {
+    font-family: var(--mono); font-size: 0.74rem;
+    color: var(--muted); letter-spacing: -0.005em;
+    display: flex; gap: 12px; flex-wrap: wrap;
+    margin-bottom: 22px;
+  }
+  .hero-top .pill {
+    border: 1px solid var(--rule); padding: 3px 10px;
+    border-radius: 999px; color: var(--fg-soft);
+  }
+  .hero-top .pill.accent { color: var(--accent); border-color: var(--accent); }
+  .hero h1 {
+    font-family: var(--mono); font-weight: 700;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    line-height: 1.02; letter-spacing: -0.04em;
+    margin: 0 0 14px; color: var(--fg);
+  }
+  .hero h1 .blink {
+    color: var(--accent);
+    animation: blink 1.1s steps(2) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .hero p.deck {
+    font-family: var(--sans);
+    color: var(--fg-soft);
+    max-width: 56ch;
+    margin: 0 0 24px;
+    font-size: 0.98rem;
+    line-height: 1.6;
+  }
+
+  /* Stats bar */
+  .stats {
+    max-width: 1200px; margin: 0 auto;
+    padding: 0 24px 24px;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .stat {
+    background: var(--bg-elev);
+    padding: 18px 16px 14px;
+  }
+  .stat .lbl {
+    font-family: var(--mono); font-size: 0.68rem;
+    color: var(--muted); letter-spacing: 0;
+    text-transform: lowercase;
+  }
+  .stat .num {
+    font-family: var(--mono); font-weight: 800;
+    font-size: 1.9rem; line-height: 1;
+    margin-top: 8px;
+    letter-spacing: -0.03em;
+    color: var(--fg);
+    font-variant-numeric: tabular-nums;
+  }
+  .stat .num.self { color: var(--self); }
+  .stat .num.official { color: var(--official); }
+  .stat .num.community { color: var(--community); }
+  .stat .delta {
+    font-family: var(--mono); font-size: 0.72rem;
+    color: var(--muted); margin-top: 4px;
+  }
+
+  /* Filter bar */
+  .filter-bar {
+    max-width: 1200px; margin: 0 auto;
+    padding: 14px 24px 12px;
+    position: sticky;
+    top: 56px; z-index: 40;
+    background: rgba(10, 10, 12, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .filter-bar h3 {
+    font-family: var(--mono); font-size: 0.7rem;
+    color: var(--muted); letter-spacing: 0.04em;
+    text-transform: lowercase;
+    margin: 0 0 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .filter-bar h3 .prompt { color: var(--accent); }
+  .filter-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .src-toggle { display: flex; gap: 0; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+  .src-btn {
+    appearance: none; background: var(--bg-elev);
+    color: var(--fg-soft); border: none;
+    padding: 6px 12px; cursor: pointer;
+    font: inherit; font-family: var(--mono); font-size: 0.76rem;
+    border-right: 1px solid var(--rule);
+  }
+  .src-btn:last-child { border-right: none; }
+  .src-btn:hover { background: var(--bg-row-hover); color: var(--fg); }
+  .src-btn.active { background: var(--accent); color: var(--bg); font-weight: 600; }
+  .src-btn.active[data-src="self"] { background: var(--self); }
+  .src-btn.active[data-src="official"] { background: var(--official); color: var(--bg); }
+  .src-btn.active[data-src="official-restricted"] { background: var(--restricted); color: var(--bg); }
+  .src-btn.active[data-src="community"] { background: var(--community); color: var(--bg); }
+  .cat-toggle {
+    display: flex; flex-wrap: wrap; gap: 0;
+    border: 1px solid var(--rule); border-radius: 6px;
+    overflow: hidden;
+  }
+  .cat-btn {
+    appearance: none; background: var(--bg-elev);
+    color: var(--fg-soft); border: none;
+    padding: 6px 11px; cursor: pointer;
+    font: inherit; font-family: var(--mono); font-size: 0.76rem;
+    border-right: 1px solid var(--rule);
+  }
+  .cat-btn:last-child { border-right: none; }
+  .cat-btn:hover { background: var(--bg-row-hover); color: var(--fg); }
+  .cat-btn.active { background: var(--fg); color: var(--bg); font-weight: 600; }
+  .cat-btn .ct { color: var(--muted); margin-left: 6px; font-size: 0.7rem; }
+  .cat-btn.active .ct { color: var(--bg); opacity: 0.7; }
+  .clear-btn {
+    margin-left: auto;
+    appearance: none; background: transparent;
+    border: 1px solid var(--rule);
+    color: var(--fg-soft);
+    padding: 6px 12px; border-radius: 6px;
+    cursor: pointer; font: inherit;
+    font-family: var(--mono); font-size: 0.76rem;
+  }
+  .clear-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+  /* Active filters */
+  .active-filters {
+    margin-top: 10px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+    font-family: var(--mono); font-size: 0.74rem;
+    min-height: 24px;
+  }
+  .active-filters:empty { display: none; }
+  .active-filter {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 2px 8px 2px 10px;
+    border-radius: 999px;
+  }
+  .active-filter .x {
+    cursor: pointer; opacity: 0.7;
+    font-weight: 700;
+  }
+  .active-filter .x:hover { opacity: 1; }
+
+  /* Main */
+  main { max-width: 1200px; margin: 0 auto; padding: 24px 24px 96px; }
+
+  /* Section heading */
+  .section-head {
+    margin: 56px 0 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    display: flex; align-items: baseline; gap: 14px;
+  }
+  .section-head .marker {
+    font-family: var(--mono); color: var(--accent);
+    font-size: 0.84rem;
+  }
+  .section-head h2 {
+    font-family: var(--mono); font-weight: 700;
+    font-size: 1.4rem; letter-spacing: -0.02em;
+    margin: 0; color: var(--fg);
+  }
+  .section-head p {
+    margin: 0 0 0 auto;
+    color: var(--muted); font-size: 0.84rem;
+    font-family: var(--sans);
+  }
+
+  /* Category */
+  .category { margin-bottom: 36px; scroll-margin-top: 140px; }
+  .category.is-hidden { display: none; }
+  .cat-head {
+    display: flex; align-items: baseline; gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 0;
+  }
+  .cat-idx {
+    font-family: var(--mono); color: var(--accent);
+    font-size: 0.84rem; font-weight: 700;
+  }
+  .cat-title {
+    font-family: var(--mono); font-weight: 700;
+    font-size: 1.05rem; letter-spacing: -0.01em;
+    margin: 0;
+    color: var(--fg);
+  }
+  .cat-count {
+    font-family: var(--mono); color: var(--muted);
+    font-size: 0.82rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .cat-kbd {
+    margin-left: auto;
+    font-family: var(--mono); font-size: 0.7rem;
+    color: var(--muted);
+    border: 1px solid var(--rule);
+    border-bottom-width: 2px;
+    padding: 1px 6px; border-radius: 4px;
+    background: var(--bg-elev);
+  }
+
+  /* Skill rows */
+  .row {
+    display: grid;
+    grid-template-columns: 120px 1fr 40px;
+    gap: 16px;
+    padding: 14px 14px 14px 14px;
+    border-bottom: 1px solid var(--rule-soft);
+    align-items: start;
+    transition: background 0.08s;
+  }
+  .row:hover { background: var(--bg-row); }
+  .row.is-hidden { display: none; }
+  .r-meta {
+    font-family: var(--mono); font-size: 0.72rem;
+    padding-top: 2px;
+  }
+  .r-sigil {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 600;
+    font-size: 0.7rem;
+    letter-spacing: 0;
+  }
+  .r-sigil[data-k="self"] { background: rgba(251,191,36,0.12); color: var(--self); border: 1px solid rgba(251,191,36,0.3); }
+  .r-sigil[data-k="official"] { background: rgba(96,165,250,0.12); color: var(--official); border: 1px solid rgba(96,165,250,0.3); }
+  .r-sigil[data-k="official-restricted"] { background: rgba(244,114,182,0.12); color: var(--restricted); border: 1px solid rgba(244,114,182,0.3); }
+  .r-sigil[data-k="community"] { background: rgba(167,139,250,0.12); color: var(--community); border: 1px solid rgba(167,139,250,0.3); }
+
+  .r-head {
+    display: flex; align-items: baseline; gap: 12px;
+    flex-wrap: wrap; margin-bottom: 6px;
+  }
+  .r-name {
+    font-family: var(--mono); font-weight: 600;
+    font-size: 0.98rem; letter-spacing: -0.015em;
+    margin: 0; color: var(--fg);
+  }
+  .r-path {
+    font-family: var(--mono); font-size: 0.74rem;
+    color: var(--muted);
+  }
+  .r-desc {
+    margin: 0 0 10px;
+    font-size: 0.9rem; line-height: 1.55;
+    color: var(--fg-soft);
+  }
+  .r-foot {
+    display: flex; gap: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 6px;
+  }
+  .r-tags {
+    display: flex; gap: 4px; flex-wrap: wrap;
+    align-items: center;
+  }
+  .tag-chip {
+    appearance: none;
+    background: var(--bg-elev);
+    color: var(--accent);
+    border: 1px solid var(--rule);
+    padding: 1px 7px;
+    border-radius: 3px;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: border-color 0.1s;
+  }
+  .tag-chip::before { content: "#"; color: var(--muted); }
+  .tag-chip:hover { border-color: var(--accent); }
+  .tag-chip.active {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+  .tag-chip.active::before { color: rgba(10, 10, 12, 0.6); }
+  .tag-more {
+    font-family: var(--mono); font-size: 0.7rem;
+    color: var(--muted);
+  }
+  .r-profiles {
+    display: flex; gap: 4px; flex-wrap: wrap;
+    margin-left: auto;
+  }
+  .prof-pill {
+    font-family: var(--mono); font-size: 0.68rem;
+    color: var(--muted);
+    border: 1px solid var(--rule-soft);
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+  .r-source {
+    margin-top: 8px;
+    font-family: var(--mono); font-size: 0.7rem;
+    color: var(--muted);
+    opacity: 0.7;
+  }
+  .r-actions {
+    display: flex; justify-content: flex-end; align-items: flex-start;
+  }
+  .copy-btn {
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--rule);
+    color: var(--muted);
+    font: inherit; font-family: var(--mono); font-size: 0.7rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: all 0.1s;
+  }
+  .row:hover .copy-btn { opacity: 1; }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .copy-btn.copied { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+  /* B / C / D tables */
+  .dev-table {
+    width: 100%; border-collapse: collapse;
+    margin-top: 10px;
+    background: var(--bg-elev);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .dev-table th, .dev-table td {
+    text-align: left; padding: 10px 14px;
+    border-bottom: 1px solid var(--rule-soft);
+    vertical-align: top;
+    font-size: 0.88rem;
+  }
+  .dev-table tbody tr:last-child td { border-bottom: none; }
+  .dev-table thead th {
+    font-family: var(--mono); font-weight: 600;
+    font-size: 0.7rem; letter-spacing: 0.04em;
+    color: var(--muted); background: var(--bg);
+    text-transform: lowercase;
+    border-bottom: 1px solid var(--rule);
+  }
+  .dev-table tbody tr:hover { background: var(--bg-row); }
+  .dev-table td.mono { font-family: var(--mono); font-size: 0.82rem; }
+  .dev-table td.mono.small { font-size: 0.74rem; color: var(--fg-soft); }
+  .dev-table td.name { color: var(--fg); font-weight: 600; }
+  .plugin-group {
+    margin-bottom: 12px;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .plugin-group summary {
+    cursor: pointer; padding: 12px 16px;
+    background: var(--bg-elev);
+    list-style: none;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .plugin-group summary::-webkit-details-marker { display: none; }
+  .plugin-group summary::after {
+    content: ""; margin-left: auto;
+    width: 8px; height: 8px;
+    border-right: 1.5px solid var(--muted);
+    border-bottom: 1.5px solid var(--muted);
+    transform: rotate(45deg); transition: transform 0.15s;
+  }
+  .plugin-group[open] summary::after { transform: rotate(-135deg); }
+  .plugin-grp-label {
+    font-family: var(--mono); font-weight: 600;
+    color: var(--fg); font-size: 0.86rem;
+  }
+  .plugin-grp-ct {
+    font-family: var(--mono); color: var(--muted);
+    font-size: 0.78rem;
+  }
+  .plugin-group .dev-table {
+    margin: 0; border: none; border-radius: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  /* No-match */
+  .no-match {
+    display: none;
+    padding: 64px 24px; text-align: center;
+    font-family: var(--mono); color: var(--muted);
+    font-size: 0.9rem;
+  }
+  body.is-no-match .no-match { display: block; }
+  .no-match code { color: var(--accent); }
+
+  /* Help overlay */
+  .help-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 100;
+  }
+  .help-overlay.is-open { display: flex; }
+  .help-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 28px 32px;
+    max-width: 460px;
+    width: calc(100% - 48px);
+  }
+  .help-card h3 {
+    font-family: var(--mono); font-weight: 700;
+    color: var(--fg); margin: 0 0 16px;
+    font-size: 1rem;
+  }
+  .help-card dl {
+    font-family: var(--mono); font-size: 0.84rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px 18px;
+    margin: 0;
+  }
+  .help-card dt {
+    color: var(--accent);
+    text-align: right;
+  }
+  .help-card dd {
+    color: var(--fg-soft);
+    margin: 0;
+  }
+  .help-close {
+    margin-top: 22px;
+    appearance: none; background: transparent;
+    border: 1px solid var(--rule);
+    color: var(--fg-soft);
+    padding: 6px 14px; border-radius: 4px;
+    cursor: pointer; font: inherit;
+    font-family: var(--mono); font-size: 0.76rem;
+  }
+  .help-close:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Footer status bar */
+  .statusbar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--bg-elev);
+    border-top: 1px solid var(--rule);
+    padding: 6px 24px;
+    font-family: var(--mono); font-size: 0.72rem;
+    color: var(--muted);
+    display: flex; gap: 24px;
+    justify-content: space-between;
+    z-index: 30;
+  }
+  .statusbar .left { display: flex; gap: 18px; }
+  .statusbar .right { display: flex; gap: 14px; }
+  .statusbar .live { color: var(--accent); }
+  .statusbar .kbd {
+    color: var(--fg-soft);
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    padding: 0 5px; border-radius: 3px;
+  }
+  main { padding-bottom: 80px; }
+
+  @media (max-width: 820px) {
+    .stats { grid-template-columns: repeat(3, 1fr); }
+    .row { grid-template-columns: 90px 1fr; }
+    .r-actions { display: none; }
+    .topbar-inner { grid-template-columns: auto 1fr; }
+    .topbar-status { display: none; }
+    .statusbar { font-size: 0.66rem; padding: 6px 14px; }
+  }
+  @media (max-width: 560px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .hero { padding: 32px 16px 16px; }
+    .topbar-inner { padding: 12px 16px; }
+    .filter-bar { padding: 12px 16px 10px; }
+    main { padding: 16px 16px 80px; }
+    .r-foot { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .r-profiles { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="prompt">$</span><span>cd</span><span class="path">CATALOG.md</span>
+    </div>
+    <div class="search-wrap">
+      <span class="sigil">▸</span>
+      <input id="search" type="search" placeholder='検索 — 例: firecrawl, github, lsp' aria-label="検索">
+      <span class="search-hint">/ キーで検索フォーカス</span>
+    </div>
+    <div class="topbar-status">
+      <span><span class="live" id="visible-count">70</span> / 70 件表示</span>
+      <span class="kbd" id="help-btn">?</span>
+    </div>
+  </div>
+</div>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="hero-top">
+    <span class="pill accent">v 2026-05-16</span>
+    <span class="pill">70 エントリ</span>
+    <span class="pill">49 プラグイン</span><span class="pill">14 スキル</span><span class="pill">1 subagent</span><span class="pill">6 コマンド</span>
+  </div>
+  <h1>catalog/<span class="blink">_</span></h1>
+  <p class="deck">
+    プラグイン・スキル・subagent・コマンドを 1 ファイルで管理。<span class="kbd" style="font-family:var(--mono);color:var(--fg-soft);background:var(--bg-elev);border:1px solid var(--rule);padding:1px 6px;border-radius:3px;font-size:0.78rem;">/</span> で検索、 <code style="font-family:var(--mono);color:var(--accent);background:transparent;">#tag</code> で絞り込み、 <span class="kbd" style="font-family:var(--mono);color:var(--fg-soft);background:var(--bg-elev);border:1px solid var(--rule);padding:1px 6px;border-radius:3px;font-size:0.78rem;">?</span> でヘルプ。
+  </p>
+</header>
+
+<!-- Stats -->
+<section class="stats" aria-label="統計">
+  <div class="stat"><span class="lbl">合計</span><span class="num">70</span><span class="delta">エントリ</span></div>
+  <div class="stat"><span class="lbl">plugin</span><span class="num official">49</span><span class="delta">18 enabled</span></div>
+  <div class="stat"><span class="lbl">skill</span><span class="num">14</span><span class="delta">.claude/skills/</span></div>
+  <div class="stat"><span class="lbl">subagent</span><span class="num community">1</span><span class="delta">.claude/agents/</span></div>
+  <div class="stat"><span class="lbl">command</span><span class="num restricted">6</span><span class="delta">.claude/commands/</span></div>
+</section>
+
+<!-- Filter bar -->
+<nav class="filter-bar" aria-label="絞り込み">
+  <h3><span class="prompt">$</span> filter</h3>
+  <div class="filter-row">
+    <div class="src-toggle" role="group" aria-label="プラグイン状態で絞り込み">
+      <button class="src-btn active" data-src="all">全て</button>
+      <button class="src-btn" data-src="official">[enabled]</button>
+      <button class="src-btn" data-src="self">[available]</button>
+    </div>
+    <div class="cat-toggle" role="group" aria-label="カテゴリで絞り込み">
+      <button class="cat-btn active" data-cat="all">全て<span class="ct">70</span></button><button class="cat-btn" data-cat="official">official<span class="ct">10</span></button><button class="cat-btn" data-cat="code-quality">code-quality<span class="ct">6</span></button><button class="cat-btn" data-cat="autonomous">autonomous<span class="ct">3</span></button><button class="cat-btn" data-cat="search-data">search-data<span class="ct">9</span></button><button class="cat-btn" data-cat="devops">devops<span class="ct">4</span></button><button class="cat-btn" data-cat="integration">integration<span class="ct">11</span></button><button class="cat-btn" data-cat="business-knowledge">business<span class="ct">6</span></button><button class="cat-btn" data-cat="dev">dev<span class="ct">1</span></button><button class="cat-btn" data-cat="research">research<span class="ct">8</span></button><button class="cat-btn" data-cat="document">document<span class="ct">5</span></button>
+    </div>
+    <button class="clear-btn" id="clear-btn" type="button">クリア ⨯</button>
+  </div>
+  <div class="kind-quick" style="display:flex;gap:6px;align-items:center;font-family:var(--mono);font-size:0.74rem;color:var(--fg-soft);margin-top:6px;">
+      <span style="color:var(--muted);">kind:</span>
+      <button type="button" class="kind-quick-btn" data-kind-filter="plugin" style="font-family:inherit;font-size:inherit;color:var(--fg);background:var(--bg-elev);border:1px solid var(--rule);padding:2px 8px;border-radius:4px;cursor:pointer;">plugin <span style="color:var(--muted);">(49)</span></button>
+      <button type="button" class="kind-quick-btn" data-kind-filter="skill" style="font-family:inherit;font-size:inherit;color:var(--fg);background:var(--bg-elev);border:1px solid var(--rule);padding:2px 8px;border-radius:4px;cursor:pointer;">skill <span style="color:var(--muted);">(14)</span></button>
+      <button type="button" class="kind-quick-btn" data-kind-filter="subagent" style="font-family:inherit;font-size:inherit;color:var(--fg);background:var(--bg-elev);border:1px solid var(--rule);padding:2px 8px;border-radius:4px;cursor:pointer;">subagent <span style="color:var(--muted);">(1)</span></button>
+      <button type="button" class="kind-quick-btn" data-kind-filter="command" style="font-family:inherit;font-size:inherit;color:var(--fg);background:var(--bg-elev);border:1px solid var(--rule);padding:2px 8px;border-radius:4px;cursor:pointer;">command <span style="color:var(--muted);">(6)</span></button>
+      <button type="button" class="kind-quick-btn" data-kind-filter="" style="font-family:inherit;font-size:inherit;color:var(--muted);background:transparent;border:1px solid var(--rule-soft);padding:2px 8px;border-radius:4px;cursor:pointer;">クリア</button>
+      </div>
+  <div class="active-filters" id="active-filters"></div>
+  <script>
+  (function(){
+    var btns = document.querySelectorAll('.kind-quick-btn');
+    var search = document.getElementById('search');
+    btns.forEach(function(b){
+      b.addEventListener('click', function(){
+        var k = b.getAttribute('data-kind-filter') || '';
+        // data-kind で直接フィルタする（検索テキストマッチより正確）
+        document.querySelectorAll('.row').forEach(function(r){
+          var matches = !k || r.getAttribute('data-kind') === k;
+          r.dataset.kindFiltered = matches ? '' : 'hide';
+        });
+        // 空になったカテゴリも非表示にする
+        document.querySelectorAll('.category').forEach(function(sec){
+          var any = false;
+          sec.querySelectorAll('.row').forEach(function(r){
+            if (r.dataset.kindFiltered !== 'hide' && !r.classList.contains('is-hidden')) any = true;
+          });
+          sec.classList.toggle('is-kind-hidden', !any);
+        });
+        // style タグ経由で CSS ルールを切り替える
+        var st = document.getElementById('kind-filter-style');
+        if (!st){
+          st = document.createElement('style');
+          st.id = 'kind-filter-style';
+          st.textContent = '.row[data-kind-filtered="hide"]{display:none !important;} .category.is-kind-hidden{display:none !important;}';
+          document.head.appendChild(st);
+        }
+        // アクティブ状態の見た目を更新
+        btns.forEach(function(x){
+          x.style.background = (x.getAttribute('data-kind-filter') === k) ? 'var(--accent-soft)' : (x.getAttribute('data-kind-filter') ? 'var(--bg-elev)' : 'transparent');
+          x.style.borderColor = (x.getAttribute('data-kind-filter') === k) ? 'var(--accent)' : (x.getAttribute('data-kind-filter') ? 'var(--rule)' : 'var(--rule-soft)');
+        });
+      });
+    });
+  })();
+  </script>
+</nav>
+
+<main>
+  <div class="section-head">
+    <h2>プラグイン</h2>
+    <p>`/plugin install` または `claude mcp add`</p>
+  </div>
+
+  <section class="category" data-cat="official" data-kind="plugin" id="cat-plugin-official">
+    <header class="cat-head">
+      <span class="cat-idx">01</span>
+      <h2 class="cat-title">official</h2>
+      <span class="cat-count" data-cat-count="official">10</span>
+      <span class="cat-kbd">g 1</span>
+    </header>
+    <div class="rows">
+    <article class="row" data-kind="plugin" data-source="official" data-name="frontend-design" data-tags="ui design frontend css" data-profiles="web-dev design" data-cat="official">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">enabled</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">frontend-design</h3>
+          <span class="r-path">official/frontend-design</span> <a href="https://claude.com/plugins/frontend-design" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">AI っぽくない、ちゃんとした UI コードを生成。リアルなデザインシステム、太字のタイポグラフィ。40 万+ インストールで最も人気。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="ui" type="button">ui</button><button class="tag-chip" data-tag="design" type="button">design</button><button class="tag-chip" data-tag="frontend" type="button">frontend</button><button class="tag-chip" data-tag="css" type="button">css</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">design</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official · 400k+</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install frontend-design@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="official" data-name="superpowers" data-tags="meta workflow tdd debug brainstorm" data-profiles="web-dev devops general" data-cat="official">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">enabled</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">superpowers</h3>
+          <span class="r-path">official/superpowers</span> <a href="https://claude.com/plugins/superpowers" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">20 以上のスキルが入ったスイスアーミーナイフ。TDD、デバッグ、プラン→コード変換、ブレスト、スキル作成。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="meta" type="button">meta</button><button class="tag-chip" data-tag="workflow" type="button">workflow</button><button class="tag-chip" data-tag="tdd" type="button">tdd</button><button class="tag-chip" data-tag="debug" type="button">debug</button><button class="tag-chip" data-tag="brainstorm" type="button">brainstorm</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">devops</span><span class="prof-pill">general</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official · 290k+</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install superpowers@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="official" data-name="context7" data-tags="docs search hallucination-prevention" data-profiles="web-dev research data-analysis" data-cat="official">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">enabled</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">context7</h3>
+          <span class="r-path">official/context7</span> <a href="https://claude.com/plugins/context7" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">リアルタイムのドキュメント検索。ソースリポから最新の API と使用例を引っ張ってくる。Claude が古いライブラリコードをハルシネーションするのを防ぐ。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="docs" type="button">docs</button><button class="tag-chip" data-tag="search" type="button">search</button><button class="tag-chip" data-tag="hallucination-prevention" type="button">hallucination-prevention</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">research</span><span class="prof-pill">data-analysis</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install context7@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="official" data-name="code-review" data-tags="review quality security" data-profiles="web-dev devops" data-cat="official">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">enabled</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">code-review</h3>
+          <span class="r-path">official/code-review</span> <a href="https://claude.com/plugins/code-review" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">構造化されたコードレビュー。バグ、セキュリティ、パフォーマンス、スタイル。レビュアーエージェント内蔵。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="review" type="button">review</button><button class="tag-chip" data-tag="quality" type="button">quality</button><button class="tag-chip" data-tag="security" type="button">security</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">devops</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install code-review@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="official" data-name="security-guidance" data-tags="security owasp audit" data-profiles="web-dev devops" data-cat="official">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">enabled</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">security-guidance</h3>
+          <span class="r-path">official/security-guidance</span> <a href="https://claude.com/plugins/security-guidance" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">OWASP Top 10、認証の欠陥、インジェクション脆弱性、ハードコードされたシークレットをスキャン。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="security" type="button">security</button><button class="tag-chip" data-tag="owasp" type="button">owasp</button><button class="tag-chip" data-tag="audit" type="button">audit</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">devops</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install security-guidance@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="official" data-name="commit-commands" data-tags="git commit pr changelog" data-profiles="web-dev devops general" data-cat="official">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">enabled</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">commit-commands</h3>
+          <span class="r-path">official/commit-commands</span> <a href="https://claude.com/plugins/commit-commands" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">Git ワークフローの自動化。スマートコミット、PR 作成、チェンジログ生成。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="git" type="button">git</button><button class="tag-chip" data-tag="commit" type="button">commit</button><button class="tag-chip" data-tag="pr" type="button">pr</button><button class="tag-chip" data-tag="changelog" type="button">changelog</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">devops</span><span class="prof-pill">general</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install commit-commands@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="official" data-name="feature-dev" data-tags="workflow planning implementation" data-profiles="web-dev project-mgmt" data-cat="official">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">enabled</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">feature-dev</h3>
+          <span class="r-path">official/feature-dev</span> <a href="https://claude.com/plugins/feature-dev" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">機能実装のエンドツーエンドワークフロー。仕様→計画→実装→テスト→PR。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="workflow" type="button">workflow</button><button class="tag-chip" data-tag="planning" type="button">planning</button><button class="tag-chip" data-tag="implementation" type="button">implementation</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">project-mgmt</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install feature-dev@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="official" data-name="plugin-dev" data-tags="plugin-dev hooks mcp meta" data-profiles="web-dev devops" data-cat="official">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">enabled</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">plugin-dev</h3>
+          <span class="r-path">official/plugin-dev</span> <a href="https://claude.com/plugins/plugin-dev" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">自分でプラグインを作るための 7 つのエキスパートスキル。フック、MCP、コマンド、エージェント、バリデーション。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="plugin-dev" type="button">plugin-dev</button><button class="tag-chip" data-tag="hooks" type="button">hooks</button><button class="tag-chip" data-tag="mcp" type="button">mcp</button><button class="tag-chip" data-tag="meta" type="button">meta</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">devops</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install plugin-dev@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="official" data-name="skill-creator" data-tags="skill-dev meta evaluation" data-profiles="web-dev general" data-cat="official">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">enabled</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">skill-creator</h3>
+          <span class="r-path">official/skill-creator</span> <a href="https://claude.com/plugins/skill-creator" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">スキル作成・既存スキルの改善・パフォーマンス評価のループ。トリガー説明文の最適化機能も。本テンプレートで追加有効化済み。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="skill-dev" type="button">skill-dev</button><button class="tag-chip" data-tag="meta" type="button">meta</button><button class="tag-chip" data-tag="evaluation" type="button">evaluation</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">general</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install skill-creator@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="official" data-name="claude-md-management" data-tags="meta claude-md documentation" data-profiles="web-dev devops general" data-cat="official">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">enabled</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">claude-md-management</h3>
+          <span class="r-path">official/claude-md-management</span> <a href="https://claude.com/plugins/claude-md-management" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">CLAUDE.md ファイルの監査・改善・標準化。リポジトリ全体の CLAUDE.md 品質を均す。本テンプレートで追加有効化済み。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="meta" type="button">meta</button><button class="tag-chip" data-tag="claude-md" type="button">claude-md</button><button class="tag-chip" data-tag="documentation" type="button">documentation</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">devops</span><span class="prof-pill">general</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install claude-md-management@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+    </div>
+  </section>
+
+  <section class="category" data-cat="code-quality" data-kind="plugin" id="cat-plugin-code-quality">
+    <header class="cat-head">
+      <span class="cat-idx">02</span>
+      <h2 class="cat-title">code-quality</h2>
+      <span class="cat-count" data-cat-count="code-quality">6</span>
+      <span class="cat-kbd">g 2</span>
+    </header>
+    <div class="rows">
+    <article class="row" data-kind="plugin" data-source="official" data-name="typescript-lsp" data-tags="lsp typescript types" data-profiles="web-dev" data-cat="code-quality">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">enabled</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">typescript-lsp</h3>
+          <span class="r-path">code-quality/typescript-lsp</span>
+        </header>
+        <p class="r-desc">TypeScript の型チェックとナビゲーション。定義ジャンプ・参照検索・型エラー確認に対応する公式 LSP。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="lsp" type="button">lsp</button><button class="tag-chip" data-tag="typescript" type="button">typescript</button><button class="tag-chip" data-tag="types" type="button">types</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install typescript-lsp@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="official" data-name="pyright-lsp" data-tags="lsp python types" data-profiles="web-dev data-analysis research" data-cat="code-quality">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">enabled</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">pyright-lsp</h3>
+          <span class="r-path">code-quality/pyright-lsp</span>
+        </header>
+        <p class="r-desc">Python の言語サーバー（pyright ベース）。型推論と参照解析が高速。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="lsp" type="button">lsp</button><button class="tag-chip" data-tag="python" type="button">python</button><button class="tag-chip" data-tag="types" type="button">types</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">data-analysis</span><span class="prof-pill">research</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install pyright-lsp@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="rust-analyzer-lsp" data-tags="lsp rust" data-profiles="web-dev" data-cat="code-quality">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">rust-analyzer-lsp</h3>
+          <span class="r-path">code-quality/rust-analyzer-lsp</span>
+        </header>
+        <p class="r-desc">rust-analyzer 連携。Rust のコード補完・型・参照解析。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="lsp" type="button">lsp</button><button class="tag-chip" data-tag="rust" type="button">rust</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install rust-analyzer-lsp@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="official" data-name="ruby-lsp" data-tags="lsp ruby rails" data-profiles="web-dev" data-cat="code-quality">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">enabled</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">ruby-lsp</h3>
+          <span class="r-path">code-quality/ruby-lsp</span>
+        </header>
+        <p class="r-desc">Ruby のコードインテリジェンス。Rails 開発でも有効。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="lsp" type="button">lsp</button><button class="tag-chip" data-tag="ruby" type="button">ruby</button><button class="tag-chip" data-tag="rails" type="button">rails</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install ruby-lsp@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="pydantic-ai" data-tags="ai-agent pydantic llm python" data-profiles="web-dev research data-analysis" data-cat="code-quality">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">pydantic-ai</h3>
+          <span class="r-path">code-quality/pydantic-ai</span>
+        </header>
+        <p class="r-desc">Pydantic AI エージェント開発フレームワーク。研究プロトタイピング・LLM 統合に。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="ai-agent" type="button">ai-agent</button><button class="tag-chip" data-tag="pydantic" type="button">pydantic</button><button class="tag-chip" data-tag="llm" type="button">llm</button><button class="tag-chip" data-tag="python" type="button">python</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">research</span><span class="prof-pill">data-analysis</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install pydantic-ai@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="serena" data-tags="code-analysis semantic refactor" data-profiles="web-dev research" data-cat="code-quality">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">serena</h3>
+          <span class="r-path">code-quality/serena</span>
+        </header>
+        <p class="r-desc">セマンティックなコード分析。大規模リファクタリングや研究コード理解に有用。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="code-analysis" type="button">code-analysis</button><button class="tag-chip" data-tag="semantic" type="button">semantic</button><button class="tag-chip" data-tag="refactor" type="button">refactor</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">research</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install serena@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+    </div>
+  </section>
+
+  <section class="category" data-cat="autonomous" data-kind="plugin" id="cat-plugin-autonomous">
+    <header class="cat-head">
+      <span class="cat-idx">03</span>
+      <h2 class="cat-title">autonomous</h2>
+      <span class="cat-count" data-cat-count="autonomous">3</span>
+      <span class="cat-kbd">g 3</span>
+    </header>
+    <div class="rows">
+    <article class="row" data-kind="plugin" data-source="self" data-name="ralph-loop" data-tags="autonomous loop git hands-free" data-profiles="web-dev devops" data-cat="autonomous">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">ralph-loop</h3>
+          <span class="r-path">autonomous/ralph-loop</span> <a href="https://claude.com/plugins/ralph-loop" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">自律コーディングセッション。Claude がタスクを 1 つずつ処理して git にコミットし、そのまま次に進む。放っておけば、きれいな git 履歴とともに完成したコードが待っている。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="autonomous" type="button">autonomous</button><button class="tag-chip" data-tag="loop" type="button">loop</button><button class="tag-chip" data-tag="git" type="button">git</button><button class="tag-chip" data-tag="hands-free" type="button">hands-free</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">devops</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install ralph-loop@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="chrome-devtools-mcp" data-tags="debug frontend chrome devtools" data-profiles="web-dev design system-dev" data-cat="autonomous">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">chrome-devtools-mcp</h3>
+          <span class="r-path">autonomous/chrome-devtools-mcp</span>
+        </header>
+        <p class="r-desc">既存の Chrome セッションを使ってネットワークリクエスト、コンソールエラー、ライブページのデバッグができる。フロントエンドデバッグで過小評価。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="debug" type="button">debug</button><button class="tag-chip" data-tag="frontend" type="button">frontend</button><button class="tag-chip" data-tag="chrome" type="button">chrome</button><button class="tag-chip" data-tag="devtools" type="button">devtools</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">design</span><span class="prof-pill">system-dev</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install chrome-devtools-mcp@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="official" data-name="playwright" data-tags="e2e browser testing automation" data-profiles="web-dev design" data-cat="autonomous">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">enabled</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">playwright</h3>
+          <span class="r-path">autonomous/playwright</span> <a href="https://claude.com/plugins/playwright" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">Claude が実際のブラウザを操作する。クリック、フォーム入力、スクリーンショット、UI テスト。テストスクリプト不要。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="e2e" type="button">e2e</button><button class="tag-chip" data-tag="browser" type="button">browser</button><button class="tag-chip" data-tag="testing" type="button">testing</button><button class="tag-chip" data-tag="automation" type="button">automation</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">design</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install playwright@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+    </div>
+  </section>
+
+  <section class="category" data-cat="search-data" data-kind="plugin" id="cat-plugin-search-data">
+    <header class="cat-head">
+      <span class="cat-idx">04</span>
+      <h2 class="cat-title">search-data</h2>
+      <span class="cat-count" data-cat-count="search-data">9</span>
+      <span class="cat-kbd">g 4</span>
+    </header>
+    <div class="rows">
+    <article class="row" data-kind="plugin" data-source="official" data-name="firecrawl" data-tags="scrape crawl research web" data-profiles="research business data-analysis" data-cat="search-data">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">enabled</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">firecrawl</h3>
+          <span class="r-path">search-data/firecrawl</span> <a href="https://claude.com/plugins/firecrawl" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">任意の URL をスクレイプ、サイトクロール、自律リサーチエージェント。Web データを Claude Code に入れるための定番。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="scrape" type="button">scrape</button><button class="tag-chip" data-tag="crawl" type="button">crawl</button><button class="tag-chip" data-tag="research" type="button">research</button><button class="tag-chip" data-tag="web" type="button">web</button></div>
+          <div class="r-profiles"><span class="prof-pill">research</span><span class="prof-pill">business</span><span class="prof-pill">data-analysis</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install firecrawl@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="sourcegraph" data-tags="search codebase refactor" data-profiles="web-dev devops" data-cat="search-data">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">sourcegraph</h3>
+          <span class="r-path">search-data/sourcegraph</span> <a href="https://claude.com/plugins/sourcegraph" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">コードベース横断検索。参照のトレース、リファクタリング影響分析、セキュリティスキャン。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="search" type="button">search</button><button class="tag-chip" data-tag="codebase" type="button">codebase</button><button class="tag-chip" data-tag="refactor" type="button">refactor</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">devops</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install sourcegraph@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="community" data-name="data-engineering" data-tags="data pipeline airflow partner" data-profiles="data-analysis devops" data-cat="search-data">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="community">partner</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">data-engineering</h3>
+          <span class="r-path">search-data/data-engineering</span>
+        </header>
+        <p class="r-desc">ウェアハウス探索、パイプライン作成、Airflow 連携（パートナー製）。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="data" type="button">data</button><button class="tag-chip" data-tag="pipeline" type="button">pipeline</button><button class="tag-chip" data-tag="airflow" type="button">airflow</button><button class="tag-chip" data-tag="partner" type="button">partner</button></div>
+          <div class="r-profiles"><span class="prof-pill">data-analysis</span><span class="prof-pill">devops</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install data-engineering@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="amplitude" data-tags="analytics tracking product" data-profiles="business data-analysis" data-cat="search-data">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">amplitude</h3>
+          <span class="r-path">search-data/amplitude</span> <a href="https://claude.com/plugins/amplitude" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">トラッキングプラン作成、アナリティクスコード生成。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="analytics" type="button">analytics</button><button class="tag-chip" data-tag="tracking" type="button">tracking</button><button class="tag-chip" data-tag="product" type="button">product</button></div>
+          <div class="r-profiles"><span class="prof-pill">business</span><span class="prof-pill">data-analysis</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install amplitude@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="exa" data-tags="search web research paper" data-profiles="research data-analysis" data-cat="search-data">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">exa</h3>
+          <span class="r-path">search-data/exa</span>
+        </header>
+        <p class="r-desc">精度の高い Web 検索 API。論文・記事・学術ソースのリサーチに最適（汎用検索より精度高）。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="search" type="button">search</button><button class="tag-chip" data-tag="web" type="button">web</button><button class="tag-chip" data-tag="research" type="button">research</button><button class="tag-chip" data-tag="paper" type="button">paper</button></div>
+          <div class="r-profiles"><span class="prof-pill">research</span><span class="prof-pill">data-analysis</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install exa@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="huggingface-skills" data-tags="ml dataset model ai" data-profiles="research data-analysis" data-cat="search-data">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">huggingface-skills</h3>
+          <span class="r-path">search-data/huggingface-skills</span>
+        </header>
+        <p class="r-desc">Hugging Face モデル・データセット管理。ML 研究の必須統合。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="ml" type="button">ml</button><button class="tag-chip" data-tag="dataset" type="button">dataset</button><button class="tag-chip" data-tag="model" type="button">model</button><button class="tag-chip" data-tag="ai" type="button">ai</button></div>
+          <div class="r-profiles"><span class="prof-pill">research</span><span class="prof-pill">data-analysis</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install huggingface-skills@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="official" data-name="pinecone" data-tags="vector-db rag semantic-search embedding" data-profiles="research data-analysis" data-cat="search-data">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">enabled</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">pinecone</h3>
+          <span class="r-path">search-data/pinecone</span>
+        </header>
+        <p class="r-desc">Pinecone ベクトルデータベース統合。RAG・論文セマンティック検索・知識ベース構築に。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="vector-db" type="button">vector-db</button><button class="tag-chip" data-tag="rag" type="button">rag</button><button class="tag-chip" data-tag="semantic-search" type="button">semantic-search</button><button class="tag-chip" data-tag="embedding" type="button">embedding</button></div>
+          <div class="r-profiles"><span class="prof-pill">research</span><span class="prof-pill">data-analysis</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install pinecone@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="fiftyone" data-tags="cv dataset visualization image" data-profiles="research data-analysis" data-cat="search-data">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">fiftyone</h3>
+          <span class="r-path">search-data/fiftyone</span>
+        </header>
+        <p class="r-desc">FiftyOne コンピュータビジョンデータセット管理・可視化。CV・画像研究に。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="cv" type="button">cv</button><button class="tag-chip" data-tag="dataset" type="button">dataset</button><button class="tag-chip" data-tag="visualization" type="button">visualization</button><button class="tag-chip" data-tag="image" type="button">image</button></div>
+          <div class="r-profiles"><span class="prof-pill">research</span><span class="prof-pill">data-analysis</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install fiftyone@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="official" data-name="clickhouse" data-tags="db columnar analytics olap" data-profiles="data-analysis" data-cat="search-data">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">enabled</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">clickhouse</h3>
+          <span class="r-path">search-data/clickhouse</span>
+        </header>
+        <p class="r-desc">ClickHouse 列指向 DB 統合。ベストプラクティス参照とクエリ補助のスキルを提供。ログ集計・解析用途、大規模イベントデータの探索的分析に。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="db" type="button">db</button><button class="tag-chip" data-tag="columnar" type="button">columnar</button><button class="tag-chip" data-tag="analytics" type="button">analytics</button><button class="tag-chip" data-tag="olap" type="button">olap</button></div>
+          <div class="r-profiles"><span class="prof-pill">data-analysis</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install clickhouse@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+    </div>
+  </section>
+
+  <section class="category" data-cat="devops" data-kind="plugin" id="cat-plugin-devops">
+    <header class="cat-head">
+      <span class="cat-idx">05</span>
+      <h2 class="cat-title">devops</h2>
+      <span class="cat-count" data-cat-count="devops">4</span>
+      <span class="cat-kbd">g 5</span>
+    </header>
+    <div class="rows">
+    <article class="row" data-kind="plugin" data-source="self" data-name="vercel" data-tags="deploy hosting edge" data-profiles="web-dev devops" data-cat="devops">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">vercel</h3>
+          <span class="r-path">devops/vercel</span> <a href="https://claude.com/plugins/vercel" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">デプロイ、ビルド、ログ、ドメイン管理。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="deploy" type="button">deploy</button><button class="tag-chip" data-tag="hosting" type="button">hosting</button><button class="tag-chip" data-tag="edge" type="button">edge</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">devops</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install vercel@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="official" data-name="deploy-on-aws" data-tags="aws deploy infrastructure cost" data-profiles="devops" data-cat="devops">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">enabled</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">deploy-on-aws</h3>
+          <span class="r-path">devops/deploy-on-aws</span>
+        </header>
+        <p class="r-desc">AWS デプロイ、アーキテクチャ推奨、コスト見積もり。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="aws" type="button">aws</button><button class="tag-chip" data-tag="deploy" type="button">deploy</button><button class="tag-chip" data-tag="infrastructure" type="button">infrastructure</button><button class="tag-chip" data-tag="cost" type="button">cost</button></div>
+          <div class="r-profiles"><span class="prof-pill">devops</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install deploy-on-aws@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="pagerduty" data-tags="risk deploy oncall" data-profiles="devops" data-cat="devops">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">pagerduty</h3>
+          <span class="r-path">devops/pagerduty</span> <a href="https://claude.com/plugins/pagerduty" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">コミット前にデプロイリスクをスコア化。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="risk" type="button">risk</button><button class="tag-chip" data-tag="deploy" type="button">deploy</button><button class="tag-chip" data-tag="oncall" type="button">oncall</button></div>
+          <div class="r-profiles"><span class="prof-pill">devops</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install pagerduty@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="mintlify" data-tags="docs generation api" data-profiles="web-dev devops" data-cat="devops">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">mintlify</h3>
+          <span class="r-path">devops/mintlify</span> <a href="https://claude.com/plugins/mintlify" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">コードからドキュメント自動生成。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="docs" type="button">docs</button><button class="tag-chip" data-tag="generation" type="button">generation</button><button class="tag-chip" data-tag="api" type="button">api</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">devops</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install mintlify@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+    </div>
+  </section>
+
+  <section class="category" data-cat="integration" data-kind="plugin" id="cat-plugin-integration">
+    <header class="cat-head">
+      <span class="cat-idx">06</span>
+      <h2 class="cat-title">integration</h2>
+      <span class="cat-count" data-cat-count="integration">11</span>
+      <span class="cat-kbd">g 6</span>
+    </header>
+    <div class="rows">
+    <article class="row" data-kind="plugin" data-source="self" data-name="github" data-tags="github pr issue ci" data-profiles="web-dev devops project-mgmt" data-cat="integration">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">github</h3>
+          <span class="r-path">integration/github</span> <a href="https://claude.com/plugins/github" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">PR、Issue、コード検索、CI/CD（定番中の定番）。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="github" type="button">github</button><button class="tag-chip" data-tag="pr" type="button">pr</button><button class="tag-chip" data-tag="issue" type="button">issue</button><button class="tag-chip" data-tag="ci" type="button">ci</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">devops</span><span class="prof-pill">project-mgmt</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install github@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="slack" data-tags="slack messaging workflow" data-profiles="project-mgmt business" data-cat="integration">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">slack</h3>
+          <span class="r-path">integration/slack</span> <a href="https://claude.com/plugins/slack" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">ワークフロー、メッセージ下書き、チャンネル分析。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="slack" type="button">slack</button><button class="tag-chip" data-tag="messaging" type="button">messaging</button><button class="tag-chip" data-tag="workflow" type="button">workflow</button></div>
+          <div class="r-profiles"><span class="prof-pill">project-mgmt</span><span class="prof-pill">business</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install slack@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="sentry" data-tags="error monitoring observability" data-profiles="web-dev devops" data-cat="integration">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">sentry</h3>
+          <span class="r-path">integration/sentry</span> <a href="https://claude.com/plugins/sentry" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">本番エラーモニタリング、スタックトレース、修正提案。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="error" type="button">error</button><button class="tag-chip" data-tag="monitoring" type="button">monitoring</button><button class="tag-chip" data-tag="observability" type="button">observability</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">devops</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install sentry@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="linear" data-tags="issue sprint project" data-profiles="project-mgmt" data-cat="integration">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">linear</h3>
+          <span class="r-path">integration/linear</span> <a href="https://claude.com/plugins/linear" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">Issue 管理、スプリント管理。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="issue" type="button">issue</button><button class="tag-chip" data-tag="sprint" type="button">sprint</button><button class="tag-chip" data-tag="project" type="button">project</button></div>
+          <div class="r-profiles"><span class="prof-pill">project-mgmt</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install linear@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="supabase" data-tags="db auth storage postgres" data-profiles="web-dev" data-cat="integration">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">supabase</h3>
+          <span class="r-path">integration/supabase</span> <a href="https://claude.com/plugins/supabase" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">DB 管理、認証、ストレージ。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="db" type="button">db</button><button class="tag-chip" data-tag="auth" type="button">auth</button><button class="tag-chip" data-tag="storage" type="button">storage</button><button class="tag-chip" data-tag="postgres" type="button">postgres</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install supabase@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="stripe" data-tags="payment subscription billing" data-profiles="web-dev business" data-cat="integration">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">stripe</h3>
+          <span class="r-path">integration/stripe</span> <a href="https://claude.com/plugins/stripe" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">決済、サブスク、請求書、顧客データ。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="payment" type="button">payment</button><button class="tag-chip" data-tag="subscription" type="button">subscription</button><button class="tag-chip" data-tag="billing" type="button">billing</button></div>
+          <div class="r-profiles"><span class="prof-pill">web-dev</span><span class="prof-pill">business</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install stripe@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="notion" data-tags="notes knowledge-base collaboration" data-profiles="research project-mgmt business" data-cat="integration">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">notion</h3>
+          <span class="r-path">integration/notion</span>
+        </header>
+        <p class="r-desc">Notion ワークスペース連携。文献整理・研究ノート管理・チーム共有に。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="notes" type="button">notes</button><button class="tag-chip" data-tag="knowledge-base" type="button">knowledge-base</button><button class="tag-chip" data-tag="collaboration" type="button">collaboration</button></div>
+          <div class="r-profiles"><span class="prof-pill">research</span><span class="prof-pill">project-mgmt</span><span class="prof-pill">business</span></div>
+        </div>
+        <div class="r-source">claude-plugins-official</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install notion@claude-plugins-official" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="coplay-unity-mcp" data-tags="unity gamedev vr simulation editor" data-profiles="system-dev research" data-cat="integration">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">coplay-unity-mcp</h3>
+          <span class="r-path">integration/coplay-unity-mcp</span> <a href="https://github.com/CoplayDev/unity-mcp" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">[代替] Unity Editor を Claude Code から操作する軽量 MCP ブリッジ。assets/scenes/scripts/build/physics/Cinemachine/UI/Roslyn 型チェック等 30+ tools。batch_execute で 10-100x 高速。uvx(Python) 起動で Node 不要。268 tools が過剰な場合の軽量構成。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="unity" type="button">unity</button><button class="tag-chip" data-tag="gamedev" type="button">gamedev</button><button class="tag-chip" data-tag="vr" type="button">vr</button><button class="tag-chip" data-tag="simulation" type="button">simulation</button><button class="tag-chip" data-tag="editor" type="button">editor</button></div>
+          <div class="r-profiles"><span class="prof-pill">system-dev</span><span class="prof-pill">research</span></div>
+        </div>
+        <div class="r-source">external (GitHub)</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="claude mcp add unityMCP -- uvx --from mcpforunityserver mcp-for-unity --transport stdio" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="ivanmurzak-unity-mcp" data-tags="unity gamedev ai-skills cli runtime" data-profiles="system-dev research" data-cat="integration">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">ivanmurzak-unity-mcp</h3>
+          <span class="r-path">integration/ivanmurzak-unity-mcp</span> <a href="https://github.com/IvanMurzak/Unity-MCP" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">AI Skills + MCP Tools + CLI for Unity。100+ tools 3 カテゴリ（Project&amp;Assets / Scene&amp;Hierarchy / Scripting&amp;Editor）。runtime 対応、任意 C# メソッドを 1 行でツール化。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="unity" type="button">unity</button><button class="tag-chip" data-tag="gamedev" type="button">gamedev</button><button class="tag-chip" data-tag="ai-skills" type="button">ai-skills</button><button class="tag-chip" data-tag="cli" type="button">cli</button><button class="tag-chip" data-tag="runtime" type="button">runtime</button></div>
+          <div class="r-profiles"><span class="prof-pill">system-dev</span><span class="prof-pill">research</span></div>
+        </div>
+        <div class="r-source">external (GitHub)</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="unity-mcp-cli install-plugin ./MyUnityProject &amp;&amp; unity-mcp-cli setup-skills claude-code ./MyUnityProject" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="official" data-name="anklebreaker-unity-mcp" data-tags="unity gamedev shader physics animation multiplayer" data-profiles="system-dev research" data-cat="integration">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">anklebreaker-unity-mcp</h3>
+          <span class="r-path">integration/anklebreaker-unity-mcp</span> <a href="https://github.com/AnkleBreaker-Studio/unity-mcp-server" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">[標準] **268 tools** の最大級 Unity MCP。Scene/GameObject/Build/Profiling/Shader Graph/Amplify/Terrain/Physics/NavMesh/Animation/MPPM multiplayer 等。本テンプレ標準（.mcp.json の unityMCP / `unity-development` skill / `unity-debugger` subagent が対応）。ツールは `unity_*` 命名。Node.js 18+ + Unity 側 `unity-mcp-plugin`（UPM Git URL）が前提。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="unity" type="button">unity</button><button class="tag-chip" data-tag="gamedev" type="button">gamedev</button><button class="tag-chip" data-tag="shader" type="button">shader</button><button class="tag-chip" data-tag="physics" type="button">physics</button><button class="tag-chip" data-tag="animation" type="button">animation</button><button class="tag-chip" data-tag="multiplayer" type="button">multiplayer</button></div>
+          <div class="r-profiles"><span class="prof-pill">system-dev</span><span class="prof-pill">research</span></div>
+        </div>
+        <div class="r-source">external (GitHub)</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="claude mcp add unityMCP -- npx -y anklebreaker-unity-mcp@latest" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="figma-mcp" data-tags="figma design ui slides code-connect tokens" data-profiles="design" data-cat="integration">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">figma-mcp</h3>
+          <span class="r-path">integration/figma-mcp</span> <a href="https://developers.figma.com/docs/figma-mcp-server/" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.74rem;color:var(--accent);">[link]</a>
+        </header>
+        <p class="r-desc">公式 Figma MCP サーバ。design→code（get_design_context / get_screenshot / get_metadata）・code→design（use_figma）・Code Connect・design tokens / variables・FigJam・Figma Slides（プレゼン作成）を双方向で扱う。本テンプレ標準（.mcp.json の figma / `figma-integration` skill が対応）。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="figma" type="button">figma</button><button class="tag-chip" data-tag="design" type="button">design</button><button class="tag-chip" data-tag="ui" type="button">ui</button><button class="tag-chip" data-tag="slides" type="button">slides</button><button class="tag-chip" data-tag="code-connect" type="button">code-connect</button><button class="tag-chip" data-tag="tokens" type="button">tokens</button></div>
+          <div class="r-profiles"><span class="prof-pill">design</span></div>
+        </div>
+        <div class="r-source">external (公式)</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="claude mcp add --transport http figma https://mcp.figma.com/mcp" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+    </div>
+  </section>
+
+  <section class="category" data-cat="business-knowledge" data-kind="plugin" id="cat-plugin-business-knowledge">
+    <header class="cat-head">
+      <span class="cat-idx">07</span>
+      <h2 class="cat-title">business-knowledge</h2>
+      <span class="cat-count" data-cat-count="business-knowledge">6</span>
+      <span class="cat-kbd">g 7</span>
+    </header>
+    <div class="rows">
+    <article class="row" data-kind="plugin" data-source="self" data-name="brand-voice" data-tags="brand voice content" data-profiles="business writing" data-cat="business-knowledge">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">brand-voice</h3>
+          <span class="r-path">business-knowledge/brand-voice</span>
+        </header>
+        <p class="r-desc">ブランドトーンを全コンテンツで統一。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="brand" type="button">brand</button><button class="tag-chip" data-tag="voice" type="button">voice</button><button class="tag-chip" data-tag="content" type="button">content</button></div>
+          <div class="r-profiles"><span class="prof-pill">business</span><span class="prof-pill">writing</span></div>
+        </div>
+        <div class="r-source">knowledge-work-plugins</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install brand-voice@knowledge-work-plugins" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="marketing" data-tags="marketing seo content" data-profiles="business writing research" data-cat="business-knowledge">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">marketing</h3>
+          <span class="r-path">business-knowledge/marketing</span>
+        </header>
+        <p class="r-desc">SEO 監査、コンテンツ戦略、競合分析。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="marketing" type="button">marketing</button><button class="tag-chip" data-tag="seo" type="button">seo</button><button class="tag-chip" data-tag="content" type="button">content</button></div>
+          <div class="r-profiles"><span class="prof-pill">business</span><span class="prof-pill">writing</span><span class="prof-pill">research</span></div>
+        </div>
+        <div class="r-source">knowledge-work-plugins</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install marketing@knowledge-work-plugins" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="sales" data-tags="sales outreach leads" data-profiles="business research" data-cat="business-knowledge">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">sales</h3>
+          <span class="r-path">business-knowledge/sales</span>
+        </header>
+        <p class="r-desc">見込み客リサーチ、メールシーケンス、反論対応。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="sales" type="button">sales</button><button class="tag-chip" data-tag="outreach" type="button">outreach</button><button class="tag-chip" data-tag="leads" type="button">leads</button></div>
+          <div class="r-profiles"><span class="prof-pill">business</span><span class="prof-pill">research</span></div>
+        </div>
+        <div class="r-source">knowledge-work-plugins</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install sales@knowledge-work-plugins" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="legal" data-tags="legal contract compliance" data-profiles="business" data-cat="business-knowledge">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">legal</h3>
+          <span class="r-path">business-knowledge/legal</span>
+        </header>
+        <p class="r-desc">契約レビュー、コンプライアンス（初回スクリーニング用。法的アドバイスではない）。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="legal" type="button">legal</button><button class="tag-chip" data-tag="contract" type="button">contract</button><button class="tag-chip" data-tag="compliance" type="button">compliance</button></div>
+          <div class="r-profiles"><span class="prof-pill">business</span></div>
+        </div>
+        <div class="r-source">knowledge-work-plugins</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install legal@knowledge-work-plugins" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="finance" data-tags="finance budget forecast" data-profiles="business" data-cat="business-knowledge">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">finance</h3>
+          <span class="r-path">business-knowledge/finance</span>
+        </header>
+        <p class="r-desc">財務分析、予算計画、予測モデル。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="finance" type="button">finance</button><button class="tag-chip" data-tag="budget" type="button">budget</button><button class="tag-chip" data-tag="forecast" type="button">forecast</button></div>
+          <div class="r-profiles"><span class="prof-pill">business</span></div>
+        </div>
+        <div class="r-source">knowledge-work-plugins</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install finance@knowledge-work-plugins" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="plugin" data-source="self" data-name="productivity" data-tags="meeting task email" data-profiles="project-mgmt business general" data-cat="business-knowledge">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="self">available</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="plugin" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--official);background:rgba(96,165,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">plugin</span>
+          <h3 class="r-name" style="margin:0;">productivity</h3>
+          <span class="r-path">business-knowledge/productivity</span>
+        </header>
+        <p class="r-desc">会議要約、タスク管理、メール下書き。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="meeting" type="button">meeting</button><button class="tag-chip" data-tag="task" type="button">task</button><button class="tag-chip" data-tag="email" type="button">email</button></div>
+          <div class="r-profiles"><span class="prof-pill">project-mgmt</span><span class="prof-pill">business</span><span class="prof-pill">general</span></div>
+        </div>
+        <div class="r-source">knowledge-work-plugins</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/plugin install productivity@knowledge-work-plugins" type="button" title="インストールコマンドをコピー">⌘C</button>
+      </div>
+    </article>
+    </div>
+  </section>
+
+  <div class="section-head">
+    <h2>スキル</h2>
+    <p>.claude/skills/<cat>/<name>/SKILL.md</p>
+  </div>
+
+  <section class="category" data-cat="dev" data-kind="skill" id="cat-skill-dev">
+    <header class="cat-head">
+      <span class="cat-idx">08</span>
+      <h2 class="cat-title">dev</h2>
+      <span class="cat-count" data-cat-count="dev">1</span>
+      <span class="cat-kbd">g 8</span>
+    </header>
+    <div class="rows">
+    <article class="row" data-kind="skill" data-source="official" data-name="unity-development" data-tags="unity gamedev vr simulation mcp" data-profiles="system-dev research" data-cat="dev">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="skill" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--accent);background:rgba(94,234,212,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">skill</span>
+          <h3 class="r-name" style="margin:0;">unity-development</h3>
+          <span class="r-path">dev/unity-development</span>
+        </header>
+        <p class="r-desc">Unity Editor を MCP（unityMCP / AnkleBreaker unity-mcp, 268 tools）経由で操作する際のワークフロー規約を Claude に適用させる。C# スクリプトは unity_script_create→unity_get_compilation_errors でコンパイル確認してから新型を使用、新規 scene は Camera + Directional Light を必須、関連操作は unity_execute_code でまとめる、パスは Assets/ 相対・forward slash、変更前に unity_editor_state など read 系を先に確認。Unity / VR / AR / 物理シミュレーションのシーン構築・スクリプト編集・ビルド・デバッグ時に発火する。Use when building or editing Unity scenes, scripts, prefabs, or running Unity via the MCP bridge.</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="unity" type="button">unity</button><button class="tag-chip" data-tag="gamedev" type="button">gamedev</button><button class="tag-chip" data-tag="vr" type="button">vr</button><button class="tag-chip" data-tag="simulation" type="button">simulation</button><button class="tag-chip" data-tag="mcp" type="button">mcp</button></div>
+          <div class="r-profiles"><span class="prof-pill">system-dev</span><span class="prof-pill">research</span></div>
+        </div>
+        <div class="r-source">.claude/skills/dev/unity-development</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy=".claude/skills/dev/unity-development" type="button" title="パスをコピー">⌘C</button>
+      </div>
+    </article>
+    </div>
+  </section>
+
+  <section class="category" data-cat="research" data-kind="skill" id="cat-skill-research">
+    <header class="cat-head">
+      <span class="cat-idx">09</span>
+      <h2 class="cat-title">research</h2>
+      <span class="cat-count" data-cat-count="research">8</span>
+      <span class="cat-kbd">g 9</span>
+    </header>
+    <div class="rows">
+    <article class="row" data-kind="skill" data-source="official" data-name="agent-council" data-tags="" data-profiles="" data-cat="research">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="skill" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--accent);background:rgba(94,234,212,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">skill</span>
+          <h3 class="r-name" style="margin:0;">agent-council</h3>
+          <span class="r-path">research/agent-council</span>
+        </header>
+        <p class="r-desc">Convene a panel of CLI-based AI agents (Codex, Gemini) to deliberate on a question. Each agent answers independently, then you synthesize the council&#x27;s verdict as chairman. Use for architecture decisions, code review, debugging hypotheses, or any question where diverse perspectives add value.</p>
+        <div class="r-foot">
+          <div class="r-tags"></div>
+          <div class="r-profiles"></div>
+        </div>
+        <div class="r-source">.claude/skills/research/agent-council</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy=".claude/skills/research/agent-council" type="button" title="パスをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="skill" data-source="official" data-name="agent-council-nudge" data-tags="" data-profiles="" data-cat="research">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="skill" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--accent);background:rgba(94,234,212,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">skill</span>
+          <h3 class="r-name" style="margin:0;">agent-council-nudge</h3>
+          <span class="r-path">research/agent-council-nudge</span>
+        </header>
+        <p class="r-desc">Ambient awareness for Agent Council. Detects moments where convening a multi-model council would genuinely help and suggests the right command. Never interrupts. Never nags. Just a quiet tip at the right moment.</p>
+        <div class="r-foot">
+          <div class="r-tags"></div>
+          <div class="r-profiles"></div>
+        </div>
+        <div class="r-source">.claude/skills/research/agent-council/agent-council-nudge</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy=".claude/skills/research/agent-council/agent-council-nudge" type="button" title="パスをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="skill" data-source="official" data-name="council-list" data-tags="" data-profiles="" data-cat="research">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="skill" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--accent);background:rgba(94,234,212,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">skill</span>
+          <h3 class="r-name" style="margin:0;">council-list</h3>
+          <span class="r-path">research/council-list</span>
+        </header>
+        <p class="r-desc">List all past Agent Council sessions for the current project. Shows session ID, mode, agent count, and question for each.</p>
+        <div class="r-foot">
+          <div class="r-tags"></div>
+          <div class="r-profiles"></div>
+        </div>
+        <div class="r-source">.claude/skills/research/agent-council/council-list</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy=".claude/skills/research/agent-council/council-list" type="button" title="パスをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="skill" data-source="official" data-name="council-nudge" data-tags="" data-profiles="" data-cat="research">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="skill" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--accent);background:rgba(94,234,212,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">skill</span>
+          <h3 class="r-name" style="margin:0;">council-nudge</h3>
+          <span class="r-path">research/council-nudge</span>
+        </header>
+        <p class="r-desc">Nudge a specific agent to reconsider its opinion based on a corrected assumption. Sends the original question + response + correction to one agent and saves the updated opinion alongside the original for comparison.</p>
+        <div class="r-foot">
+          <div class="r-tags"></div>
+          <div class="r-profiles"></div>
+        </div>
+        <div class="r-source">.claude/skills/research/agent-council/council-nudge</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy=".claude/skills/research/agent-council/council-nudge" type="button" title="パスをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="skill" data-source="official" data-name="council-outcome" data-tags="" data-profiles="" data-cat="research">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="skill" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--accent);background:rgba(94,234,212,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">skill</span>
+          <h3 class="r-name" style="margin:0;">council-outcome</h3>
+          <span class="r-path">research/council-outcome</span>
+        </header>
+        <p class="r-desc">Record the outcome of a past Agent Council decision. Was the council right? Builds calibration data over time to learn which models are best at what.</p>
+        <div class="r-foot">
+          <div class="r-tags"></div>
+          <div class="r-profiles"></div>
+        </div>
+        <div class="r-source">.claude/skills/research/agent-council/council-outcome</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy=".claude/skills/research/agent-council/council-outcome" type="button" title="パスをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="skill" data-source="official" data-name="council-replay" data-tags="" data-profiles="" data-cat="research">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="skill" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--accent);background:rgba(94,234,212,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">skill</span>
+          <h3 class="r-name" style="margin:0;">council-replay</h3>
+          <span class="r-path">research/council-replay</span>
+        </header>
+        <p class="r-desc">Replay a past Agent Council session in the terminal. Shows the full deliberation: question, each agent&#x27;s opinion, and the chairman&#x27;s synthesis.</p>
+        <div class="r-foot">
+          <div class="r-tags"></div>
+          <div class="r-profiles"></div>
+        </div>
+        <div class="r-source">.claude/skills/research/agent-council/council-replay</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy=".claude/skills/research/agent-council/council-replay" type="button" title="パスをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="skill" data-source="official" data-name="council-revisit" data-tags="" data-profiles="" data-cat="research">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="skill" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--accent);background:rgba(94,234,212,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">skill</span>
+          <h3 class="r-name" style="margin:0;">council-revisit</h3>
+          <span class="r-path">research/council-revisit</span>
+        </header>
+        <p class="r-desc">Revisit a past Agent Council decision with current codebase context. Re-runs the same question through the council and shows a side-by-side comparison of what changed. Use for living decisions.</p>
+        <div class="r-foot">
+          <div class="r-tags"></div>
+          <div class="r-profiles"></div>
+        </div>
+        <div class="r-source">.claude/skills/research/agent-council/council-revisit</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy=".claude/skills/research/agent-council/council-revisit" type="button" title="パスをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="skill" data-source="official" data-name="notebooklm-integration" data-tags="" data-profiles="" data-cat="research">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="skill" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--accent);background:rgba(94,234,212,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">skill</span>
+          <h3 class="r-name" style="margin:0;">notebooklm-integration</h3>
+          <span class="r-path">research/notebooklm-integration</span>
+        </header>
+        <p class="r-desc">Use this skill to query your Google NotebookLM notebooks directly from Claude Code for source-grounded, citation-backed answers from Gemini. Browser automation, library management, persistent auth. Drastically reduced hallucinations through document-only responses.</p>
+        <div class="r-foot">
+          <div class="r-tags"></div>
+          <div class="r-profiles"></div>
+        </div>
+        <div class="r-source">.claude/skills/research/notebooklm-integration</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy=".claude/skills/research/notebooklm-integration" type="button" title="パスをコピー">⌘C</button>
+      </div>
+    </article>
+    </div>
+  </section>
+
+  <section class="category" data-cat="document" data-kind="skill" id="cat-skill-document">
+    <header class="cat-head">
+      <span class="cat-idx">10</span>
+      <h2 class="cat-title">document</h2>
+      <span class="cat-count" data-cat-count="document">5</span>
+      <span class="cat-kbd">g 10</span>
+    </header>
+    <div class="rows">
+    <article class="row" data-kind="skill" data-source="official" data-name="doc-coauthoring" data-tags="" data-profiles="" data-cat="document">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="skill" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--accent);background:rgba(94,234,212,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">skill</span>
+          <h3 class="r-name" style="margin:0;">doc-coauthoring</h3>
+          <span class="r-path">document/doc-coauthoring</span>
+        </header>
+        <p class="r-desc">Guide users through a structured workflow for co-authoring documentation. Use when user wants to write documentation, proposals, technical specs, decision docs, or similar structured content. This workflow helps users efficiently transfer context, refine content through iteration, and verify the doc works for readers. Trigger when user mentions writing docs, creating proposals, drafting specs, or similar documentation tasks.</p>
+        <div class="r-foot">
+          <div class="r-tags"></div>
+          <div class="r-profiles"></div>
+        </div>
+        <div class="r-source">.claude/skills/document/doc-coauthoring</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy=".claude/skills/document/doc-coauthoring" type="button" title="パスをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="skill" data-source="official" data-name="docx" data-tags="" data-profiles="" data-cat="document">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="skill" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--accent);background:rgba(94,234,212,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">skill</span>
+          <h3 class="r-name" style="margin:0;">docx</h3>
+          <span class="r-path">document/docx</span>
+        </header>
+        <p class="r-desc">Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx files). Triggers include: any mention of &#x27;Word doc&#x27;, &#x27;word document&#x27;, &#x27;.docx&#x27;, or requests to produce professional documents with formatting like tables of contents, headings, page numbers, or letterheads. Also use when extracting or reorganizing content from .docx files, inserting or replacing images in documents, performing find-and-replace in Word files, working with tracked changes or comments, or converting content into a polished Word document. If the user asks for a &#x27;report&#x27;, &#x27;memo&#x27;, &#x27;letter&#x27;, &#x27;template&#x27;, or similar deliverable as a Word or .docx file, use this skill. Do NOT use for PDFs, spreadsheets, Google Docs, or general coding tasks unrelated to document generation.</p>
+        <div class="r-foot">
+          <div class="r-tags"></div>
+          <div class="r-profiles"></div>
+        </div>
+        <div class="r-source">.claude/skills/document/docx · Proprietary. LICENSE.txt has complete terms</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy=".claude/skills/document/docx" type="button" title="パスをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="skill" data-source="official" data-name="pdf" data-tags="" data-profiles="" data-cat="document">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="skill" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--accent);background:rgba(94,234,212,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">skill</span>
+          <h3 class="r-name" style="margin:0;">pdf</h3>
+          <span class="r-path">document/pdf</span>
+        </header>
+        <p class="r-desc">Use this skill whenever the user wants to do anything with PDF files. This includes reading or extracting text/tables from PDFs, combining or merging multiple PDFs into one, splitting PDFs apart, rotating pages, adding watermarks, creating new PDFs, filling PDF forms, encrypting/decrypting PDFs, extracting images, and OCR on scanned PDFs to make them searchable. If the user mentions a .pdf file or asks to produce one, use this skill.</p>
+        <div class="r-foot">
+          <div class="r-tags"></div>
+          <div class="r-profiles"></div>
+        </div>
+        <div class="r-source">.claude/skills/document/pdf · Proprietary. LICENSE.txt has complete terms</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy=".claude/skills/document/pdf" type="button" title="パスをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="skill" data-source="official" data-name="pptx" data-tags="" data-profiles="" data-cat="document">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="skill" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--accent);background:rgba(94,234,212,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">skill</span>
+          <h3 class="r-name" style="margin:0;">pptx</h3>
+          <span class="r-path">document/pptx</span>
+        </header>
+        <p class="r-desc">Use this skill any time a .pptx file is involved in any way — as input, output, or both. This includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx file (even if the extracted content will be used elsewhere, like in an email or summary); editing, modifying, or updating existing presentations; combining or splitting slide files; working with templates, layouts, speaker notes, or comments. Trigger whenever the user mentions \&quot;deck,\&quot; \&quot;slides,\&quot; \&quot;presentation,\&quot; or references a .pptx filename, regardless of what they plan to do with the content afterward. If a .pptx file needs to be opened, created, or touched, use this skill.</p>
+        <div class="r-foot">
+          <div class="r-tags"></div>
+          <div class="r-profiles"></div>
+        </div>
+        <div class="r-source">.claude/skills/document/pptx · Proprietary. LICENSE.txt has complete terms</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy=".claude/skills/document/pptx" type="button" title="パスをコピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="skill" data-source="official" data-name="xlsx" data-tags="" data-profiles="" data-cat="document">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="skill" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--accent);background:rgba(94,234,212,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">skill</span>
+          <h3 class="r-name" style="margin:0;">xlsx</h3>
+          <span class="r-path">document/xlsx</span>
+        </header>
+        <p class="r-desc">Use this skill any time a spreadsheet file is the primary input or output. This means any task where the user wants to: open, read, edit, or fix an existing .xlsx, .xlsm, .csv, or .tsv file (e.g., adding columns, computing formulas, formatting, charting, cleaning messy data); create a new spreadsheet from scratch or from other data sources; or convert between tabular file formats. Trigger especially when the user references a spreadsheet file by name or path — even casually (like \&quot;the xlsx in my downloads\&quot;) — and wants something done to it or produced from it. Also trigger for cleaning or restructuring messy tabular data files (malformed rows, misplaced headers, junk data) into proper spreadsheets. The deliverable must be a spreadsheet file. Do NOT trigger when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration, even if tabular data is involved.</p>
+        <div class="r-foot">
+          <div class="r-tags"></div>
+          <div class="r-profiles"></div>
+        </div>
+        <div class="r-source">.claude/skills/document/xlsx · Proprietary. LICENSE.txt has complete terms</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy=".claude/skills/document/xlsx" type="button" title="パスをコピー">⌘C</button>
+      </div>
+    </article>
+    </div>
+  </section>
+
+  <div class="section-head">
+    <h2>subagent</h2>
+    <p>.claude/agents/<name>.md</p>
+  </div>
+
+  <section class="category" data-cat="subagent" data-kind="subagent" id="cat-subagent-subagent">
+    <header class="cat-head">
+      <span class="cat-idx">11</span>
+      <h2 class="cat-title">subagent</h2>
+      <span class="cat-count" data-cat-count="subagent">1</span>
+      <span class="cat-kbd">g 11</span>
+    </header>
+    <div class="rows">
+    <article class="row" data-kind="subagent" data-source="official" data-name="unity-debugger" data-tags="unity debugging error-diagnosis" data-profiles="system-dev research" data-cat="subagent">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="subagent" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--community);background:rgba(167,139,250,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">subagent</span>
+          <h3 class="r-name" style="margin:0;">unity-debugger</h3>
+          <span class="r-path">subagent/unity-debugger</span>
+        </header>
+        <p class="r-desc">Unity のコンパイルエラー・実行時例外・シーン / 物理セットアップ不整合を診断する読み取り専用エージェント。unityMCP（AnkleBreaker）の unity_get_compilation_errors・unity_console_log・unity_scene_hierarchy・unity_gameobject_info・unity_search_missing_references・unity_editor_state を解析し、原因と修正方針を severity 付きで構造化して返す。書き換え（Edit / Write / unity_*_create / _update / _set_*）は行わない。Unity 固有エラーのデバッグ・原因特定時に使う。Use when diagnosing Unity compilation errors, runtime exceptions, or scene/physics setup issues.</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="unity" type="button">unity</button><button class="tag-chip" data-tag="debugging" type="button">debugging</button><button class="tag-chip" data-tag="error-diagnosis" type="button">error-diagnosis</button></div>
+          <div class="r-profiles"><span class="prof-pill">system-dev</span><span class="prof-pill">research</span></div>
+        </div>
+        <div class="r-source">tools: Read, Grep, Glob, mcp__unityMCP__unity_get_compilation_errors, mcp__unityMCP__unity_console_log, mcp__unityMCP__unity_editor_state, mcp__unityMCP__unity_scene_hierarchy, mcp__unityMCP__unity_gameobject_info, mcp__unityMCP__unity_search_missing_references, mcp__unityMCP__unity_script_read</div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="unity-debugger" type="button" title="subagent 名をコピー">⌘C</button>
+      </div>
+    </article>
+    </div>
+  </section>
+
+  <div class="section-head">
+    <h2>コマンド</h2>
+    <p>.claude/commands/<name>.md</p>
+  </div>
+
+  <section class="category" data-cat="command" data-kind="command" id="cat-command-command">
+    <header class="cat-head">
+      <span class="cat-idx">12</span>
+      <h2 class="cat-title">command</h2>
+      <span class="cat-count" data-cat-count="command">6</span>
+      <span class="cat-kbd">g 12</span>
+    </header>
+    <div class="rows">
+    <article class="row" data-kind="command" data-source="official" data-name="catalog-sync" data-tags="catalog sync build" data-profiles="meta general" data-cat="command">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="command" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--restricted);background:rgba(244,114,182,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">command</span>
+          <h3 class="r-name" style="margin:0;">catalog-sync</h3>
+          <span class="r-path">command/catalog-sync</span>
+        </header>
+        <p class="r-desc">**status 自動判定**: `.claude/commands/&lt;name&gt;.md` 実体の存在で `[active]`/`[planned]` がビルド時に自動付与される。現状 `catalog-sync` のみ `[active]`。</p>
+        <div class="r-foot">
+          <div class="r-tags"><button class="tag-chip" data-tag="catalog" type="button">catalog</button><button class="tag-chip" data-tag="sync" type="button">sync</button><button class="tag-chip" data-tag="build" type="button">build</button></div>
+          <div class="r-profiles"><span class="prof-pill">meta</span><span class="prof-pill">general</span></div>
+        </div>
+        <div class="r-source"></div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/catalog-sync" type="button" title="コピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="command" data-source="official" data-name="ticket-create" data-tags="" data-profiles="meta" data-cat="command">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="command" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--restricted);background:rgba(244,114,182,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">command</span>
+          <h3 class="r-name" style="margin:0;">ticket-create</h3>
+          <span class="r-path">command/ticket-create</span>
+        </header>
+        <p class="r-desc">新規タスクチケット (tasks/T-NNN-&lt;slug&gt;.md) を [ ] チェックボックス形式で生成。次の T-NNN を自動採番し、汎用 5 セクション構成（目的 / 背景 / 手順 / 検証 / 完了報告）を出力する。</p>
+        <div class="r-foot">
+          <div class="r-tags"></div>
+          <div class="r-profiles"><span class="prof-pill">meta</span></div>
+        </div>
+        <div class="r-source"></div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/ticket-create" type="button" title="コピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="command" data-source="official" data-name="ticket-run" data-tags="" data-profiles="meta" data-cat="command">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="command" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--restricted);background:rgba(244,114,182,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">command</span>
+          <h3 class="r-name" style="margin:0;">ticket-run</h3>
+          <span class="r-path">command/ticket-run</span>
+        </header>
+        <p class="r-desc">既存タスクチケット (tasks/T-NNN-&lt;slug&gt;.md) を実行。手順 / 検証 セクションの各 `- [ ]` 項目を順に実施し、完了するたびに `- [x]` へ更新する。全項目が完了したら frontmatter の status を done にし、完了報告を追記してファイルを tasks/_done/ へ移動する。</p>
+        <div class="r-foot">
+          <div class="r-tags"></div>
+          <div class="r-profiles"><span class="prof-pill">meta</span></div>
+        </div>
+        <div class="r-source"></div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/ticket-run" type="button" title="コピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="command" data-source="official" data-name="doctor" data-tags="" data-profiles="meta" data-cat="command">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="command" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--restricted);background:rgba(244,114,182,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">command</span>
+          <h3 class="r-name" style="margin:0;">doctor</h3>
+          <span class="r-path">command/doctor</span>
+        </header>
+        <p class="r-desc">テンプレ環境の健全性診断。settings 構文 / catalog drift / user-scope drift / 秘匿情報の直書き / スコープ衝突 / ドキュメントのリンク切れなど 19 項目を一括チェックしてレポートを出力する。判定は .claude/scripts/doctor.py にあり、/init-project のプリフライトと共有する。</p>
+        <div class="r-foot">
+          <div class="r-tags"></div>
+          <div class="r-profiles"><span class="prof-pill">meta</span></div>
+        </div>
+        <div class="r-source"></div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/doctor" type="button" title="コピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="command" data-source="official" data-name="profile-switch" data-tags="" data-profiles="meta" data-cat="command">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="command" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--restricted);background:rgba(244,114,182,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">command</span>
+          <h3 class="r-name" style="margin:0;">profile-switch</h3>
+          <span class="r-path">command/profile-switch</span>
+        </header>
+        <p class="r-desc">既に初期化済みのプロジェクトのプロファイルを別プロファイルに切り替える。/init-project の再実行と同等だが、仕様文の再入力をスキップして baseline のみで切替する軽量フロー。</p>
+        <div class="r-foot">
+          <div class="r-tags"></div>
+          <div class="r-profiles"><span class="prof-pill">meta</span></div>
+        </div>
+        <div class="r-source"></div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/profile-switch" type="button" title="コピー">⌘C</button>
+      </div>
+    </article>
+
+    <article class="row" data-kind="command" data-source="official" data-name="ticket-list" data-tags="" data-profiles="meta" data-cat="command">
+      <div class="r-meta">
+        <span class="r-sigil" data-k="official">active</span>
+      </div>
+      <div class="r-body">
+        <header class="r-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="r-kind" data-kind="command" style="font-family:var(--mono);font-size:0.66rem;font-weight:600;letter-spacing:0.04em;color:var(--restricted);background:rgba(244,114,182,0.15);padding:1px 6px;border-radius:3px;text-transform:uppercase;">command</span>
+          <h3 class="r-name" style="margin:0;">ticket-list</h3>
+          <span class="r-path">command/ticket-list</span>
+        </header>
+        <p class="r-desc">tasks/ 配下の未完了チケットを一覧表示する。frontmatter から id / title / status / category / estimated_minutes / depends_on を抽出し、表形式で出力。完了済み (tasks/_done/) は件数のみ集計。</p>
+        <div class="r-foot">
+          <div class="r-tags"></div>
+          <div class="r-profiles"><span class="prof-pill">meta</span></div>
+        </div>
+        <div class="r-source"></div>
+      </div>
+      <div class="r-actions">
+        <button class="copy-btn" data-copy="/ticket-list" type="button" title="コピー">⌘C</button>
+      </div>
+    </article>
+    </div>
+  </section>
+
+</main>
+
+<!-- Help overlay -->
+<div class="help-overlay" id="help-overlay">
+  <div class="help-card">
+    <h3>キーボードショートカット</h3>
+    <dl>
+      <dt>/</dt><dd>検索にフォーカス</dd>
+      <dt>Esc</dt><dd>フィルタクリア／ヘルプを閉じる</dd>
+      <dt>1-9, 0</dt><dd>カテゴリ 01〜10 へ移動</dd>
+      <dt>g h</dt><dd>先頭へスクロール</dd>
+      <dt>?</dt><dd>このヘルプの表示切替</dd>
+    </dl>
+    <button class="help-close" type="button">閉じる</button>
+  </div>
+</div>
+
+<!-- Status bar -->
+<div class="statusbar">
+  <div class="left">
+    <span><span class="live" id="sb-visible">70</span>/<span id="sb-total">70</span> 件</span>
+    <span id="sb-filters">フィルタなし</span>
+  </div>
+  <div class="right">
+    <span><span class="kbd">/</span> 検索</span>
+    <span><span class="kbd">Esc</span> クリア</span>
+    <span><span class="kbd">?</span> ヘルプ</span>
+    <span>v 2026-05-16 catalog</span>
+  </div>
+</div>
+
+<script>
+(function () {
+  var rows = document.querySelectorAll('.row');
+  var cats = document.querySelectorAll('.category');
+  var srcBtns = document.querySelectorAll('.src-btn');
+  var catBtns = document.querySelectorAll('.cat-btn');
+  var tagChips = document.querySelectorAll('.tag-chip');
+  var search = document.getElementById('search');
+  var clearBtn = document.getElementById('clear-btn');
+  var helpBtn = document.getElementById('help-btn');
+  var helpOverlay = document.getElementById('help-overlay');
+  var helpClose = document.querySelector('.help-close');
+  var visibleCount = document.getElementById('visible-count');
+  var sbVisible = document.getElementById('sb-visible');
+  var sbFilters = document.getElementById('sb-filters');
+  var activeFilters = document.getElementById('active-filters');
+  var body = document.body;
+
+  var state = {
+    cat: 'all',
+    src: 'all',
+    q: '',
+    tags: new Set(),
+  };
+
+  function pushHash() {
+    var parts = [];
+    if (state.cat !== 'all') parts.push('cat=' + state.cat);
+    if (state.src !== 'all') parts.push('src=' + state.src);
+    if (state.q) parts.push('q=' + encodeURIComponent(state.q));
+    if (state.tags.size) parts.push('tags=' + Array.from(state.tags).join(','));
+    var h = parts.join('&');
+    if (h) history.replaceState(null, '', '#' + h);
+    else history.replaceState(null, '', location.pathname + location.search);
+  }
+
+  function readHash() {
+    var h = location.hash.replace(/^#/, '');
+    if (!h) return;
+    h.split('&').forEach(function (kv) {
+      var ix = kv.indexOf('=');
+      if (ix < 0) return;
+      var k = kv.slice(0, ix), v = decodeURIComponent(kv.slice(ix + 1));
+      if (k === 'cat') state.cat = v;
+      else if (k === 'src') state.src = v;
+      else if (k === 'q') state.q = v;
+      else if (k === 'tags') state.tags = new Set(v.split(',').filter(Boolean));
+    });
+    if (state.q) search.value = state.q;
+  }
+
+  function apply() {
+    var n = 0;
+    rows.forEach(function (r) {
+      var srcOk = state.src === 'all' || r.getAttribute('data-source') === state.src;
+      var rowName = r.getAttribute('data-name') || '';
+      var rowTags = (r.getAttribute('data-tags') || '').split(' ').filter(Boolean);
+      var qOk = !state.q || rowName.indexOf(state.q) >= 0 || (r.innerText || '').toLowerCase().indexOf(state.q) >= 0;
+      var tagsOk = true;
+      if (state.tags.size) {
+        var rt = new Set(rowTags);
+        state.tags.forEach(function (t) { if (!rt.has(t)) tagsOk = false; });
+      }
+      var visible = srcOk && qOk && tagsOk;
+      r.classList.toggle('is-hidden', !visible);
+      if (visible) n++;
+    });
+    cats.forEach(function (sec) {
+      var slug = sec.getAttribute('data-cat');
+      var catOk = state.cat === 'all' || slug === state.cat;
+      var anyVisible = false;
+      sec.querySelectorAll('.row').forEach(function (r) {
+        if (!r.classList.contains('is-hidden')) anyVisible = true;
+      });
+      sec.classList.toggle('is-hidden', !catOk || !anyVisible);
+      // update per-cat count
+      var perCat = 0;
+      sec.querySelectorAll('.row').forEach(function (r) {
+        if (!r.classList.contains('is-hidden')) perCat++;
+      });
+      var btn = document.querySelector('.cat-btn[data-cat="' + slug + '"]');
+      if (btn) {
+        var ctEl = btn.querySelector('.ct');
+        if (ctEl) ctEl.textContent = perCat;
+      }
+    });
+    srcBtns.forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-src') === state.src); });
+    catBtns.forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-cat') === state.cat); });
+    tagChips.forEach(function (c) { c.classList.toggle('active', state.tags.has(c.getAttribute('data-tag'))); });
+    visibleCount.textContent = n;
+    sbVisible.textContent = n;
+    body.classList.toggle('is-no-match', n === 0);
+    renderActiveFilters();
+    pushHash();
+  }
+
+  function renderActiveFilters() {
+    var chips = [];
+    if (state.cat !== 'all') chips.push({ k: 'cat', v: state.cat, label: 'カテゴリ:' + state.cat });
+    if (state.src !== 'all') chips.push({ k: 'src', v: state.src, label: 'ソース:' + state.src });
+    if (state.q) chips.push({ k: 'q', v: state.q, label: '検索:' + state.q });
+    state.tags.forEach(function (t) { chips.push({ k: 'tag', v: t, label: '#' + t }); });
+    activeFilters.innerHTML = chips.map(function (c) {
+      return '<span class="active-filter" data-k="' + c.k + '" data-v="' + c.v + '">' + c.label + ' <span class="x">⨯</span></span>';
+    }).join('');
+    activeFilters.querySelectorAll('.active-filter .x').forEach(function (x) {
+      x.addEventListener('click', function () {
+        var p = x.parentElement;
+        var k = p.getAttribute('data-k'), v = p.getAttribute('data-v');
+        if (k === 'cat') state.cat = 'all';
+        else if (k === 'src') state.src = 'all';
+        else if (k === 'q') { state.q = ''; search.value = ''; }
+        else if (k === 'tag') state.tags.delete(v);
+        apply();
+      });
+    });
+    sbFilters.textContent = chips.length ? chips.map(function (c) { return c.label; }).join(' ') : 'フィルタなし';
+  }
+
+  srcBtns.forEach(function (b) {
+    b.addEventListener('click', function () { state.src = b.getAttribute('data-src'); apply(); });
+  });
+  catBtns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.cat = b.getAttribute('data-cat');
+      apply();
+      if (state.cat !== 'all') {
+        var sec = document.getElementById('cat-' + state.cat);
+        if (sec) window.scrollTo({ top: window.scrollY + sec.getBoundingClientRect().top - 130, behavior: 'smooth' });
+      }
+    });
+  });
+  tagChips.forEach(function (c) {
+    c.addEventListener('click', function () {
+      var t = c.getAttribute('data-tag');
+      if (state.tags.has(t)) state.tags.delete(t); else state.tags.add(t);
+      apply();
+    });
+  });
+
+  var t;
+  search.addEventListener('input', function () {
+    clearTimeout(t);
+    t = setTimeout(function () {
+      state.q = search.value.trim().toLowerCase();
+      apply();
+    }, 80);
+  });
+
+  clearBtn.addEventListener('click', function () {
+    state.cat = 'all'; state.src = 'all'; state.q = ''; state.tags.clear();
+    search.value = '';
+    apply();
+  });
+
+  // Copy buttons
+  document.querySelectorAll('.copy-btn').forEach(function (b) {
+    b.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var txt = b.getAttribute('data-copy');
+      var done = function () {
+        b.classList.add('copied');
+        var orig = b.textContent;
+        b.textContent = '完了';
+        setTimeout(function () { b.classList.remove('copied'); b.textContent = orig; }, 900);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(done, done);
+      } else {
+        done();
+      }
+    });
+  });
+
+  // Help overlay
+  function toggleHelp(open) {
+    helpOverlay.classList.toggle('is-open', open);
+  }
+  helpBtn.addEventListener('click', function () { toggleHelp(true); });
+  helpClose.addEventListener('click', function () { toggleHelp(false); });
+  helpOverlay.addEventListener('click', function (e) {
+    if (e.target === helpOverlay) toggleHelp(false);
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', function (e) {
+    var active = document.activeElement;
+    var inField = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+    if (e.key === '/' && !inField) {
+      e.preventDefault();
+      search.focus(); search.select();
+    } else if (e.key === 'Escape') {
+      if (helpOverlay.classList.contains('is-open')) {
+        toggleHelp(false);
+      } else if (inField) {
+        search.blur();
+      } else {
+        clearBtn.click();
+      }
+    } else if (e.key === '?' && !inField) {
+      e.preventDefault();
+      toggleHelp(!helpOverlay.classList.contains('is-open'));
+    } else if (!inField && /^[0-9]$/.test(e.key)) {
+      var idx = e.key === '0' ? 10 : parseInt(e.key, 10);
+      var btns = document.querySelectorAll('.cat-btn[data-cat]:not([data-cat="all"])');
+      var target = btns[idx - 1];
+      if (target) target.click();
+    } else if (e.key === 'g' && !inField) {
+      // wait for next key
+      var handler = function (e2) {
+        if (e2.key === 'h') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        document.removeEventListener('keydown', handler, true);
+      };
+      document.addEventListener('keydown', handler, true);
+      setTimeout(function () { document.removeEventListener('keydown', handler, true); }, 700);
+    }
+  });
+
+  // initial
+  readHash();
+  apply();
+})();
+</script>
+</body>
+</html>

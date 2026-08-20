@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MRCP 想起オンセット同期 — 文献調査と新規性の検討</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f6f4ee;
+    --surface:#ffffff;
+    --ink:#232a2d;
+    --sub:#59636a;
+    --teal:#1c5a62;
+    --teal-deep:#164249;
+    --teal-tint:#e6efee;
+    --ochre:#9a5417;
+    --ochre-tint:#f4ebdf;
+    --info:#6c7176;
+    --info-tint:#ecebe4;
+    --line:#e2dccf;
+    --rule:#d6cfc1;
+    --maxcol:780px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Inter","Noto Sans JP",-apple-system,BlinkMacSystemFont,sans-serif;
+    font-size:16px;line-height:1.85;font-feature-settings:"palt";}
+  .masthead{border-bottom:2px solid var(--teal);background:var(--surface);}
+  .masthead .inner{max-width:1080px;margin:0 auto;padding:34px 28px 26px;}
+  .kicker{font-size:.78rem;letter-spacing:.14em;color:var(--teal);font-weight:600;text-transform:uppercase;margin:0 0 8px;}
+  .masthead h1{margin:0;font-size:1.8rem;font-weight:700;letter-spacing:.01em;line-height:1.35;}
+  .masthead p{margin:10px 0 0;color:var(--sub);font-size:.92rem;max-width:var(--maxcol);}
+  .layout{max-width:1080px;margin:0 auto;padding:0 28px;display:flex;gap:44px;align-items:flex-start;}
+  aside{position:sticky;top:0;flex:0 0 210px;padding:34px 0;align-self:flex-start;}
+  aside .toc-title{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);font-weight:600;margin:0 0 12px;}
+  aside ol{list-style:none;margin:0;padding:0;}
+  aside a{display:block;padding:6px 0 6px 14px;border-left:2px solid var(--line);
+    color:var(--sub);text-decoration:none;font-size:.86rem;line-height:1.5;transition:.15s;}
+  aside a:hover{color:var(--teal);border-color:var(--teal);}
+  aside a.active{color:var(--teal-deep);border-color:var(--teal);font-weight:600;}
+  aside .toc-part{border:0;background:none;border-radius:0;margin:0;overflow:visible;}
+  aside .toc-part>summary{display:flex;align-items:baseline;gap:6px;
+    padding:8px 0 8px 14px;border-left:2px solid var(--line);
+    font-size:.78rem;font-weight:700;color:var(--teal-deep);letter-spacing:.03em;}
+  aside .toc-part>summary::before{content:"▸";color:var(--sub);font-size:.7rem;}
+  aside .toc-part[open]>summary::before{content:"▾";}
+  aside .toc-part>summary::after{content:none;}
+  aside .toc-part[open]>summary{border-bottom:0;}
+  aside .toc-part.current>summary{border-left-color:var(--teal);}
+  aside .part-progress{margin-left:auto;font-weight:400;font-size:.72rem;color:var(--sub);
+    font-variant-numeric:tabular-nums;}
+  aside .toc-part>ol{margin:0 0 10px;}
+  aside .toc-part>ol a{padding-left:26px;}
+  main{flex:1 1 auto;min-width:0;max-width:var(--maxcol);padding:34px 0 80px;}
+  section{padding-top:26px;margin-top:20px;}
+  section:first-child{margin-top:0;}
+  .secnum{font-size:.8rem;font-weight:700;color:var(--teal);letter-spacing:.05em;}
+  h2{font-size:1.42rem;font-weight:700;margin:4px 0 4px;line-height:1.4;}
+  .h2rule{height:2px;background:var(--rule);border:0;margin:0 0 20px;}
+  h3{font-size:1.04rem;font-weight:700;color:var(--teal-deep);margin:26px 0 8px;}
+  p{margin:12px 0;}
+  .lead{font-size:1.02rem;}
+  strong{font-weight:700;}
+  a.inline{color:var(--teal);text-underline-offset:2px;}
+  .partmark{margin:52px 0 0;padding-top:22px;border-top:2px solid var(--teal);}
+  .partmark .lbl{font-size:.78rem;font-weight:700;letter-spacing:.12em;color:var(--teal);}
+  .partmark h2{font-size:1.24rem;margin:2px 0 0;}
+  .tablewrap{overflow-x:auto;margin:18px 0;}
+  table{width:100%;border-collapse:collapse;font-size:.9rem;line-height:1.6;min-width:460px;}
+  th,td{text-align:left;padding:10px 14px;vertical-align:top;border-bottom:1px solid var(--line);}
+  thead th{border-bottom:2px solid var(--teal);color:var(--teal-deep);font-weight:600;white-space:nowrap;}
+  td:first-child,th:first-child{padding-left:0;}
+  .rowhead{font-weight:600;color:var(--ink);white-space:nowrap;}
+  table.sortable thead th{cursor:pointer;user-select:none;position:relative;padding-right:22px;}
+  table.sortable thead th::after{content:"⇅";position:absolute;right:6px;color:var(--rule);font-size:.78em;font-weight:400;}
+  table.sortable thead th[aria-sort="ascending"]::after{content:"↑";color:var(--teal);}
+  table.sortable thead th[aria-sort="descending"]::after{content:"↓";color:var(--teal);}
+  .rowmore{appearance:none;background:none;border:0;border-bottom:1px solid var(--line);width:100%;
+    padding:8px 0;font:inherit;font-size:.82rem;font-weight:600;color:var(--teal);cursor:pointer;text-align:left;}
+  .rowmore:hover{color:var(--teal-deep);}
+  .note{border-left:3px solid var(--teal);background:var(--teal-tint);padding:14px 18px;margin:18px 0;border-radius:0 4px 4px 0;}
+  .note .lbl{display:block;font-size:.76rem;font-weight:700;letter-spacing:.08em;color:var(--teal-deep);text-transform:uppercase;margin-bottom:4px;}
+  .caution{border-left:3px solid var(--ochre);background:var(--ochre-tint);padding:14px 18px;margin:18px 0;border-radius:0 4px 4px 0;}
+  .caution .lbl{display:block;font-size:.76rem;font-weight:700;letter-spacing:.08em;color:var(--ochre);text-transform:uppercase;margin-bottom:4px;}
+  .info{border-left:3px solid var(--info);background:var(--info-tint);padding:14px 18px;margin:18px 0;border-radius:0 4px 4px 0;}
+  .info .lbl{display:block;font-size:.76rem;font-weight:700;letter-spacing:.08em;color:var(--info);text-transform:uppercase;margin-bottom:4px;}
+  .note p,.caution p,.info p{margin:6px 0;}
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:18px 0;}
+  .flow .node{border:1px solid var(--rule);background:var(--surface);padding:9px 15px;font-size:.86rem;font-weight:600;border-radius:3px;}
+  .flow .node small{display:block;font-weight:400;color:var(--sub);font-size:.74rem;}
+  .flow .sep{color:var(--teal);font-weight:700;}
+  .flow[data-ready] .node,.flow[data-ready] .sep{transition:opacity .18s;}
+  .flow[data-ready] .ahead{opacity:.22;}
+  .flow[data-ready] .node.now{border-color:var(--teal);box-shadow:inset 3px 0 0 var(--teal);}
+  .flow-ctl{display:flex;align-items:center;gap:12px;margin:-8px 0 18px;font-size:.8rem;color:var(--sub);}
+  .flow-ctl button{appearance:none;background:var(--surface);border:1px solid var(--rule);border-radius:3px;
+    padding:4px 12px;font:inherit;font-size:.8rem;font-weight:600;color:var(--teal);cursor:pointer;}
+  .flow-ctl button:disabled{color:var(--sub);opacity:.5;cursor:default;}
+  .flow-ctl .pos{font-variant-numeric:tabular-nums;}
+  .tabs{margin:18px 0;}
+  .tablist{display:flex;flex-wrap:wrap;gap:2px;border-bottom:1px solid var(--line);}
+  .tablist button{appearance:none;background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;
+    padding:8px 14px;font:inherit;font-size:.86rem;font-weight:600;color:var(--sub);cursor:pointer;}
+  .tablist button[aria-selected="true"]{color:var(--teal-deep);border-bottom-color:var(--teal);}
+  .tabs .panel>*:first-child{margin-top:14px;}
+  .tabs[data-ready] .panel[hidden]{display:none;}
+  .tabs:not([data-ready]) .tablist{display:none;}
+  .tabs:not([data-ready]) .panel::before{content:attr(data-label);display:block;margin-top:16px;
+    font-size:.82rem;font-weight:700;color:var(--teal-deep);}
+  ul.clean{margin:12px 0;padding-left:0;list-style:none;}
+  ul.clean li{position:relative;padding-left:20px;margin:7px 0;}
+  ul.clean li::before{content:"";position:absolute;left:2px;top:.72em;width:6px;height:6px;background:var(--teal);border-radius:50%;}
+  ul.clean li.warn::before{background:var(--ochre);}
+  .def{border:1px solid var(--line);border-radius:5px;padding:2px 20px 6px;margin:16px 0;background:var(--surface);}
+  .def h3{margin-top:16px;}
+  details{border:1px solid var(--line);border-radius:5px;margin:12px 0;background:var(--surface);overflow:hidden;}
+  summary{cursor:pointer;padding:14px 18px;font-weight:600;font-size:.95rem;list-style:none;position:relative;padding-right:44px;}
+  summary::-webkit-details-marker{display:none;}
+  summary::after{content:"＋";position:absolute;right:18px;top:13px;color:var(--teal);font-weight:700;}
+  details[open] summary::after{content:"－";}
+  details[open] summary{border-bottom:1px solid var(--line);}
+  .qbody{padding:14px 18px;font-size:.92rem;}
+  .qbody p:first-child{margin-top:0;}
+  .doclist .grp{font-size:.82rem;font-weight:700;color:var(--teal-deep);letter-spacing:.04em;margin:18px 0 8px;}
+  .doclist a{display:block;padding:8px 0;border-bottom:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:.9rem;transition:.15s;}
+  .doclist a:hover{color:var(--teal);padding-left:6px;}
+  .doclist a .u{display:block;font-size:.74rem;color:var(--sub);}
+  .muted{color:var(--sub);font-size:.84rem;}
+  footer{border-top:1px solid var(--rule);margin-top:40px;padding-top:18px;color:var(--sub);font-size:.8rem;line-height:1.7;}
+  code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.86em;background:#efece4;padding:1px 5px;border-radius:3px;}
+  pre{background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:14px 18px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,monospace;font-size:.82rem;line-height:1.7;margin:16px 0;}
+  pre code{background:none;padding:0;font-size:1em;}
+  /* --- 対話部品（シミュレータ） -------------------------------------------
+     読者が値を振って挙動を確かめるための部品。JS が動かない環境では
+     .sim-fallback だけが残り、静的な説明として読める。 */
+  .sim{border:1px solid var(--line);border-radius:6px;background:var(--surface);
+    margin:20px 0;overflow:hidden;}
+  .sim > .hd{background:var(--teal-tint);border-bottom:1px solid var(--line);
+    padding:9px 16px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
+  .sim > .hd .lbl{font-size:.7rem;font-weight:700;letter-spacing:.1em;color:var(--teal-deep);}
+  .sim > .hd .ttl{font-size:.9rem;font-weight:600;color:var(--ink);}
+  .sim > .bd{padding:16px;}
+  .sim[data-ready] .sim-fallback{display:none;}
+  .sim-fallback{font-size:.85rem;color:var(--sub);margin:0;}
+  .sim-ctl{display:flex;flex-wrap:wrap;gap:14px 20px;align-items:flex-end;margin-bottom:14px;}
+  .sim-ctl label{display:flex;flex-direction:column;gap:3px;font-size:.76rem;color:var(--sub);}
+  .sim-ctl label .v{font-family:"SFMono-Regular",Consolas,monospace;color:var(--ink);font-weight:600;}
+  .sim-ctl input[type=range]{width:150px;accent-color:var(--teal);}
+  .sim-btn{font:inherit;font-size:.8rem;padding:6px 13px;border:1px solid var(--rule);
+    border-radius:4px;background:var(--paper);color:var(--ink);cursor:pointer;}
+  .sim-btn:hover{border-color:var(--teal);color:var(--teal-deep);}
+  .sim-btn:disabled{opacity:.45;cursor:default;border-color:var(--rule);color:var(--sub);}
+  .sim-btn.primary{background:var(--teal);border-color:var(--teal);color:#fff;}
+  .sim-btn.primary:hover{background:var(--teal-deep);}
+  .sim-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;}
+  .sim-state{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;}
+  .sim-chip{font-size:.72rem;font-family:"SFMono-Regular",Consolas,monospace;
+    border:1px solid var(--rule);border-radius:3px;padding:3px 9px;color:var(--sub);background:var(--paper);}
+  .sim-chip.on{background:var(--teal);border-color:var(--teal);color:#fff;}
+  .sim-chip.warn{background:var(--ochre-tint);border-color:var(--ochre);color:var(--ochre);}
+  .sim-out{font-family:"SFMono-Regular",Consolas,monospace;font-size:.78rem;line-height:1.65;
+    background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:10px 12px;
+    white-space:pre;overflow-x:auto;margin:0;}
+  .sim-note{font-size:.78rem;color:var(--sub);margin:10px 0 0;line-height:1.65;}
+  .sim svg{display:block;max-width:100%;height:auto;}
+  .sim-legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.74rem;color:var(--sub);margin-top:8px;}
+  .sim-legend i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px;}
+
+  @media(max-width:820px){
+    aside{display:none;}
+    .layout{padding:0 20px;}
+    .masthead .inner{padding:26px 20px 22px;}
+    main{padding:24px 0 60px;max-width:none;}
+    .masthead h1{font-size:1.5rem;}
+  }
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="inner">
+    <p class="kicker">MRCP 想起オンセット同期 / 文献調査と新規性の検討</p>
+    <h1>運動準備電位による「動き出しの先読み」<br>— 研究の整理と、本システムの立ち位置</h1>
+<p>MI-BCI の操作ラグをどう扱うかについて、学術文献が取ってきたアプローチを整理する。第 1 部でラグを成分に分解し、リアルタイム性が重要である根拠と、それが効くアプリケーションを押さえる。第 2 部で運動準備電位（MRCP）による運動前検出を、個別研究の数値まで降りて整理する。第 3 部で、それらの座標の上に本システムを置き、<strong>WISS へシステム提案として出すときに何が新規性として立つか</strong>を候補軸ごとに検討する。姉妹編は「unity-bci-pseudo-haptics システム構成と設定・使い方」。</p>
+  </div>
+</div>
+
+<div class="layout">
+  <aside>
+    <p class="toc-title">目次</p>
+    <nav id="toc">
+      <details class="toc-part" open>
+        <summary>第1部　ラグとリアルタイム性<span class="part-progress">0/3</span></summary>
+        <ol>
+          <li><a href="#s1">1. 操作ラグの解剖</a></li>
+          <li><a href="#s2">2. リアルタイム性の学術的根拠</a></li>
+          <li><a href="#s3">3. 時間精度が効くアプリケーション</a></li>
+        </ol>
+      </details>
+      <details class="toc-part" open>
+        <summary>第2部　MRCP<span class="part-progress">0/4</span></summary>
+        <ol>
+          <li><a href="#s4">4. MRCP とは何か</a></li>
+          <li><a href="#s5">5. 検出手法の系譜</a></li>
+          <li><a href="#s6">6. 報告されている性能</a></li>
+          <li><a href="#s7">7. 限界と論争</a></li>
+        </ol>
+      </details>
+      <details class="toc-part" open>
+        <summary>第3部　新規性<span class="part-progress">0/4</span></summary>
+        <ol>
+          <li><a href="#s8">8. 本システムを座標に置く</a></li>
+          <li><a href="#s9">9. 新規性の候補軸</a></li>
+          <li><a href="#s10">10. WISS 向けの組み立て</a></li>
+          <li><a href="#s11">11. まとめ・文献</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+
+  <main>
+
+<div class="partmark"><span class="lbl">第1部</span><h2>ラグとリアルタイム性</h2></div>
+
+<section id="s1">
+  <p class="secnum">SECTION 1</p>
+  <h2>操作ラグの解剖</h2>
+  <hr class="h2rule">
+
+  <p class="lead">「イメージしてから操作が反映されるまで」は 1 つの遅延ではなく、性質の違う 5 つの成分の和である。どれを削れるかは成分ごとに違い、<strong>もっとも大きい成分がもっとも削りにくい</strong>という構造になっている。</p>
+
+  <div class="tablewrap">
+  <table class="sortable">
+    <thead><tr><th>成分</th><th>典型値</th><th>性質</th><th>削減の余地</th></tr></thead>
+    <tbody>
+      <tr><td class="rowhead">生理的遅延</td><td>数百 ms 〜 1 s</td><td>ERD は律動の脱同期という統計量なので、推定に一定の時間窓を要する</td><td>信号処理では削れない。<strong>先読み</strong>でしか越えられない</td></tr>
+      <tr><td class="rowhead">解析窓長</td><td>1000 ms</td><td>窓が埋まるまで判定が出せない。精度と直交しない</td><td>短縮すると精度が落ちる。文献の最適点は 1–2 s</td></tr>
+      <tr><td class="rowhead">フィルタ群遅延</td><td>〜500 ms</td><td>因果フィルタの位相遅れ。オフラインの零位相フィルタは使えない</td><td><strong>設計で削れる。ほぼ純損失</strong></td></tr>
+      <tr><td class="rowhead">計算・通信・描画</td><td>100–150 ms</td><td>前処理 23 ms / 分類 47 ms / 転送 17 ms 程度の積み上げ</td><td>削っても効果は小さい</td></tr>
+      <tr><td class="rowhead">判定ゲート</td><td>N × 推論間隔</td><td>連続 N 回の成立を待つぶんの遅れ。誤発火とのトレードオフ</td><td>N を下げれば削れるが誤発火が増える</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note">
+    <span class="lbl">要点</span>
+    <p>Cybathlon 2024 の MI-BCI を実測した報告では、<strong>計算系の合計は 117 ms（p95 143 ms）に過ぎず、フィルタ群遅延 500 ms とウィンドウイング 1000 ms が支配項</strong>だった。「モデルを軽くする」方向はここでは効かない。アンプから受信クライアントまでのハードウェア経路もさらに 50–100 ms 乗る。</p>
+  </div>
+
+  <div class="sim" id="sim-latency">
+    <div class="hd"><span class="lbl">SIMULATOR 1</span><span class="ttl">レイテンシ・バジェットを振ってみる</span></div>
+    <div class="bd">
+      <p class="sim-fallback">JavaScript が有効な環境で、各成分を振ったときの合計遅延と、MRCP の先行分を差し引いた「体感ラグ」を計算できる部品が表示される。</p>
+      <div class="sim-ctl">
+        <label>解析窓長 <span class="v" data-lab="win">1.00</span> s<input type="range" data-in="win" min="0.25" max="2" step="0.05" value="1"></label>
+        <label>フィルタ群遅延 <span class="v" data-lab="filt">500</span> ms<input type="range" data-in="filt" min="0" max="600" step="10" value="500"></label>
+        <label>推論間隔 <span class="v" data-lab="interval">200</span> ms<input type="range" data-in="interval" min="50" max="500" step="10" value="200"></label>
+        <label>consecutiveHits <span class="v" data-lab="hits">3</span><input type="range" data-in="hits" min="1" max="6" step="1" value="3"></label>
+        <label>計算・通信・描画 <span class="v" data-lab="compute">120</span> ms<input type="range" data-in="compute" min="20" max="300" step="10" value="120"></label>
+        <label>MRCP の先行分 <span class="v" data-lab="lead">0</span> ms<input type="range" data-in="lead" min="0" max="1200" step="20" value="0"></label>
+      </div>
+      <div class="sim-row">
+        <button class="sim-btn" data-preset="now">現在の既定値</button>
+        <button class="sim-btn" data-preset="tuned">因果フィルタ＋短窓に詰めた場合</button>
+        <button class="sim-btn primary" data-preset="mrcp">MRCP で先読みした場合</button>
+      </div>
+      <div data-out="chart"></div>
+      <div class="sim-legend">
+        <span><i style="background:var(--teal)"></i>窓</span>
+        <span><i style="background:var(--teal-deep)"></i>フィルタ</span>
+        <span><i style="background:var(--ochre)"></i>ゲート</span>
+        <span><i style="background:var(--info)"></i>計算・通信</span>
+        <span><i style="background:#b9c9c6"></i>先読みで打ち消した分</span>
+      </div>
+      <pre class="sim-out" data-out="text"></pre>
+      <p class="sim-note">ゲートの遅れは <code>(N−1) × 推論間隔 + 推論間隔/2</code> で見積もっている（最初の 1 通が届く位相の期待値を含む）。破線は所有感が消える 190 ms（Shibuya et al. 2016）と、VR で主体感が顕著に劣化する 300 ms。<strong>MRCP の先行分を 0 にしたままでは、どう詰めてもこの線を越えられない</strong>ことが分かる。</p>
+    </div>
+  </div>
+
+  <div class="caution">
+    <span class="lbl">本システムに直結する点</span>
+    <p>姉妹編にあるとおり、判定を Unity 側へ移した引き換えに <code>delay_ms</code> による遅延補償は撤去された。発火は連続 N 回が成立したフレームで即座に起きる。<strong>つまり現状では「遅延を意図的に注入する」経路が存在しない</strong>。第 3 部で述べるとおり、主観的同時点（PSS）を測るにはこの経路が要る。</p>
+  </div>
+</section>
+
+<section id="s2">
+  <p class="secnum">SECTION 2</p>
+  <h2>リアルタイム性が重要であることの学術的根拠</h2>
+  <hr class="h2rule">
+
+  <p class="lead">「速いほうがよい」は自明に見えるが、査読で通るのは<strong>速さが何かの成否を分けたという証拠</strong>である。根拠は性質の違う 3 系統に分かれ、要求される時間精度も桁が違う。</p>
+
+  <div class="tabs">
+    <div class="tablist" role="tablist">
+      <button role="tab" aria-controls="p-plast" aria-selected="true">A. 神経可塑性</button>
+      <button role="tab" aria-controls="p-embod" aria-selected="false">B. 身体化・主体感</button>
+      <button role="tab" aria-controls="p-prac" aria-selected="false">C. 実用性能</button>
+    </div>
+    <div class="panel" id="p-plast" data-label="A. 神経可塑性">
+      <p>もっとも強い根拠がここにある。Hebb 則は<strong>時間的随伴性</strong>を要求するので、意図と感覚フィードバックがずれると可塑性が誘導されない。</p>
+      <ul class="clean">
+        <li><strong>Mrachacz-Kersting らの連合 BCI</strong>：末梢神経刺激による求心性入力が、<strong>MRCP のもっとも陰性な相（peak negativity）に到達したときだけ</strong>可塑性が誘導される。早くても遅くても誘導されない、と明示的に報告されている。これは「数十 ms の同期精度が治療効果を決める」という主張であり、時間精度の要求としては最も厳しい。</li>
+        <li><strong>Biasiucci et al. 2018（Nat Commun, 慢性期脳卒中）</strong>：BCI 駆動の FES と、同量の sham FES を比較。<strong>刺激量ではなく随伴性のほうが効いた</strong>ことを示し、機能改善は 6–12 か月持続、患側半球の運動野間の機能的結合性の増加と相関した。</li>
+        <li>逆に、開ループ BCI は時間的随伴性を成立させられないため、リハ効果が限定的になると総説でも整理されている。</li>
+      </ul>
+      <div class="note"><span class="lbl">この系統の含意</span><p>MRCP 文献が「300 ms 以内の検出」を要求水準として掲げるのは、装置の応答性ではなく<strong>可塑性の誘導窓に間に合わせるため</strong>である。要求の出どころが工学ではなく神経生理にある。</p></div>
+    </div>
+    <div class="panel" id="p-embod" data-label="B. 身体化・主体感" hidden>
+      <p>VR・HCI 側の根拠。ここには<strong>一見矛盾する 2 つの知見</strong>があり、そこが本研究の面白いところになる。</p>
+      <ul class="clean">
+        <li>実身体の運動：運動パフォーマンスと同時性知覚は <strong>75 ms</strong> から影響を受け、主体感・身体所有感は <strong>125 ms</strong> で低下し、<strong>300 ms</strong> 超で顕著に劣化する（VR 研究）。Shibuya et al. 2016 のロボット手錯覚では所有感が <strong>190 ms</strong> 超で消失する。</li>
+        <li class="warn">BMI 由来の遅延：ところが <strong>脳-視覚間の遅延には 1 秒近くまで鈍感</strong>だという報告がある（Visual Feedback Dominates the Sense of Agency for Brain-Machine Actions, PLOS ONE 2015）。BCI では主体感は視覚フィードバックに支配され、身体運動を介した場合の 150–300 ms という基準がそのままは当てはまらない。</li>
+        <li>一方 EEG カーソル制御では <strong>750 ms</strong> で主体感の明確な低下が報告されている。VR アバタの身体化が強いほど主体感が上がることも示されている（Škola & Liarokapis ほか）。</li>
+      </ul>
+      <div class="caution"><span class="lbl">この二重性が研究の隙間</span><p>「BCI だと分かっている操作では遅延許容度が上がる」なら、<strong>許容度は固定値ではなく、遅延にどんな意味づけを与えるかで動く</strong>可能性がある。第 3 部の候補軸 D はここを突く。</p></div>
+    </div>
+    <div class="panel" id="p-prac" data-label="C. 実用性能" hidden>
+      <ul class="clean">
+        <li>遅延した神経フィードバックは<strong>学習そのものを阻害する</strong>（頭頂 α 帯訓練の研究）。訓練フェーズでは遅延削減の優先度が上がる。</li>
+        <li>EEG デコーディングの遅延は <strong>200 ms 以下</strong>に抑えるべきという目安が実装系の文献で示されている（埋込型では 50 ms 程度）。</li>
+        <li>自己ペース BCI では、窓を長く取ると <strong>ITR（情報転送率）</strong>が直接下がる。逐次確率比検定などの動的停止は、この平均待ち時間を削る枠組みとして提案されている。</li>
+        <li>ただし共有制御（shared control）を入れると、BCI は高レベルの意図だけを低レートで供給すればよくなり、<strong>数百 ms の遅延は致命的でなくなる</strong>。「速くする」と「遅延に耐える構造にする」は別の解であり、実応用では後者が採用されがちである。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="s3">
+  <p class="secnum">SECTION 3</p>
+  <h2>時間精度が効くアプリケーション</h2>
+  <hr class="h2rule">
+
+  <p>要求される時間精度は応用によって 3 桁ちがう。自分の研究がどこを狙うのかを先に決めないと、「速くしました」が誰に効く主張なのか言えなくなる。列見出しをクリックすると並べ替えられる。</p>
+
+  <div class="tablewrap">
+  <table class="sortable">
+    <thead><tr><th>応用</th><th>要求される時間精度</th><th>なぜ効くか</th><th>根拠</th></tr></thead>
+    <tbody>
+      <tr><td class="rowhead">連合 BCI による可塑性誘導</td><td>数十 ms</td><td>求心性入力が MRCP のピーク陰性に到達しないと LTP 様の変化が起きない</td><td>Mrachacz-Kersting et al.</td></tr>
+      <tr><td class="rowhead">BCI-FES 随伴刺激（脳卒中リハ）</td><td>試行内の随伴性</td><td>刺激量ではなく随伴性が回復量を決める</td><td>Biasiucci et al. 2018</td></tr>
+      <tr><td class="rowhead">VR 身体化・疑似触覚</td><td>100–200 ms</td><td>所有感は 190 ms、主体感は 300 ms で崩れる</td><td>Shibuya 2016 / VR 研究</td></tr>
+      <tr><td class="rowhead">ニューロフィードバック訓練</td><td>できるだけ短く</td><td>遅延フィードバックは学習の成立自体を妨げる</td><td>頭頂 α 帯訓練</td></tr>
+      <tr><td class="rowhead">義手・外骨格の駆動</td><td>運動開始前が望ましい</td><td>装具の機械的立ち上がりを見越して先行して指令を出す必要がある</td><td>下肢外骨格研究（−272〜−710 ms）</td></tr>
+      <tr><td class="rowhead">車椅子・ロボットのナビゲーション</td><td>数百 ms（緩い）</td><td>共有制御で低レベル制御を自律側に渡せば吸収できる</td><td>shared control 研究</td></tr>
+      <tr><td class="rowhead">スペラー・選択インタフェース</td><td>緩い（ITR に効く）</td><td>速度は快適性と転送率に効くが、成否は分けない</td><td>動的停止研究</td></tr>
+      <tr><td class="rowhead">ゲーム・エンタテインメント</td><td>100–300 ms</td><td>操作感そのものが体験の質になる</td><td>VR レイテンシ研究</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note">
+    <span class="lbl">本研究の位置</span>
+    <p>選んだ応用先は <strong>VR/HCI のインタラクション手法・リハビリテーション・補助デバイス</strong>の 3 つ。この 3 つは要求精度が「100–200 ms」「数十 ms」「運動開始前」と異なるが、<strong>いずれも "動き出しの時刻" が成果指標である</strong>点で一致する。逆に言えば、スペラーのような選択系は本研究の射程外だと明示したほうが主張が締まる。</p>
+  </div>
+</section>
+
+<div class="partmark"><span class="lbl">第2部</span><h2>MRCP — 運動準備電位による運動前検出</h2></div>
+
+<section id="s4">
+  <p class="secnum">SECTION 4</p>
+  <h2>MRCP とは何か</h2>
+  <hr class="h2rule">
+
+  <p class="lead">MRCP（movement-related cortical potential）は、随意運動の<strong>約 2 秒前から</strong>始まる低周波の陰性シフトである。運動の計画・準備に伴う皮質活動を反映しており、MI-BCI のラグを「負」にできる唯一の生理的経路がここにある。</p>
+
+  <div class="def">
+    <h3>時間構造</h3>
+    <div class="flow" data-steps>
+      <span class="node">BP1 / 早期 BP<small>−2.0 〜 −0.5 s・緩やかな陰性化</small></span>
+      <span class="sep">→</span>
+      <span class="node">BP2 / NS′<small>−0.5 〜 0 s・傾きが急になる</small></span>
+      <span class="sep">→</span>
+      <span class="node">ピーク陰性<small>運動開始付近・可塑性誘導の標的</small></span>
+      <span class="sep">→</span>
+      <span class="node">再同期<small>+0.5 s 前後で復帰</small></span>
+    </div>
+    <h3>信号の性質</h3>
+    <ul class="clean">
+      <li><strong>周波数帯</strong>：0.05–5 Hz の低周波成分。ERD（μ/β 帯）とは帯域が重ならないので、<strong>同じ生データから独立に取り出せる</strong>。これがアンサンブル構成の物理的根拠になる。</li>
+      <li><strong>電極</strong>：Cz を中心とした中心部。手なら C3/C4、足なら Cz。空間フィルタの選び方が性能を大きく左右する。</li>
+      <li><strong>振幅</strong>：数 µV 台。単試行では背景 EEG に埋もれており、<strong>単試行検出が研究の主題そのもの</strong>になっている。</li>
+      <li class="warn"><strong>SNR の低さ</strong>：低周波ゆえに眼球運動・発汗・電極ドリフトの影響を強く受ける。ERD より前処理の巧拙が効く。</li>
+    </ul>
+  </div>
+
+  <div class="sim" id="sim-mrcp">
+    <div class="hd"><span class="lbl">SIMULATOR 2</span><span class="ttl">検出率・レイテンシ・誤発火のトリレンマ</span></div>
+    <div class="bd">
+      <p class="sim-fallback">JavaScript が有効な環境で、MRCP テンプレートに雑音を載せた模擬試行を 24 本走らせ、閾値を振ったときの検出率・平均レイテンシ・誤発火率がどう動くかを確かめる部品が表示される。</p>
+      <div class="sim-ctl">
+        <label>検出閾値 <span class="v" data-lab="thr">5.0</span> µV<input type="range" data-in="thr" min="1" max="12" step="0.2" value="5"></label>
+        <label>背景雑音 <span class="v" data-lab="noise">2.50</span> µV<input type="range" data-in="noise" min="0.5" max="5" step="0.25" value="2.5"></label>
+        <label>移動平均長 <span class="v" data-lab="smooth">0.20</span> s<input type="range" data-in="smooth" min="0.06" max="0.7" step="0.02" value="0.2"></label>
+        <label>MRCP 振幅 <span class="v" data-lab="amp">8.0</span> µV<input type="range" data-in="amp" min="3" max="14" step="0.5" value="8"></label>
+      </div>
+      <div class="sim-row">
+        <button class="sim-btn" data-act="reseed">別の乱数で引き直す</button>
+        <button class="sim-btn" data-act="reset">既定値へ戻す</button>
+      </div>
+      <div data-out="chart"></div>
+      <div class="sim-state">
+        <span class="sim-chip" data-chip="tpr">検出率 —</span>
+        <span class="sim-chip" data-chip="lat">平均レイテンシ —</span>
+        <span class="sim-chip" data-chip="sd">SD —</span>
+        <span class="sim-chip" data-chip="fp">誤発火 —</span>
+        <span class="sim-chip" data-chip="early">早発火 —</span>
+      </div>
+      <p class="sim-note">単試行ごとに MRCP の振幅と時間位置を揺らしてある（実データの単試行変動に相当）。既定値で <strong>検出率 92%・平均 −259 ms・誤発火 0.6/min</strong> あたりに落ちる。<strong>閾値を 7 まで上げると平均レイテンシは −52 ms まで 0 に近づくが、検出率は 75% に落ちる</strong>。逆に閾値 3 では −781 ms という一見すばらしい先行検出が出るが、<strong>誤発火が 11.6/min に跳ね上がる</strong>——これは先読みではなく雑音を拾っているだけである。<strong>大きな負のレイテンシは、それ単独では性能を意味しない</strong>。移動平均を長くすると雑音に強くなるが、そのぶん群遅延がまるごとレイテンシに乗る。この 3 つが同時に良くなる設定は存在しない。</p>
+    </div>
+  </div>
+</section>
+
+<section id="s5">
+  <p class="secnum">SECTION 5</p>
+  <h2>検出手法の系譜</h2>
+  <hr class="h2rule">
+
+  <p>MRCP 単試行検出は 2011 年前後に BCI 応用として立ち上がり、以後 4 世代に整理できる。<strong>世代が進むほどレイテンシが縮み、同時に前処理が重くなる</strong>という交換が続いている。</p>
+
+  <div class="flow" data-steps>
+    <span class="node">第1世代<small>空間フィルタ＋マッチトフィルタ</small></span>
+    <span class="sep">→</span>
+    <span class="node">第2世代<small>部分空間学習（LPP+LDA）</small></span>
+    <span class="sep">→</span>
+    <span class="node">第3世代<small>信号源分離（cICA）</small></span>
+    <span class="sep">→</span>
+    <span class="node">第4世代<small>深層学習・転移学習・多信号融合</small></span>
+  </div>
+
+  <details>
+    <summary>第1世代 — 空間フィルタ ＋ マッチトフィルタ（Niazi et al. 2011）</summary>
+    <div class="qbody">
+      <p>MRCP の平均波形をテンプレートとして持ち、連続 EEG との相関でオンセットを検出する。核心は<strong>空間フィルタの設計</strong>にあり、最適化空間フィルタ（OSF）が大ラプラシアンや CSP を大きく上回った。</p>
+      <ul class="clean">
+        <li>自己ペース足背屈（運動実行）で <strong>TPR 82.5 ± 7.8%</strong>、検出レイテンシ <strong>−66.6 ± 121 ms</strong>（運動開始より前）。</li>
+        <li>同条件で大ラプラシアンは TPR 68.7 ± 14.9%、CSP は 55.4 ± 14.0%。空間フィルタだけで 27 ポイント差がつく。</li>
+        <li>この検出器はその後、末梢電気刺激のトリガに使われ、標的筋の皮質投射の興奮性変化を誘導することが示された。<strong>検出器の性能が神経生理的な効果に直結した最初の例</strong>。</li>
+      </ul>
+      <p class="muted">Niazi, Mrachacz-Kersting, Jiang, Dremstrup, Farina (2011) J Neural Eng 8(6):066009</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>第2世代 — 部分空間学習（Xu et al. 2014, LPP+LDA）</summary>
+    <div class="qbody">
+      <p>テンプレート照合をやめ、局所性保存射影（LPP）で低次元表現を学習してから LDA で判別する。<strong>オンライン実験で比較した数少ない研究</strong>で、本研究が参照すべき基準値になる。</p>
+      <div class="tablewrap">
+      <table>
+        <thead><tr><th></th><th>LPP + LDA</th><th>マッチトフィルタ</th><th>有意差</th></tr></thead>
+        <tbody>
+          <tr><td class="rowhead">TPR</td><td>79 ± 11%</td><td>68 ± 10%</td><td>p = 0.007</td></tr>
+          <tr><td class="rowhead">誤発火</td><td>1.4 ± 0.8 /min</td><td>2.3 ± 1.1 /min</td><td>p = 0.016</td></tr>
+          <tr><td class="rowhead">検出レイテンシ</td><td>315 ± 165 ms</td><td>460 ± 123 ms</td><td>p = 0.013</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="warn"><strong>注意すべき点</strong>：オンラインでは検出レイテンシが<strong>正の値（運動開始より後）</strong>になっている。第1世代の −66.6 ms は疑似オンライン評価であり、実時間で走らせると先行検出は簡単には出ない。この差が文献を読むときの最大の落とし穴である。</p>
+      <p class="muted">Xu, Jiang, Lin, Mrachacz-Kersting, Dremstrup, Farina (2014) IEEE TBME 61(2):288–296</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>第3世代 — 信号源分離（Karimi et al. 2017, cICA）</summary>
+    <div class="qbody">
+      <p>制約付き独立成分分析で MRCP 成分そのものを取り出す。空間フィルタ系のなかで<strong>最小のレイテンシ</strong>を報告している。</p>
+      <ul class="clean">
+        <li>運動実行：<strong>−34 ± 29 ms</strong>（運動開始より前）</li>
+        <li><strong>運動イメージ：+28 ± 16 ms</strong> — 他の空間フィルタより有意に小さい</li>
+      </ul>
+      <p>本研究にとって重要なのは<strong>運動イメージでの数値が報告されている</strong>点である。MI では物理的なオンセットが存在しないため、この 28 ms は「キューまたは EMG 相当の基準時刻からのずれ」であることに注意して読む必要がある。</p>
+      <p class="muted">Karimi, Kofman, Mrachacz-Kersting, Farina, Jiang (2017) Front Neurosci 11:356</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>第4世代 — 深層学習・転移学習・多信号融合（2024–）</summary>
+    <div class="qbody">
+      <ul class="clean">
+        <li><strong>α 律動 + MRCP の融合</strong>（Measurement, 2024）：非同期 MI 検出で TPR を 12.6 ポイント改善し、オンセット検出時間を 500 ms 未満に抑えた。<strong>本システムのアンサンブル構成に最も近い先行研究</strong>で、必ず差分を述べる必要がある。</li>
+        <li><strong>CNN + 転移学習による下肢意図予測</strong>（Front Bioeng Biotechnol, 2024）：運動開始の <strong>483.9 ± 11.9 ms 前</strong>に平均精度 82.75% で予測。オンラインでの先行検出としては現時点で最も良い部類。</li>
+        <li><strong>被験者非依存学習</strong>（Niazi et al. 2013）：他者のデータで学習したテンプレートで検出でき、校正時間を削れることを示した。多日実験の初日負荷を下げる手として使える。</li>
+        <li>共通する課題は<strong>単試行特徴の弱さと変動性</strong>で、時間をまたぐ（cross-temporal）・被験者をまたぐ（cross-subject）と精度が保てない。多日実験を計画するなら、ここが最大のリスクになる。</li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<section id="s6">
+  <p class="secnum">SECTION 6</p>
+  <h2>報告されている性能</h2>
+  <hr class="h2rule">
+
+  <p>数値を一覧にする。<strong>レイテンシの符号に注意</strong>：負は運動開始より前、正は後を意味する。列見出しをクリックすると並べ替えられる。</p>
+
+  <div class="tablewrap" data-collapse="9">
+  <table class="sortable">
+    <thead><tr><th>研究</th><th>年</th><th>課題</th><th>手法</th><th>TPR</th><th>誤発火</th><th>レイテンシ</th></tr></thead>
+    <tbody>
+      <tr><td class="rowhead">Niazi et al.</td><td>2011</td><td>自己ペース足背屈（ME）</td><td>OSF + マッチトフィルタ</td><td>82.5 ± 7.8%</td><td>—</td><td>−66.6 ± 121 ms</td></tr>
+      <tr><td class="rowhead">Niazi et al.</td><td>2011</td><td>同上</td><td>大ラプラシアン</td><td>68.7 ± 14.9%</td><td>—</td><td>—</td></tr>
+      <tr><td class="rowhead">Niazi et al.</td><td>2011</td><td>同上</td><td>CSP</td><td>55.4 ± 14.0%</td><td>—</td><td>—</td></tr>
+      <tr><td class="rowhead">Jochumsen / Niazi</td><td>2014</td><td>ランダムキュー・足（意図）</td><td>マッチトフィルタ</td><td>63.5 ± 5.9%</td><td>—</td><td>−202.8 ± 129.5 ms</td></tr>
+      <tr><td class="rowhead">Xu et al.</td><td>2014</td><td>自己ペース背屈（オンライン, n=9）</td><td>LPP + LDA</td><td>79 ± 11%</td><td>1.4 ± 0.8 /min</td><td>315 ± 165 ms</td></tr>
+      <tr><td class="rowhead">Xu et al.</td><td>2014</td><td>同上（比較条件）</td><td>マッチトフィルタ</td><td>68 ± 10%</td><td>2.3 ± 1.1 /min</td><td>460 ± 123 ms</td></tr>
+      <tr><td class="rowhead">Karimi et al.</td><td>2017</td><td>運動実行</td><td>cICA</td><td>—</td><td>—</td><td>−34 ± 29 ms</td></tr>
+      <tr><td class="rowhead">Karimi et al.</td><td>2017</td><td>運動イメージ</td><td>cICA</td><td>—</td><td>—</td><td>+28 ± 16 ms</td></tr>
+      <tr><td class="rowhead">Lin et al. (Measurement)</td><td>2024</td><td>非同期 MI</td><td>α 律動 + MRCP 融合</td><td>+12.6 pt 改善</td><td>—</td><td>&lt; 500 ms</td></tr>
+      <tr><td class="rowhead">Zhang et al. (Front Bioeng)</td><td>2024</td><td>下肢・オンライン</td><td>CNN + 転移学習</td><td>82.75%（精度）</td><td>—</td><td>−483.9 ± 11.9 ms</td></tr>
+      <tr><td class="rowhead">下肢外骨格研究</td><td>2024</td><td>下肢随意運動</td><td>EEG 意図予測</td><td>—</td><td>—</td><td>−272.5 〜 −710 ms</td></tr>
+      <tr><td class="rowhead">Jochumsen et al.</td><td>2019</td><td>キュー基準の被験者ばらつき</td><td>—</td><td>—</td><td>—</td><td>11.73 ± 165 ms</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="sim" id="sim-map">
+    <div class="hd"><span class="lbl">SIMULATOR 3</span><span class="ttl">研究マップ — レイテンシ × 検出率</span></div>
+    <div class="bd">
+      <p class="sim-fallback">JavaScript が有効な環境で、レイテンシと検出率の二次元平面に各研究を配置した散布図が表示される。点をクリックすると詳細が出る。</p>
+      <div class="sim-row" data-out="filters"></div>
+      <div data-out="chart"></div>
+      <div data-out="detail"></div>
+      <p class="sim-note">縦の実線が運動開始（0 ms）、帯が本システムの要求である ±100 ms。<strong>要求帯に入っている先行研究は疑似オンライン評価のものだけ</strong>で、オンライン実験で ±100 ms に入った報告は見当たらない。これは本研究にとって不利な事実でもあり、同時に「主観基準に切り替える」という選択の動機にもなる。</p>
+    </div>
+  </div>
+</section>
+
+<section id="s7">
+  <p class="secnum">SECTION 7</p>
+  <h2>限界と論争 — 引用する前に踏むべき地雷</h2>
+  <hr class="h2rule">
+
+  <details open>
+    <summary>1. キュー型と自己ペース型で「MRCP」の中身が違う</summary>
+    <div class="qbody">
+      <p>MRCP 文献の性能値の多くは<strong>自己ペース運動</strong>で得られている。本システムは t=0 のキューに合わせて想起させるので、そこに現れるのは純粋な Bereitschaftspotential ではなく、<strong>予告刺激に対する随伴陰性変動（CNV）を含んだキュー同期の運動前活動</strong>である。</p>
+      <p>Cui &amp; MacKinnon (2009) が示したのは、予告間隔が不規則だと運動前活動が有意に減弱する（P &lt; 0.005）ということ。本システムが foreperiod を 2.0 秒に固定しているのは正しい判断だが、その代償として<strong>「自己ペースで想起を開始する」という自然な使い方からは離れている</strong>。査読で必ず突かれるので、先回りして「本システムはキュー型を前提とする」と限定を明示したほうがよい。</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>2. 運動イメージの MRCP は運動実行より弱い</summary>
+    <div class="qbody">
+      <p>MRCP 研究の大半は運動実行（ME）か運動企図（attempted movement）で行われている。イメージのみ（MI）で報告されている数値は少なく、Karimi et al. の +28 ± 16 ms も cICA という重い前処理があってのものである。</p>
+      <p><strong>実装上の含意</strong>：shrinkage LDA だけで ME 相当のレイテンシが出ると期待しないほうがよい。空間フィルタの設計（OSF / cICA / 大ラプラシアン）が効き代の大半を占める、というのが第1世代からの一貫した知見である。ここを詰めずに分類器を替えても効果は薄い。</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>3. 準備電位の解釈そのものが論争中（Schurger 問題）</summary>
+    <div class="qbody">
+      <p>Schurger, Sitt &amp; Dehaene (2012, PNAS) は、自己開始運動に先立つ準備電位は<strong>決定論的な「準備過程」ではなく、自発的神経ノイズを蓄積するリーキー積分器の閾値超えとして説明できる</strong>と主張した。試行平均で見える緩やかな立ち上がりは、時間ロック平均の副産物かもしれない。</p>
+      <div class="caution"><span class="lbl">書き方への影響</span><p>「MRCP は意図を先読みできる」と素朴に書くと、この論争に巻き込まれる。<strong>工学的には「検出できれば十分」であって意図の存在論に踏み込む必要はない</strong>ので、「運動準備に伴う皮質活動を運動開始前に検出する」という記述に留めるのが安全である。Libet 的な話に寄せると論点がずれる。</p></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>4. 「イメージ開始時刻」に客観的な基準が存在しない</summary>
+    <div class="qbody">
+      <p>これが本研究の核心的な困難であり、同時に<strong>新規性の源でもある</strong>。運動実行なら EMG や力センサでオンセットを定義できるが、<strong>運動イメージには物理的オンセットがない</strong>。だから MRCP 文献は MI について「レイテンシ 0」を定義できない。</p>
+      <p>本システムは <code>onset_ms</code> をキュー基準で測っているが、姉妹編の Q&amp;A が自ら認めているとおり、これは「被験者が教示どおり t=0 に想起を始めた」という仮定に依存する。そのばらつきは <strong>11.73 ± 165 ms</strong>（Jochumsen et al. 2019）に達し、<strong>要求精度 ±100 ms より基準そのもののノイズのほうが大きい</strong>。</p>
+      <p>したがって「<code>onset_ms</code> が 0 に集まった」は主張として弱い。主観的一致度を対で取る設計は、この構造的欠陥への正しい応答である。</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>5. 多日実験で効いてくる非定常性</summary>
+    <div class="qbody">
+      <p>第4世代の文献が共通して挙げる課題が cross-temporal な性能低下である。日をまたぐと電極位置・インピーダンス・覚醒度・戦略が変わり、単試行 MRCP の弱い特徴は容易に崩れる。</p>
+      <p>「1 人に対して複数日でどれだけ精度を高められるか」という問いは、<strong>相互適応（co-adaptation）の向上と非定常性による劣化の差し引き</strong>を見ることになる。素朴に右肩上がりを期待すると、初日より 2 日目が悪いという結果が普通に出る。対策としては、日ごとの再校正、被験者非依存テンプレートとの併用、Riemannian アライメントなどのドメイン適応が定番である。</p>
+    </div>
+  </details>
+</section>
+
+<div class="partmark"><span class="lbl">第3部</span><h2>本システムの新規性を検討する</h2></div>
+
+<section id="s8">
+  <p class="secnum">SECTION 8</p>
+  <h2>本システムを文献の座標に置く</h2>
+  <hr class="h2rule">
+
+  <p class="lead">率直に言えば、<strong>要素技術を 1 つずつ取り出すと、すべて既にやられている</strong>。まずそれを認めたうえで、組み合わせのどこに空白があるかを探すのが順序として正しい。</p>
+
+  <div class="tablewrap">
+  <table class="sortable">
+    <thead><tr><th>本システムの構成要素</th><th>既存研究</th><th>新規性</th></tr></thead>
+    <tbody>
+      <tr><td class="rowhead">MRCP による運動前検出</td><td>Niazi 2011 / Xu 2014 / Karimi 2017</td><td>なし。2011 年から確立</td></tr>
+      <tr><td class="rowhead">MRCP で外部機器をトリガ</td><td>Mrachacz-Kersting（FES）/ 外骨格研究</td><td>なし。臨床試験まで到達</td></tr>
+      <tr><td class="rowhead">MRCP と ERD の併用</td><td>Lin et al. 2024（α + MRCP 融合）</td><td>ほぼなし。ただし<strong>融合ではなく役割分離</strong>という差はある</td></tr>
+      <tr><td class="rowhead">VR アバタ手による MI-BCI フィードバック</td><td>Škola et al. / Vourvopoulos et al.</td><td>なし</td></tr>
+      <tr><td class="rowhead">C/D 比による疑似触覚の重さ</td><td>Lécuyer / Samad et al. CHI 2019</td><td>なし</td></tr>
+      <tr><td class="rowhead">BCI 操作における主体感の測定</td><td>PLOS ONE 2015 / Škola 2022 / Corsi et al. 2024（意図的結合）</td><td>なし。実は近年ホットな領域</td></tr>
+      <tr><td class="rowhead"><strong>主観的同時性をデコーダの調整目標にする</strong></td><td>見当たらない</td><td><strong>あり得る</strong></td></tr>
+      <tr><td class="rowhead"><strong>残余遅延を疑似触覚で意味づけ直す</strong></td><td>見当たらない</td><td><strong>あり得る</strong></td></tr>
+      <tr><td class="rowhead">オンセット時間精度の縦断的（多日）追跡</td><td>MI-BCI 訓練研究はあるが、<strong>onset タイミングの縦断</strong>は見当たらない</td><td>あり得るが評価実験寄り</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="def">
+    <h3>先行研究の空白地図</h3>
+    <p class="muted">横軸＝何を基準に「合っている」と判定するか。縦軸＝何を操作するか。</p>
+    <svg viewBox="0 0 700 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="先行研究の位置づけマップ">
+      <defs>
+        <marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L7,3 L0,6 z" fill="var(--sub)"/>
+        </marker>
+      </defs>
+      <line x1="70" y1="290" x2="660" y2="290" stroke="var(--rule)" stroke-width="1.5" marker-end="url(#ah)"/>
+      <line x1="70" y1="290" x2="70" y2="24" stroke="var(--rule)" stroke-width="1.5" marker-end="url(#ah)"/>
+      <text x="660" y="312" text-anchor="end" font-size="12" fill="var(--sub)">一致の基準：物理的オンセット → 主観的同時性</text>
+      <text x="62" y="20" text-anchor="start" font-size="12" fill="var(--sub)">操作対象：遅延を減らす → 遅延の意味を変える</text>
+
+      <rect x="380" y="40" width="270" height="120" fill="var(--teal-tint)" opacity="0.55"/>
+      <text x="515" y="86" text-anchor="middle" font-size="13" font-weight="700" fill="var(--teal-deep)">空白</text>
+      <text x="515" y="106" text-anchor="middle" font-size="11" fill="var(--teal-deep)">主観を基準に、遅延の意味づけを操作する</text>
+      <text x="515" y="124" text-anchor="middle" font-size="11" fill="var(--teal-deep)">＝ 本システムが狙える領域</text>
+
+      <circle cx="140" cy="250" r="7" fill="var(--teal)"/>
+      <text x="154" y="248" font-size="11.5" fill="var(--ink)">Niazi 2011 / Xu 2014</text>
+      <text x="154" y="263" font-size="10.5" fill="var(--sub)">EMG 基準・レイテンシ最小化</text>
+
+      <circle cx="185" cy="196" r="7" fill="var(--teal)"/>
+      <text x="199" y="194" font-size="11.5" fill="var(--ink)">Mrachacz-Kersting / Biasiucci 2018</text>
+      <text x="199" y="209" font-size="10.5" fill="var(--sub)">ピーク陰性への同期・随伴性</text>
+
+      <circle cx="330" cy="252" r="7" fill="var(--ochre)"/>
+      <text x="344" y="250" font-size="11.5" fill="var(--ink)">Lin 2024（α + MRCP 融合）</text>
+      <text x="344" y="265" font-size="10.5" fill="var(--sub)">検出性能の改善</text>
+
+      <circle cx="430" cy="222" r="7" fill="var(--info)"/>
+      <text x="444" y="220" font-size="11.5" fill="var(--ink)">Shibuya 2016 / VR 遅延研究</text>
+      <text x="444" y="235" font-size="10.5" fill="var(--sub)">主観で許容限界を測る（減らす側）</text>
+
+      <circle cx="480" cy="182" r="7" fill="var(--info)"/>
+      <text x="494" y="180" font-size="11.5" fill="var(--ink)">Corsi 2024（意図的結合）</text>
+
+      <circle cx="248" cy="112" r="7" fill="var(--ochre)"/>
+      <text x="262" y="110" font-size="11.5" fill="var(--ink)">Samad 2019（疑似触覚の重さ）</text>
+      <text x="262" y="125" font-size="10.5" fill="var(--sub)">遅延を「重さ」に読み替える。ただし BCI ではない</text>
+
+      <circle cx="540" cy="96" r="9" fill="var(--teal-deep)" stroke="#fff" stroke-width="2"/>
+      <text x="556" y="94" font-size="12" font-weight="700" fill="var(--teal-deep)">本システム</text>
+    </svg>
+  </div>
+
+  <div class="note">
+    <span class="lbl">読み方</span>
+    <p>疑似触覚（Samad 2019）は「遅れて付いてくることを重さとして意味づける」手法だが BCI ではない。BCI の遅延研究（Shibuya, Corsi）は主観を測るが、遅延は<strong>減らすべきもの</strong>として扱われている。この 2 つを接続した研究が見当たらない、というのが本システムの立てる場所である。</p>
+  </div>
+</section>
+
+<section id="s9">
+  <p class="secnum">SECTION 9</p>
+  <h2>新規性の候補軸 — 5 本を並べて比べる</h2>
+  <hr class="h2rule">
+
+  <p>「本当に新規性がないのか」に対する答えは、<strong>主張の立て方しだいで変わる</strong>。以下は成立しうる 5 本で、それぞれに反論と、成立させるために足りない実装を付けた。★ は WISS 向きの度合い。</p>
+
+  <div class="tabs">
+    <div class="tablist" role="tablist">
+      <button role="tab" aria-controls="ax-a" aria-selected="true">A. 主観基準</button>
+      <button role="tab" aria-controls="ax-b" aria-selected="false">B. 役割分離</button>
+      <button role="tab" aria-controls="ax-c" aria-selected="false">C. 責務分割</button>
+      <button role="tab" aria-controls="ax-d" aria-selected="false">D. 遅延の意味づけ ★★★</button>
+      <button role="tab" aria-controls="ax-e" aria-selected="false">E. 縦断基盤</button>
+    </div>
+
+    <div class="panel" id="ax-a" data-label="A. 主観的同時性をデコーダの調整目標にする">
+      <h3>A. 主観的同時性をデコーダの調整目標にする　★★</h3>
+      <p><strong>主張</strong>：既存の MRCP-BCI はすべて物理的な運動開始を基準にレイテンシを測ってきた。運動イメージには物理的オンセットが存在しないため、この基準はそもそも使えない。本システムは欠けた基準を<strong>被験者の主観的同時性判断で置き換え</strong>、<code>onset_ms</code> と主観の対応をもってシステムを調整する。</p>
+      <p><strong>成立する理由</strong>：セクション 7-4 のとおり、キュー基準のばらつき（11.73 ± 165 ms）が要求精度 ±100 ms を上回っている。<strong>客観基準のほうがノイジーだから主観に切り替える</strong>、という論理は防御可能で、しかも MRCP 文献が構造的に扱えなかった問題である。</p>
+      <p><strong>想定される反論</strong>：「主体感の主観評価は既に BCI 研究にある（Škola 2022, Corsi 2024）」。<br>→ 差分は<strong>主観を測ることではなく、主観をデコーダのチューニング目標として使うこと</strong>。既存研究は主観を結果変数としてしか使っていない。</p>
+      <div class="caution"><span class="lbl">足りない実装</span><p>心理物理関数を引くには、<strong>発火時刻に既知の遅延／先行を注入する機構</strong>が要る。現状はこれが撤去されている（<code>delay_ms</code> の廃止）。注入した遅延を横軸、主観的一致度を縦軸にして<strong>主観的同時点（PSS）</strong>を推定できて初めて、この軸は主張になる。逆に言えば、この機構を戻すだけで軸が 1 本立つ。</p></div>
+    </div>
+
+    <div class="panel" id="ax-b" data-label="B. 発火と維持で分類器を分けるアーキテクチャ" hidden>
+      <h3>B. 発火と維持で分類器を分けるアーキテクチャ　★★</h3>
+      <p><strong>主張</strong>：MRCP（いつ始まるか）と ERD（いま続いているか）は帯域が重ならない独立な情報である。既存研究はこれを<strong>単一検出器への特徴融合</strong>として扱うが（Lin et al. 2024）、本システムは<strong>役割で分離</strong>し、発火は MRCP、維持は ERD が担い、提示側のゲートで合成する。オンセットの時間精度と持続の頑健性を別々に最適化できる。</p>
+      <p><strong>成立する理由</strong>：融合すると、片方の目的関数がもう片方を汚染する。とくに<strong>維持用の分類器が単独で発火を起こすと、<code>onset_ms</code> が発火用分類器の性能を表さなくなる</strong>。姉妹編がこの問題を明示的に設計で塞いでいるのは、既に立派な設計上の主張になっている。</p>
+      <p><strong>想定される反論</strong>：「アンサンブルは一般的な手法にすぎない」。<br>→ 差分は「精度を上げるためのアンサンブル」ではなく「<strong>評価指標を汚染させないための分離</strong>」である点。目的が違う。</p>
+      <div class="caution"><span class="lbl">足りない実装と検証</span><p>現状、維持クラス（<code>GraspHold</code>）を担う ERD 分類器は繋がっておらず、<code>grasp_ms</code> は <code>holdSeconds</code> に張り付く。<strong>この軸を主張するなら維持側の実装が必須</strong>。加えて、融合型（単一分類器）構成との比較で <code>onset_ms</code> の分散と <code>grasp_ms</code> の安定性を示せると強い。</p></div>
+    </div>
+
+    <div class="panel" id="ax-c" data-label="C. 判定を提示側に置く責務分割" hidden>
+      <h3>C. 判定を提示側に置く責務分割　★</h3>
+      <p><strong>主張</strong>：デコーダ側は「いま何を推定しているか」だけを一定レートで流し、<strong>いつ動かすかは提示側（Unity）が決める</strong>。閾値・連続 N・最小保持を実験者がその場で振れ、デコーダの実装に依存しない。BCI ミドルウェアの責務分割としての提案。</p>
+      <p><strong>成立する理由</strong>：BCI 研究の再現性の低さは、しばしば「判定ロジックがデコーダ実装に埋め込まれていて外から見えない」ことに起因する。UDP プロトコルを固定し、判定を設定 asset に露出させ、EditMode テストで既定値を押さえてある構成は、<strong>再現可能な実験基盤としての価値</strong>がある。</p>
+      <p><strong>想定される反論</strong>：「工学的には当然の設計」。<br>→ そのとおりなので、これ単独では論文にならない。ただし WISS はシステム論文が通る場なので、<strong>OSS 公開とセットで「貢献の 1 つ」として置く</strong>のが妥当な扱い方。主軸には据えない。</p>
+      <div class="note"><span class="lbl">既に持っているもの</span><p>UDP 仕様の固定（<code>format_version</code> による後方互換の明示的拒否）、純粋関数への切り出しと EditMode テスト、設定スナップショットの出力。これらは「再現性への配慮」として論文に書ける材料が既に揃っている。</p></div>
+    </div>
+
+    <div class="panel" id="ax-d" data-label="D. 残余遅延を疑似触覚で意味づけ直す" hidden>
+      <h3>D. 残余遅延を疑似触覚で「重さ」として意味づけ直す　★★★</h3>
+      <p><strong>主張</strong>：BCI の残余遅延は原理的にゼロにできない。ならば<strong>遅延を消すのではなく、遅延に妥当な物理的説明を与える</strong>。C/D 比による疑似触覚は「指令に対して表示が遅れて付いてくる」操作そのものなので、同じ遅延を「システムが遅い」ではなく「<strong>物体が重い</strong>」として被験者に読み替えさせられる。仮説は、意味づけが与えられた条件では<strong>同じ物理遅延でも主体感が下がらず、主観的同時点が遅延側にシフトする</strong>。</p>
+      <p><strong>なぜこれが一番強いか</strong></p>
+      <ul class="clean">
+        <li>遅延研究はすべて「減らす」か「許容限界を測る」方向で、<strong>許容度そのものを設計変数として動かす</strong>研究が見当たらない。</li>
+        <li>セクション 2-B の二重性（実運動では 190 ms で所有感が消えるのに、BMI 由来の遅延には 1 秒近く鈍感）が、<strong>許容度が文脈依存であることを既に示唆している</strong>。理論的な足場がある。</li>
+        <li>疑似触覚（Samad 2019）と BCI 遅延を接続した研究が見当たらない。<strong>2 つの成熟した分野の間の空白</strong>で、どちらの分野の読者にも新しい。</li>
+        <li>何より<strong>これは完全に HCI の提案</strong>である。神経生理の精度勝負に持ち込まれず、WISS の土俵で戦える。</li>
+      </ul>
+      <p><strong>想定される反論</strong>：「単に遅延に慣れただけ（時間的再較正）ではないか」。<br>→ だから<strong>重い条件と軽い条件を同じ物理遅延で比較する</strong>設計にする。慣れなら両条件で同じだけシフトするはずで、意味づけの効果なら重い条件だけシフトする。</p>
+      <div class="caution"><span class="lbl">足りない実装</span><p>現状、C/D 比はブロック要因で、遅延は制御されていない。この軸には <strong>「注入遅延 × 重さ手がかり」の直交設計</strong>が要る。つまり候補軸 A で必要な遅延注入機構が、ここでも前提になる。<strong>A と D は同じ 1 つの実装で両方立つ</strong>ので、実装の優先度としてはここが最上位。</p></div>
+    </div>
+
+    <div class="panel" id="ax-e" data-label="E. 縦断的な相互適応の記録基盤" hidden>
+      <h3>E. 1 人 × 複数日の相互適応を記録する基盤　★</h3>
+      <p><strong>主張</strong>：デコーダ精度・<code>onset_ms</code>・主観的一致度の 3 つが、日をまたいでどう共変するかを追う。MI-BCI 訓練の縦断研究はあるが、<strong>オンセットの時間精度を縦断的に追った報告は見当たらない</strong>。</p>
+      <p><strong>想定される反論と現実的リスク</strong></p>
+      <ul class="clean">
+        <li class="warn">これは<strong>評価実験の主張であって、システム提案ではない</strong>。WISS の趣旨と正面から衝突する。主軸には据えられない。</li>
+        <li class="warn">セクション 7-5 のとおり、非定常性のせいで<strong>右肩上がりにならない可能性が高い</strong>。N=1 で日数も限られるなら、統計的な主張はほぼ不可能。</li>
+      </ul>
+      <div class="note"><span class="lbl">扱い方</span><p>「多日で精度が上がった」を主張にせず、<strong>「多日にわたる相互適応を追跡できる記録基盤を作った」というシステム側の主張に変換する</strong>。データは予備評価として 1〜2 図に留める。この変換をすると軸 C（責務分割・再現性）と自然に合流し、貢献が 1 本に束ねられる。</p></div>
+    </div>
+  </div>
+
+  <div class="tablewrap">
+  <table class="sortable">
+    <thead><tr><th>候補軸</th><th>WISS 適性</th><th>必要な追加実装</th><th>実装コスト</th></tr></thead>
+    <tbody>
+      <tr><td class="rowhead">A. 主観基準（PSS 推定）</td><td>★★</td><td>発火時刻への遅延注入機構</td><td>小</td></tr>
+      <tr><td class="rowhead">B. 発火／維持の役割分離</td><td>★★</td><td>ERD 維持分類器の実装・融合型との比較</td><td>大</td></tr>
+      <tr><td class="rowhead">C. 責務分割・再現性</td><td>★</td><td>なし（既に実装済み）・OSS 公開</td><td>なし</td></tr>
+      <tr><td class="rowhead">D. 遅延の意味づけ直し</td><td>★★★</td><td>遅延注入 × 重さ手がかりの直交設計</td><td>小（A と共通）</td></tr>
+      <tr><td class="rowhead">E. 縦断記録基盤</td><td>★</td><td>なし（既に実装済み）</td><td>なし</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note">
+    <span class="lbl">推奨</span>
+    <p><strong>D を主軸、A を測定手法、C+E を基盤の貢献として束ねる。</strong>B は今回は「将来拡張」として設計だけ述べ、実装は次の論文に回す。この構成なら、追加実装は<strong>遅延注入機構ひとつ</strong>で足り、しかも WISS が求めるシステム提案の形になる。</p>
+  </div>
+</section>
+
+<section id="s10">
+  <p class="secnum">SECTION 10</p>
+  <h2>WISS 向けの組み立て — 評価ではなくシステムを主役にする</h2>
+  <hr class="h2rule">
+
+  <p class="lead">同じ内容でも、<strong>「システムを作った、ついでに評価した」</strong>の順で書くか<strong>「仮説を検証した、そのために作った」</strong>の順で書くかで、通る場が変わる。前者に寄せる具体的な操作を挙げる。</p>
+
+  <h3>貢献を 3 点に切る</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>#</th><th>貢献</th><th>種別</th></tr></thead>
+    <tbody>
+      <tr><td class="rowhead">1</td><td>運動想起の開始と仮想身体の動き出しを同期させる、MRCP 駆動の VR インタラクション機構</td><td>システム</td></tr>
+      <tr><td class="rowhead">2</td><td>取り除けない残余遅延を、疑似触覚（C/D 比）によって「重さ」として意味づけ直す手法</td><td>インタラクション手法</td></tr>
+      <tr><td class="rowhead">3</td><td>遅延を既知量で注入し、主観的同時点を推定できる評価機構を内蔵した実験基盤</td><td>基盤・再現性</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>評価実験を「システムの妥当性確認」として書く</h3>
+  <ul class="clean">
+    <li>節のタイトルを「評価実験」ではなく<strong>「動作の確認」「予備的な検討」</strong>にする。狙いは仮説検定ではなく、提案機構が意図どおり動くことの確認だと明示する。</li>
+    <li>1 人 × 複数日は<strong>ケーススタディ</strong>として提示する。N=1 を統計で押そうとすると弱点になるが、「システムが多日運用に耐えることの実証」なら強みに変わる。</li>
+    <li>主要な図を「精度の推移」ではなく<strong>「注入遅延 × 主観的一致度の心理物理関数」</strong>にする。前者は評価実験の図だが、後者は<strong>システムに内蔵した測定機構が動いていることの図</strong>である。同じデータで印象が変わる。</li>
+    <li>失敗も書く。検出率 65〜75% は文献値どおりで、<strong>3 割の試行が発火しない前提で設計してある</strong>ことは、隠すより設計判断として書いたほうが説得力がある。</li>
+  </ul>
+
+  <h3>章立ての案</h3>
+<pre><code>1. はじめに — 想起と動き出しがずれるという問題
+2. 関連研究
+   2.1 MRCP による運動前検出（Niazi, Xu, Karimi）
+   2.2 BCI における遅延と主体感（Shibuya, PLOS 2015, Corsi）
+   2.3 疑似触覚による重さ知覚（Lecuyer, Samad）
+   → 2.1 と 2.3 が接続されていないことを明示する
+3. 提案：想起オンセット同期システム
+   3.1 設計原理（ラグの分解と、どこを攻めるか）
+   3.2 発火判定を提示側に置く責務分割
+   3.3 遅延注入機構と主観的同時性の測定
+   3.4 残余遅延を重さとして意味づけ直す機構
+4. 実装（Unity / python / UDP プロトコル / 再現性への配慮）
+5. 予備的な検討（1 名・複数日のケーススタディ）
+6. 議論と限界
+7. まとめ</code></pre>
+
+  <div class="caution">
+    <span class="lbl">先回りして書いておくべき限界</span>
+    <ul class="clean">
+      <li>キュー型を前提としており、自己ペースの想起は扱わない（セクション 7-1）</li>
+      <li><code>onset_ms</code> はキュー基準であり、被験者側のばらつき（±165 ms）を含む（セクション 7-4）</li>
+      <li>MI の MRCP は ME より弱く、文献の先行検出値がそのまま出るとは限らない（セクション 7-2）</li>
+      <li>準備電位の解釈自体に論争があるため、「意図の先読み」とは主張しない（セクション 7-3）</li>
+    </ul>
+    <p>これらを自分から書くと、査読者が指摘する余地が減るうえに、<strong>文献を正確に読んでいることの証明</strong>になる。</p>
+  </div>
+
+  <h3>実装ギャップの一覧</h3>
+  <div class="tablewrap">
+  <table class="sortable">
+    <thead><tr><th>必要なもの</th><th>現状</th><th>用途</th><th>優先度</th></tr></thead>
+    <tbody>
+      <tr><td class="rowhead">発火時刻への遅延注入</td><td>撤去済み（<code>delay_ms</code> 廃止）</td><td>PSS 推定・軸 A と D の前提</td><td>最高</td></tr>
+      <tr><td class="rowhead">重さ手がかりと遅延の直交設計</td><td>C/D 比はブロック要因のみ</td><td>軸 D の検証</td><td>高</td></tr>
+      <tr><td class="rowhead">注入遅延を記録する CSV 列</td><td>なし</td><td>解析に必須</td><td>高</td></tr>
+      <tr><td class="rowhead">MRCP 用の空間フィルタ（OSF / 大ラプラシアン）</td><td>要確認</td><td>レイテンシは分類器より空間フィルタで決まる</td><td>高</td></tr>
+      <tr><td class="rowhead">ERD 維持分類器</td><td>未接続（<code>holdSeconds</code> に張り付き）</td><td>軸 B。今回は将来拡張でよい</td><td>中</td></tr>
+      <tr><td class="rowhead">日ごとの再校正・ドメイン適応</td><td>なし</td><td>多日運用時の非定常性対策</td><td>中</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="s11">
+  <p class="secnum">SECTION 11</p>
+  <h2>まとめ・Q&amp;A</h2>
+  <hr class="h2rule">
+
+  <ul class="clean">
+    <li>操作ラグの支配項は<strong>解析窓長とフィルタ群遅延</strong>であり、計算量ではない。フィルタ群遅延はほぼ純損失なので最初に削る。</li>
+    <li>ラグは原理的にゼロにできない。近年の潮流は「削減」から<strong>「予測的補償」と「遅延に耐える構造」</strong>へ移っている。</li>
+    <li>リアルタイム性の根拠は 3 系統。<strong>可塑性（数十 ms）／身体化（100–200 ms）／実用（緩い）</strong>で要求が 3 桁ちがう。</li>
+    <li>MRCP による運動前検出は 2011 年から確立しており、<strong>要素技術としての新規性はない</strong>。オンラインでは先行検出は簡単には出ず、Xu 2014 のオンライン値は +315 ms である。</li>
+    <li><strong>運動イメージには物理的オンセットがない</strong>。これが MRCP 文献の構造的な穴であり、本研究の新規性の源でもある。</li>
+    <li>最も強い軸は<strong>「残余遅延を疑似触覚で意味づけ直す」</strong>。疑似触覚と BCI 遅延を接続した研究が見当たらず、完全に HCI の提案として書ける。</li>
+    <li>必要な追加実装は実質<strong>遅延注入機構ひとつ</strong>で、軸 A と D の両方がこれで立つ。</li>
+    <li>多日実験は<strong>「精度が上がった」ではなく「多日運用に耐える基盤を作った」</strong>に読み替える。WISS ではそのほうが強い。</li>
+  </ul>
+
+  <details>
+    <summary>結局、現在のシステムに新規性はあるのですか</summary>
+    <div class="qbody">
+      <p><strong>要素を分解すると、ありません。組み合わせと問いの立て方を変えると、あります。</strong></p>
+      <p>MRCP 検出も、VR 身体化も、疑似触覚も、BCI の主体感測定も、それぞれ確立した領域です。「リアルタイムに想起開始と操作がぴったり合う」こと自体は、MRCP-BCI が 2011 年から目標にしてきたことで、そのままでは主張になりません。</p>
+      <p>ただし、<strong>「ぴったり」を何で測るか</strong>を問い直すと話が変わります。運動イメージには物理的な開始時刻がないので、既存の測り方（EMG 基準）は使えない。主観に置き換えると、こんどは「主観的な一致は設計で動かせるのではないか」という問いが出てくる。<strong>遅延を減らすのではなく、遅延に意味を与えて許容させる</strong>——ここには先行研究がありません。</p>
+      <p>つまり新規性は「速さ」ではなく<strong>「一致の定義を主観に移し、その主観を設計変数として扱った」</strong>点に置くべきです。</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>多日実験は本当に意味がありますか</summary>
+    <div class="qbody">
+      <p>WISS に出すという条件では、<strong>主軸には置けません</strong>。N=1 の縦断データで統計的主張をするのは無理があり、しかも非定常性のせいで右肩上がりにならない可能性が高いためです（セクション 7-5）。</p>
+      <p>意味があるとすれば 2 点です。1 つは<strong>システムが多日運用に耐えることの実証</strong>——記録・校正・再現の手順が回ることを示す。もう 1 つは<strong>主観的同時点が日をまたいで安定するかどうか</strong>で、これは軸 D の前提が成り立つかを確かめる予備検討になります。「精度」ではなく「PSS の安定性」を見るなら、N=1 でも意味のある図が描けます。</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>ERD ではなく MRCP を使う理由を、査読者にどう説明しますか</summary>
+    <div class="qbody">
+      <p>3 点で説明できます。</p>
+      <ul class="clean">
+        <li><strong>時間的因果</strong>：ERD は想起が始まってからでないと立ち上がらないが、MRCP は運動開始の約 2 秒前から始まる。原理的に、<strong>先行検出は MRCP でしか成立しない</strong>。</li>
+        <li><strong>帯域の独立性</strong>：MRCP は 0.05–5 Hz、ERD は μ/β 帯。重ならないので同じ生データから独立に取り出せ、役割分離アーキテクチャの物理的根拠になる。</li>
+        <li><strong>検出遅延の構造</strong>：ERD はバンドパワー＝分散推定なので、特徴量の定義自体が数百 ms の遅れを内包する。MRCP は振幅そのものなので、この遅れがない。</li>
+      </ul>
+      <p>引き換えに MRCP は SNR が低く、空間フィルタの設計に性能が支配されます。この交換を明示的に述べると説得力が出ます。</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>「遅延を重さとして意味づける」は、単なる言い訳に見えませんか</summary>
+    <div class="qbody">
+      <p>実験デザインで区別できます。核心は<strong>「同じ物理遅延で、意味づけだけを変える」</strong>ことです。</p>
+      <p>重い箱を持ち上げる条件と軽い箱を持ち上げる条件で、注入遅延を完全に揃える。単なる慣れ（時間的再較正）なら両条件で同じだけ主観的同時点がシフトするはずで、意味づけの効果なら重い条件だけシフトします。この分離ができていれば、言い訳ではなく<strong>検証可能な仮説</strong>になります。</p>
+      <p>加えて、セクション 2-B の「BMI 由来の遅延には 1 秒近く鈍感」という既知の知見が、<strong>許容度が文脈依存であることの傍証</strong>として使えます。まったくの思いつきではない、という足場があります。</p>
+    </div>
+  </details>
+
+  <h3>参考文献</h3>
+  <div class="doclist">
+    <p class="grp">MRCP・運動前検出</p>
+    <a href="https://iopscience.iop.org/article/10.1088/1741-2560/8/6/066009" class="inline">Niazi et al. (2011) Detection of movement intention from single-trial movement-related cortical potentials<span class="u">J Neural Eng 8(6):066009 — TPR 82.5±7.8%、レイテンシ −66.6±121 ms</span></a>
+    <a href="https://pubmed.ncbi.nlm.nih.gov/24448593/" class="inline">Xu et al. (2014) Enhanced low-latency detection of motor intention from EEG for closed-loop BCI<span class="u">IEEE TBME 61(2):288–296 — LPP+LDA、オンラインで 315±165 ms</span></a>
+    <a href="https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2017.00356/full" class="inline">Karimi et al. (2017) Detection of MRCP from EEG using constrained ICA<span class="u">Front Neurosci 11:356 — ME −34±29 ms / MI +28±16 ms</span></a>
+    <a href="https://www.hindawi.com/journals/cmmm/2015/346217/" class="inline">Shakeel et al. (2015) A review of techniques for detection of movement intention using MRCPs<span class="u">Comput Math Methods Med — 総説</span></a>
+    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3627050/" class="inline">Niazi et al. (2013) Detection of MRCPs based on subject-independent training<span class="u">校正時間の削減</span></a>
+    <a href="https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2015.00527/full" class="inline">Factors of influence on the performance of a short-latency non-invasive brain switch<span class="u">Front Neurosci 9:527</span></a>
+    <a href="https://www.sciencedirect.com/science/article/abs/pii/S0263224124010522" class="inline">A hybrid method for asynchronous detection of MI EEG fusing alpha rhythm and MRCP (2024)<span class="u">Measurement — TPR +12.6 pt、オンセット検出 &lt;500 ms</span></a>
+    <a href="https://www.frontiersin.org/journals/bioengineering-and-biotechnology/articles/10.3389/fbioe.2024.1448903/full" class="inline">Cross-domain prediction of lower limb voluntary movement intention for exoskeleton (2024)<span class="u">Front Bioeng Biotechnol — 運動開始 483.9±11.9 ms 前、82.75%</span></a>
+
+    <p class="grp">リアルタイム性・可塑性</p>
+    <a href="https://www.nature.com/articles/s41467-018-04673-z" class="inline">Biasiucci et al. (2018) Brain-actuated FES elicits lasting arm motor recovery after stroke<span class="u">Nat Commun 9:2421 — 随伴性が回復量を決める</span></a>
+    <a href="https://journals.physiology.org/doi/full/10.1152/jn.00918.2015" class="inline">Mrachacz-Kersting et al. (2016) Efficient neuroplasticity induction in chronic stroke patients by an associative BCI<span class="u">J Neurophysiol — ピーク陰性への同期</span></a>
+    <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6050354/" class="inline">Comparison of the efficacy of a real-time and offline associative BCI (2018)<span class="u">Front Neurosci</span></a>
+    <a href="https://doi.org/10.3390/s26020549" class="inline">Specificity of pairing afferent and efferent activity for inducing neural plasticity with an associative BCI<span class="u">Sensors</span></a>
+    <a href="https://www.biorxiv.org/content/10.1101/2020.07.27.222786v1.full" class="inline">Delayed neurofeedback impedes training of parietal alpha-band power<span class="u">bioRxiv — 遅延が学習を阻害する</span></a>
+
+    <p class="grp">遅延・主体感・身体化</p>
+    <a href="https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0130019" class="inline">Visual feedback dominates the sense of agency for brain-machine actions (2015)<span class="u">PLOS ONE — BMI 由来の遅延には 1 秒近くまで鈍感</span></a>
+    <a href="https://dl.acm.org/doi/10.1145/2993369.2993381" class="inline">The impact of latency on perceptual judgments and motor performance in closed-loop VR (2016)<span class="u">ACM VRST — 75 / 125 / 300 ms の閾値</span></a>
+    <a href="https://iopscience.iop.org/article/10.1088/1741-2552/ad628c" class="inline">Corsi et al. (2024) Intentional binding for noninvasive BCI control<span class="u">J Neural Eng — MI のタイミングが精度に影響する</span></a>
+    <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8741301/" class="inline">"Mine works better": embodiment in VR and the sense of agency in a binary MI-BCI task<span class="u">Front Hum Neurosci</span></a>
+    <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6775193/" class="inline">Škola et al. (2019) Progressive training for MI-BCI using gamification and VR embodiment<span class="u">Front Hum Neurosci</span></a>
+
+    <p class="grp">ラグの分解・低遅延化の一般手法</p>
+    <a href="https://link.springer.com/article/10.1186/s12984-026-01969-w" class="inline">Improving MI decoding methods for an EEG-based mobile BCI (Cybathlon 2024)<span class="u">J NeuroEng Rehabil — レイテンシ内訳の実測</span></a>
+    <a href="https://arxiv.org/abs/2204.05450" class="inline">A self-paced BCI system with low latency for MI onset detection based on time series prediction<span class="u">LSTM encoder-decoder による先読み、F1 +26.7%</span></a>
+    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5799229/" class="inline">Markov switching model for quick detection of event related desynchronization in EEG<span class="u">分散推定を経由しない ERD 検出</span></a>
+    <a href="https://onlinelibrary.wiley.com/doi/10.1155/2017/2948742" class="inline">Sequential probability ratio testing improves decision-making for BCI<span class="u">動的停止による平均レイテンシ削減</span></a>
+    <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11435735/" class="inline">Optimizing real-time MI-BCI performance in post-stroke patients: impact of time window duration<span class="u">最適窓長 1–2 s</span></a>
+
+    <p class="grp">論争・注意点</p>
+    <a href="https://www.pnas.org/doi/10.1073/pnas.1210467109" class="inline">Schurger, Sitt &amp; Dehaene (2012) An accumulator model for spontaneous neural activity prior to self-initiated movement<span class="u">PNAS — 準備電位の再解釈</span></a>
+    <a href="https://pubmed.ncbi.nlm.nih.gov/19048236/" class="inline">Cui &amp; MacKinnon (2009) The effect of temporal accuracy constraints on movement-related potentials<span class="u">Exp Brain Res — 不規則キューで運動前活動が減弱</span></a>
+    <a href="https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0159619" class="inline">Shibuya et al. (2016) 'Robot' hand illusion under delayed visual feedback<span class="u">PLOS ONE — 所有感は 190 ms 超で消失</span></a>
+    <a href="https://dl.acm.org/doi/10.1145/3290605.3300550" class="inline">Samad et al. (2019) Pseudo-haptic weight<span class="u">CHI 2019 — C/D 比による重さ知覚</span></a>
+  </div>
+
+  <footer>
+    <p>本資料は姉妹編「unity-bci-pseudo-haptics システム構成と設定・使い方」を前提に、MRCP による運動前検出の文献調査と、WISS 投稿に向けた新規性の検討をまとめたものである。数値はすべて出典の報告値をそのまま引いており、単位と符号（負＝運動開始より前）に注意して読むこと。<strong>個々の主張は一次文献にあたって確認してから引用すること</strong>。</p>
+    <p>作成日：2026-08-12</p>
+  </footer>
+</section>
+
+  </main>
+</div>
+
+<script>
+
+(function () {
+  'use strict';
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var seen = {};
+
+  function updateParts() {
+    document.querySelectorAll('#toc .toc-part').forEach(function (part) {
+      var items = Array.prototype.slice.call(part.querySelectorAll('a'));
+      var done = items.filter(function (a) { return seen[a.getAttribute('href').slice(1)]; }).length;
+      var counter = part.querySelector('.part-progress');
+      if (counter) counter.textContent = done + '/' + items.length;
+      var current = items.some(function (a) { return a.classList.contains('active'); });
+      part.classList.toggle('current', current);
+      if (current) part.open = true;
+    });
+  }
+
+  if (typeof IntersectionObserver === 'function') {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        seen[entry.target.id] = true;
+        links.forEach(function (a) { a.classList.remove('active'); });
+        if (byId[entry.target.id]) byId[entry.target.id].classList.add('active');
+        updateParts();
+      });
+    }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+    document.querySelectorAll('main section').forEach(function (s) { observer.observe(s); });
+  }
+
+  function applyCollapse(wrap) {
+    if (!wrap || !wrap.dataset.collapse || !wrap.dataset.expanded) return;
+    var limit = parseInt(wrap.dataset.collapse, 10);
+    var rows = Array.prototype.slice.call(wrap.querySelectorAll('tbody tr'));
+    var expanded = wrap.dataset.expanded === 'true';
+    rows.forEach(function (row, index) { row.hidden = !expanded && index >= limit; });
+    var button = wrap.querySelector('.rowmore');
+    if (!button) return;
+    button.textContent = expanded ? '折りたたむ' : '残り ' + (rows.length - limit) + ' 行を表示';
+    button.setAttribute('aria-expanded', String(expanded));
+  }
+
+  document.querySelectorAll('.tablewrap[data-collapse]').forEach(function (wrap) {
+    var limit = parseInt(wrap.dataset.collapse, 10);
+    var rows = wrap.querySelectorAll('tbody tr');
+    if (!limit || rows.length <= limit) return;
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'rowmore';
+    button.addEventListener('click', function () {
+      wrap.dataset.expanded = wrap.dataset.expanded === 'true' ? 'false' : 'true';
+      applyCollapse(wrap);
+    });
+    wrap.appendChild(button);
+    wrap.dataset.expanded = 'false';
+    applyCollapse(wrap);
+  });
+
+  function cellValue(row, index) {
+    var cell = row.cells[index];
+    return cell ? cell.textContent.trim() : '';
+  }
+
+  var NUMERIC = /^[+-]?\d[\d,]*(?:\.\d+)?$/;
+
+  function compareValues(x, y) {
+    if (NUMERIC.test(x) && NUMERIC.test(y)) {
+      return parseFloat(x.replace(/,/g, '')) - parseFloat(y.replace(/,/g, ''));
+    }
+    return x.localeCompare(y, 'ja', { numeric: true });
+  }
+
+  function comparator(index, descending) {
+    return function (a, b) {
+      var result = compareValues(cellValue(a, index), cellValue(b, index));
+      return descending ? -result : result;
+    };
+  }
+
+  document.querySelectorAll('table.sortable').forEach(function (table) {
+    if (!table.tHead || !table.tBodies.length) return;
+    var headers = Array.prototype.slice.call(table.tHead.rows[0].cells);
+    headers.forEach(function (th, index) {
+      th.setAttribute('tabindex', '0');
+      th.setAttribute('role', 'button');
+      function sort() {
+        var descending = th.getAttribute('aria-sort') === 'ascending';
+        headers.forEach(function (other) { other.removeAttribute('aria-sort'); });
+        th.setAttribute('aria-sort', descending ? 'descending' : 'ascending');
+        var body = table.tBodies[0];
+        Array.prototype.slice.call(body.rows)
+          .sort(comparator(index, descending))
+          .forEach(function (row) { body.appendChild(row); });
+        applyCollapse(table.closest('.tablewrap'));
+      }
+      th.addEventListener('click', sort);
+      th.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
+        sort();
+      });
+    });
+  });
+
+  document.querySelectorAll('.tabs').forEach(function (tabs) {
+    var buttons = Array.prototype.slice.call(tabs.querySelectorAll('[role="tab"]'));
+    var panels = buttons.map(function (b) { return document.getElementById(b.getAttribute('aria-controls')); });
+    if (!buttons.length || panels.indexOf(null) !== -1) return;
+
+    function select(index) {
+      buttons.forEach(function (button, i) {
+        button.setAttribute('aria-selected', String(i === index));
+        button.setAttribute('tabindex', i === index ? '0' : '-1');
+        panels[i].hidden = i !== index;
+      });
+    }
+
+    buttons.forEach(function (button, index) {
+      button.addEventListener('click', function () { select(index); });
+      button.addEventListener('keydown', function (e) {
+        var step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!step) return;
+        e.preventDefault();
+        var next = (index + step + buttons.length) % buttons.length;
+        select(next);
+        buttons[next].focus();
+      });
+    });
+    tabs.dataset.ready = 'true';
+    select(0);
+  });
+
+  document.querySelectorAll('.flow[data-steps]').forEach(function (flow) {
+    var nodes = Array.prototype.slice.call(flow.querySelectorAll('.node'));
+    if (nodes.length < 3) return;
+    var parts = Array.prototype.slice.call(flow.children);
+    var position = 0;
+
+    var control = document.createElement('div');
+    control.className = 'flow-ctl';
+    var prev = document.createElement('button');
+    prev.type = 'button';
+    prev.textContent = '前へ';
+    var next = document.createElement('button');
+    next.type = 'button';
+    next.textContent = '次へ';
+    var label = document.createElement('span');
+    label.className = 'pos';
+    control.appendChild(prev);
+    control.appendChild(label);
+    control.appendChild(next);
+    flow.parentNode.insertBefore(control, flow.nextSibling);
+
+    function render() {
+      var head = nodes[position];
+      var passed = false;
+      parts.forEach(function (part) {
+        part.classList.toggle('ahead', passed);
+        part.classList.toggle('now', part === head);
+        if (part === head) passed = true;
+      });
+      label.textContent = (position + 1) + ' / ' + nodes.length;
+      prev.disabled = position === 0;
+      next.disabled = position === nodes.length - 1;
+    }
+
+    prev.addEventListener('click', function () { position = Math.max(0, position - 1); render(); });
+    next.addEventListener('click', function () { position = Math.min(nodes.length - 1, position + 1); render(); });
+    flow.dataset.ready = 'true';
+    render();
+  });
+})();
+
+/* --- SIMULATOR 1: レイテンシ・バジェット ------------------------------- */
+(function () {
+  var sim = document.getElementById('sim-latency');
+  if (!sim) { return; }
+  var inputs = {}, labs = {}, outs = {};
+  sim.querySelectorAll('[data-in]').forEach(function (el) { inputs[el.dataset.in] = el; });
+  sim.querySelectorAll('[data-lab]').forEach(function (el) { labs[el.dataset.lab] = el; });
+  sim.querySelectorAll('[data-out]').forEach(function (el) { outs[el.dataset.out] = el; });
+
+  var PRESETS = {
+    now:   { win: 1,    filt: 500, interval: 200, hits: 3, compute: 120, lead: 0 },
+    tuned: { win: 0.5,  filt: 80,  interval: 100, hits: 2, compute: 80,  lead: 0 },
+    mrcp:  { win: 0.5,  filt: 80,  interval: 100, hits: 2, compute: 80,  lead: 800 }
+  };
+
+  function v(k) { return parseFloat(inputs[k].value); }
+
+  function esc(s) { return String(s); }
+
+  function render() {
+    var win = v('win'), filt = v('filt'), interval = v('interval');
+    var hits = v('hits'), compute = v('compute'), lead = v('lead');
+    labs.win.textContent = win.toFixed(2);
+    labs.filt.textContent = filt.toFixed(0);
+    labs.interval.textContent = interval.toFixed(0);
+    labs.hits.textContent = hits.toFixed(0);
+    labs.compute.textContent = compute.toFixed(0);
+    labs.lead.textContent = lead.toFixed(0);
+
+    var winMs = win * 1000;
+    var gate = (hits - 1) * interval + interval / 2;
+    var total = winMs + filt + gate + compute;
+    var felt = total - lead;
+
+    var W = 700, PAD = 58, RIGHT = 676;
+    var scaleMax = Math.max(2000, total * 1.08);
+    function X(ms) { return PAD + (Math.max(0, ms) / scaleMax) * (RIGHT - PAD); }
+
+    var segs = [
+      { n: '窓', ms: winMs, c: 'var(--teal)' },
+      { n: 'フィルタ', ms: filt, c: 'var(--teal-deep)' },
+      { n: 'ゲート', ms: gate, c: 'var(--ochre)' },
+      { n: '計算', ms: compute, c: 'var(--info)' }
+    ];
+
+    var s = '<svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="レイテンシ内訳">';
+    // ticks
+    var step = scaleMax > 3000 ? 1000 : 500;
+    for (var t = 0; t <= scaleMax; t += step) {
+      s += '<line x1="' + X(t).toFixed(1) + '" y1="26" x2="' + X(t).toFixed(1) + '" y2="150" stroke="var(--line)" stroke-width="1"/>';
+      s += '<text x="' + X(t).toFixed(1) + '" y="168" text-anchor="middle" font-size="10" fill="var(--sub)">' + t + '</text>';
+    }
+    s += '<text x="' + RIGHT + '" y="188" text-anchor="end" font-size="10.5" fill="var(--sub)">ms</text>';
+
+    // threshold markers
+    [[100, '要求 ±100'], [190, '所有感 190'], [300, '主体感 300']].forEach(function (m) {
+      var x = X(m[0]);
+      s += '<line x1="' + x.toFixed(1) + '" y1="20" x2="' + x.toFixed(1) + '" y2="150" stroke="var(--ochre)" stroke-width="1" stroke-dasharray="3 3"/>';
+      s += '<text x="' + (x + 3).toFixed(1) + '" y="18" font-size="9.5" fill="var(--ochre)">' + m[1] + '</text>';
+    });
+
+    // bar 1: total
+    s += '<text x="' + (PAD - 6) + '" y="52" text-anchor="end" font-size="11" fill="var(--sub)">合計</text>';
+    var cur = 0;
+    segs.forEach(function (g) {
+      var x0 = X(cur), x1 = X(cur + g.ms);
+      if (x1 - x0 > 0.5) {
+        s += '<rect x="' + x0.toFixed(1) + '" y="34" width="' + (x1 - x0).toFixed(1) + '" height="26" fill="' + g.c + '"/>';
+      }
+      if (x1 - x0 > 42) {
+        s += '<text x="' + ((x0 + x1) / 2).toFixed(1) + '" y="51" text-anchor="middle" font-size="10" fill="#fff">' + g.n + '</text>';
+      }
+      cur += g.ms;
+    });
+    s += '<text x="' + (X(total) + 6).toFixed(1) + '" y="52" font-size="11.5" font-weight="700" fill="var(--ink)">' + Math.round(total) + ' ms</text>';
+
+    // bar 2: felt
+    s += '<text x="' + (PAD - 6) + '" y="106" text-anchor="end" font-size="11" fill="var(--sub)">体感</text>';
+    if (lead > 0) {
+      var cancelEnd = Math.min(lead, total);
+      s += '<rect x="' + X(0).toFixed(1) + '" y="88" width="' + (X(cancelEnd) - X(0)).toFixed(1) + '" height="26" fill="#b9c9c6"/>';
+    }
+    if (felt > 0) {
+      s += '<rect x="' + X(Math.min(lead, total)).toFixed(1) + '" y="88" width="' + (X(total) - X(Math.min(lead, total))).toFixed(1) + '" height="26" fill="var(--teal-deep)"/>';
+      s += '<text x="' + (X(total) + 6).toFixed(1) + '" y="106" font-size="11.5" font-weight="700" fill="var(--teal-deep)">' + Math.round(felt) + ' ms</text>';
+    } else {
+      s += '<text x="' + (X(Math.min(lead, total)) + 6).toFixed(1) + '" y="106" font-size="11.5" font-weight="700" fill="var(--ochre)">' + Math.round(felt) + ' ms（先行）</text>';
+    }
+    s += '<line x1="' + PAD + '" y1="150" x2="' + RIGHT + '" y2="150" stroke="var(--rule)" stroke-width="1.5"/>';
+    s += '</svg>';
+    outs.chart.innerHTML = s;
+
+    function pad(x, n) { var t = String(x); while (t.length < n) { t = ' ' + t; } return t; }
+    var lines = [];
+    lines.push('窓が埋まるまで          ' + pad(Math.round(winMs), 5) + ' ms');
+    lines.push('フィルタ群遅延          ' + pad(Math.round(filt), 5) + ' ms');
+    lines.push('判定ゲート (N=' + hits + ')       ' + pad(Math.round(gate), 5) + ' ms');
+    lines.push('計算・通信・描画        ' + pad(Math.round(compute), 5) + ' ms');
+    lines.push('-------------------------------');
+    lines.push('合計                    ' + pad(Math.round(total), 5) + ' ms');
+    lines.push('MRCP の先読み          -' + pad(Math.round(lead), 5) + ' ms');
+    lines.push('体感ラグ                ' + pad(Math.round(felt), 5) + ' ms  ' + (felt <= 100 ? '[要求 ±100 ms を満たす]' : felt <= 190 ? '[所有感は保てる可能性]' : felt <= 300 ? '[所有感が崩れる域]' : '[主体感が顕著に劣化する域]'));
+    outs.text.textContent = lines.join('\n');
+  }
+
+  sim.querySelectorAll('[data-in]').forEach(function (el) { el.addEventListener('input', render); });
+  sim.querySelectorAll('[data-preset]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var p = PRESETS[b.dataset.preset];
+      Object.keys(p).forEach(function (k) { if (inputs[k]) { inputs[k].value = p[k]; } });
+      render();
+    });
+  });
+  sim.dataset.ready = 'true';
+  render();
+})();
+
+/* --- SIMULATOR 2: 検出率・レイテンシ・誤発火のトリレンマ ---------------- */
+(function () {
+  var sim = document.getElementById('sim-mrcp');
+  if (!sim) { return; }
+  var inputs = {}, labs = {}, outs = {}, chips = {};
+  sim.querySelectorAll('[data-in]').forEach(function (el) { inputs[el.dataset.in] = el; });
+  sim.querySelectorAll('[data-lab]').forEach(function (el) { labs[el.dataset.lab] = el; });
+  sim.querySelectorAll('[data-out]').forEach(function (el) { outs[el.dataset.out] = el; });
+  sim.querySelectorAll('[data-chip]').forEach(function (el) { chips[el.dataset.chip] = el; });
+
+  var FS = 50, T0 = -2.5, T1 = 1.0, N = Math.round((T1 - T0) * FS), TRIALS = 24, RHO = 0.6;
+  var REST = 8; // s / trial
+  var seed = 20260812;
+
+  function rng(s) { return function () { s |= 0; s = s + 0x6D2B79F5 | 0; var t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function gauss(r) { var u = 1 - r(), v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+
+  function template(t, amp) {
+    if (t < -2.0) { return 0; }
+    if (t < -0.5) { return -amp * 0.35 * (t + 2.0) / 1.5; }
+    if (t < 0) { return -amp * 0.35 - amp * 0.65 * ((t + 0.5) / 0.5); }
+    if (t < 0.7) { return -amp * (1 - t / 0.7); }
+    return 0;
+  }
+
+  function makeNoise(r, n, sd) {
+    var x = [], prev = 0, i, acc = 0;
+    for (i = 0; i < n; i++) { prev = RHO * prev + gauss(r); x.push(prev); }
+    for (i = 0; i < n; i++) { acc += x[i] * x[i]; }
+    var s = Math.sqrt(acc / n) || 1;
+    for (i = 0; i < n; i++) { x[i] = x[i] / s * sd; }
+    return x;
+  }
+
+  function movavg(x, m) {
+    var out = [], acc = 0, i;
+    for (i = 0; i < x.length; i++) {
+      acc += x[i];
+      if (i >= m) { acc -= x[i - m]; }
+      out.push(acc / Math.min(i + 1, m));
+    }
+    return out;
+  }
+
+  function render() {
+    var thr = parseFloat(inputs.thr.value), noise = parseFloat(inputs.noise.value);
+    var smooth = parseFloat(inputs.smooth.value), amp = parseFloat(inputs.amp.value);
+    labs.thr.textContent = thr.toFixed(1);
+    labs.noise.textContent = noise.toFixed(2);
+    labs.smooth.textContent = smooth.toFixed(2);
+    labs.amp.textContent = amp.toFixed(1);
+
+    var m = Math.max(1, Math.round(smooth * FS));
+    var r = rng(seed);
+    var i, k;
+
+    var dets = [], traces = [], hits = 0, early = 0;
+    for (k = 0; k < TRIALS; k++) {
+      var a = amp * Math.max(0.15, 1 + 0.38 * gauss(r));
+      var sh = 0.28 * gauss(r);
+      var nz = makeNoise(r, N, noise), sig = [];
+      for (i = 0; i < N; i++) { sig.push(template(T0 + i / FS - sh, a) + nz[i]); }
+      var ma = movavg(sig, m), det = null;
+      for (i = m; i < N; i++) { if (ma[i] < -thr) { det = T0 + i / FS; break; } }
+      if (det !== null && det < -2.0) { early++; }
+      else if (det !== null && det <= 0.5) { hits++; dets.push(det); }
+      if (k < 3) { traces.push(sig); }
+    }
+
+    var restN = Math.round(REST * FS), fp = 0, restMin = TRIALS * REST / 60;
+    for (k = 0; k < TRIALS; k++) {
+      var rn = makeNoise(r, restN, noise), rma = movavg(rn, m), lock = -999;
+      for (i = m; i < restN; i++) { if (rma[i] < -thr && i - lock > FS) { fp++; lock = i; } }
+    }
+
+    var mean = 0, sd = 0;
+    if (dets.length) {
+      dets.forEach(function (d) { mean += d; });
+      mean /= dets.length;
+      dets.forEach(function (d) { sd += (d - mean) * (d - mean); });
+      sd = Math.sqrt(sd / dets.length);
+    }
+
+    var PADL = 52, PADR = 676, YT = 20, YB = 172;
+    var vTop = 6, vBot = -Math.max(18, amp * 1.9 + noise * 2.4);
+    function X(t) { return PADL + (t - T0) / (T1 - T0) * (PADR - PADL); }
+    function Y(u) { return YT + (vTop - Math.max(vBot, Math.min(vTop, u))) / (vTop - vBot) * (YB - YT); }
+
+    var tpl = [];
+    for (i = 0; i < N; i++) { tpl.push(template(T0 + i / FS, amp)); }
+
+    var s = '<svg viewBox="0 0 700 248" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MRCP 検出シミュレーション">';
+    for (var tt = -2.5; tt <= 1.001; tt += 0.5) {
+      s += '<line x1="' + X(tt).toFixed(1) + '" y1="' + YT + '" x2="' + X(tt).toFixed(1) + '" y2="' + YB + '" stroke="var(--line)" stroke-width="1"/>';
+      s += '<text x="' + X(tt).toFixed(1) + '" y="' + (YB + 14) + '" text-anchor="middle" font-size="10" fill="var(--sub)">' + tt.toFixed(1) + '</text>';
+    }
+    s += '<text x="' + PADR + '" y="' + (YB + 14) + '" text-anchor="end" font-size="10" fill="var(--sub)"> s</text>';
+    s += '<line x1="' + PADL + '" y1="' + Y(0).toFixed(1) + '" x2="' + PADR + '" y2="' + Y(0).toFixed(1) + '" stroke="var(--rule)" stroke-width="1"/>';
+    s += '<line x1="' + X(0).toFixed(1) + '" y1="' + YT + '" x2="' + X(0).toFixed(1) + '" y2="' + (YB + 46) + '" stroke="var(--ink)" stroke-width="1.5"/>';
+    s += '<text x="' + (X(0) + 4).toFixed(1) + '" y="' + (YT + 10) + '" font-size="10" fill="var(--ink)">運動 / 想起の開始</text>';
+    s += '<line x1="' + PADL + '" y1="' + Y(-thr).toFixed(1) + '" x2="' + PADR + '" y2="' + Y(-thr).toFixed(1) + '" stroke="var(--ochre)" stroke-width="1.2" stroke-dasharray="4 3"/>';
+    s += '<text x="' + (PADL + 3) + '" y="' + (Y(-thr) - 4).toFixed(1) + '" font-size="10" fill="var(--ochre)">閾値 &#8722;' + thr.toFixed(1) + ' &#181;V</text>';
+    traces.forEach(function (sg) {
+      var d = '';
+      for (i = 0; i < N; i++) { d += (i ? 'L' : 'M') + X(T0 + i / FS).toFixed(1) + ' ' + Y(sg[i]).toFixed(1) + ' '; }
+      s += '<path d="' + d + '" fill="none" stroke="var(--sub)" stroke-width="0.7" opacity="0.4"/>';
+    });
+    var dt = '';
+    for (i = 0; i < N; i++) { dt += (i ? 'L' : 'M') + X(T0 + i / FS).toFixed(1) + ' ' + Y(tpl[i]).toFixed(1) + ' '; }
+    s += '<path d="' + dt + '" fill="none" stroke="var(--teal)" stroke-width="2.4"/>';
+    s += '<text x="' + (PADL - 6) + '" y="' + (YB + 44) + '" text-anchor="end" font-size="10" fill="var(--sub)">検出</text>';
+    dets.forEach(function (d) {
+      s += '<circle cx="' + X(d).toFixed(1) + '" cy="' + (YB + 40) + '" r="3.4" fill="var(--teal-deep)" opacity="0.6"/>';
+    });
+    if (dets.length) {
+      s += '<line x1="' + X(mean).toFixed(1) + '" y1="' + (YB + 30) + '" x2="' + X(mean).toFixed(1) + '" y2="' + (YB + 50) + '" stroke="var(--ochre)" stroke-width="2"/>';
+      s += '<text x="' + (X(mean) + 5).toFixed(1) + '" y="' + (YB + 64) + '" font-size="10" fill="var(--ochre)">平均 ' + (mean * 1000).toFixed(0) + ' ms</text>';
+    }
+    s += '</svg>';
+    outs.chart.innerHTML = s;
+
+    var tprv = hits / TRIALS * 100;
+    chips.tpr.textContent = '検出率 ' + tprv.toFixed(0) + '%';
+    chips.tpr.className = 'sim-chip' + (tprv >= 70 ? ' on' : tprv >= 50 ? '' : ' warn');
+    chips.lat.textContent = '平均レイテンシ ' + (dets.length ? (mean * 1000).toFixed(0) + ' ms' : '—');
+    chips.lat.className = 'sim-chip' + (dets.length && Math.abs(mean * 1000) <= 150 ? ' on' : dets.length ? ' warn' : '');
+    chips.sd.textContent = 'SD ' + (dets.length ? (sd * 1000).toFixed(0) + ' ms' : '—');
+    var fpm = fp / restMin;
+    chips.fp.textContent = '誤発火 ' + fpm.toFixed(1) + ' /min';
+    chips.fp.className = 'sim-chip' + (fpm <= 2.5 ? ' on' : ' warn');
+    chips.early.textContent = '早発火 ' + early + ' 試行';
+    chips.early.className = 'sim-chip' + (early === 0 ? ' on' : ' warn');
+  }
+
+  sim.querySelectorAll('[data-in]').forEach(function (el) { el.addEventListener('input', render); });
+  sim.querySelector('[data-act="reseed"]').addEventListener('click', function () { seed = (seed * 1103515245 + 12345) >>> 0; render(); });
+  sim.querySelector('[data-act="reset"]').addEventListener('click', function () {
+    inputs.thr.value = 5; inputs.noise.value = 2.5; inputs.smooth.value = 0.2; inputs.amp.value = 8; render();
+  });
+  sim.dataset.ready = 'true';
+  render();
+})();
+
+/* --- SIMULATOR 3: 研究マップ ------------------------------------------- */
+(function () {
+  var sim = document.getElementById('sim-map');
+  if (!sim) { return; }
+  var outs = {};
+  sim.querySelectorAll('[data-out]').forEach(function (el) { outs[el.dataset.out] = el; });
+
+  var DATA = [
+    { k: 'Niazi 2011 (OSF)', x: -66.6, y: 82.5, mode: 'pseudo', tag: 'ME',
+      note: '自己ペース足背屈・疑似オンライン評価。空間フィルタを最適化したもの。SD ±121 ms。同研究の大ラプラシアンは TPR 68.7%、CSP は 55.4%。' },
+    { k: 'Jochumsen / Niazi 2014', x: -202.8, y: 63.5, mode: 'pseudo', tag: '意図',
+      note: 'ランダムキュー条件・足。運動「意図」の検出。SD ±129.5 ms。キュー型に近い条件で TPR が 20 ポイント落ちる点に注意。' },
+    { k: 'Xu 2014 (LPP + LDA)', x: 315, y: 79, mode: 'online', tag: 'ME',
+      note: 'オンライン実験 n=9。誤発火 1.4±0.8 /min、SD ±165 ms。オンラインで走らせると先行検出にならず、+315 ms になる。本研究が現実的に比較すべき基準値。' },
+    { k: 'Xu 2014 (matched filter)', x: 460, y: 68, mode: 'online', tag: 'ME',
+      note: '同研究の比較条件。誤発火 2.3±1.1 /min、SD ±123 ms。第1世代手法をオンラインで走らせた場合の実力。' },
+    { k: 'Zhang 2024 (CNN + 転移学習)', x: -483.9, y: 82.75, mode: 'online', tag: '下肢',
+      note: '下肢の随意運動意図をオンラインで予測。ただし報告値は「精度」であって TPR ではないため、他点と直接は比較できない。SD ±11.9 ms と極端に小さい点も要確認。' }
+  ];
+  var NOTPR = [
+    { k: 'Karimi 2017 (ME, cICA)', x: -34, note: 'TPR 未報告。SD ±29 ms。空間フィルタ系で最小のレイテンシ。', mode: 'pseudo' },
+    { k: 'Karimi 2017 (MI, cICA)', x: 28, note: 'TPR 未報告。SD ±16 ms。運動イメージで報告された数少ない値で、本研究に最も近い条件。', mode: 'pseudo' }
+  ];
+
+  var filter = 'all';
+
+  function build() {
+    var W = 700, PADL = 56, PADR = 664, YT = 22, YB = 208;
+    var xMin = -600, xMax = 560, yMin = 45, yMax = 95;
+    function X(v) { return PADL + (v - xMin) / (xMax - xMin) * (PADR - PADL); }
+    function Y(v) { return YB - (v - yMin) / (yMax - yMin) * (YB - YT); }
+
+    var s = '<svg viewBox="0 0 700 296" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="研究マップ">';
+    // target band
+    s += '<rect x="' + X(-100).toFixed(1) + '" y="' + YT + '" width="' + (X(100) - X(-100)).toFixed(1) + '" height="' + (YB - YT) + '" fill="var(--teal-tint)"/>';
+    s += '<text x="' + X(0).toFixed(1) + '" y="' + (YT - 6) + '" text-anchor="middle" font-size="10" fill="var(--teal-deep)">本システムの要求 ±100 ms</text>';
+    // grid
+    for (var g = -600; g <= 560; g += 200) {
+      s += '<line x1="' + X(g).toFixed(1) + '" y1="' + YT + '" x2="' + X(g).toFixed(1) + '" y2="' + YB + '" stroke="var(--line)" stroke-width="1"/>';
+      s += '<text x="' + X(g).toFixed(1) + '" y="' + (YB + 15) + '" text-anchor="middle" font-size="10" fill="var(--sub)">' + g + '</text>';
+    }
+    for (var gy = 50; gy <= 90; gy += 10) {
+      s += '<line x1="' + PADL + '" y1="' + Y(gy).toFixed(1) + '" x2="' + PADR + '" y2="' + Y(gy).toFixed(1) + '" stroke="var(--line)" stroke-width="1"/>';
+      s += '<text x="' + (PADL - 6) + '" y="' + (Y(gy) + 3.5).toFixed(1) + '" text-anchor="end" font-size="10" fill="var(--sub)">' + gy + '</text>';
+    }
+    s += '<line x1="' + X(0).toFixed(1) + '" y1="' + (YT - 2) + '" x2="' + X(0).toFixed(1) + '" y2="' + (YB + 44) + '" stroke="var(--ink)" stroke-width="1.5"/>';
+    s += '<text x="' + (PADR) + '" y="' + (YB + 32) + '" text-anchor="end" font-size="10.5" fill="var(--sub)">検出レイテンシ [ms]　負＝運動開始より前</text>';
+    s += '<text x="' + (PADL - 40) + '" y="' + (YT + 4) + '" font-size="10.5" fill="var(--sub)">TPR [%]</text>';
+    s += '<text x="' + (X(-300)).toFixed(1) + '" y="' + (YB + 32) + '" text-anchor="middle" font-size="10" fill="var(--teal-deep)">← 先行検出</text>';
+    s += '<text x="' + (X(300)).toFixed(1) + '" y="' + (YB + 32) + '" text-anchor="middle" font-size="10" fill="var(--ochre)">遅れて検出 →</text>';
+
+    DATA.forEach(function (d, i) {
+      if (filter !== 'all' && d.mode !== filter) { return; }
+      var fill = d.mode === 'online' ? 'var(--ochre)' : 'var(--teal)';
+      s += '<g class="pt" data-i="' + i + '" style="cursor:pointer">';
+      s += '<circle cx="' + X(d.x).toFixed(1) + '" cy="' + Y(d.y).toFixed(1) + '" r="7.5" fill="' + fill + '" stroke="#fff" stroke-width="1.6"/>';
+      s += '<text x="' + (X(d.x) + 11).toFixed(1) + '" y="' + (Y(d.y) + 4).toFixed(1) + '" font-size="10.5" fill="var(--ink)">' + d.k + '</text>';
+      s += '</g>';
+    });
+
+    // no-TPR row
+    s += '<line x1="' + PADL + '" y1="' + (YB + 58) + '" x2="' + PADR + '" y2="' + (YB + 58) + '" stroke="var(--rule)" stroke-width="1" stroke-dasharray="3 3"/>';
+    s += '<text x="' + (PADL - 6) + '" y="' + (YB + 62) + '" text-anchor="end" font-size="9.5" fill="var(--sub)">TPR 未報告</text>';
+    NOTPR.forEach(function (d, i) {
+      if (filter !== 'all' && d.mode !== filter) { return; }
+      s += '<g class="pt" data-j="' + i + '" style="cursor:pointer">';
+      s += '<circle cx="' + X(d.x).toFixed(1) + '" cy="' + (YB + 58) + '" r="6" fill="var(--info)" stroke="#fff" stroke-width="1.4"/>';
+      s += '<text x="' + (X(d.x) + 10).toFixed(1) + '" y="' + (YB + 78) + '" font-size="10" fill="var(--sub)">' + d.k + '</text>';
+      s += '</g>';
+    });
+    s += '</svg>';
+    outs.chart.innerHTML = s;
+
+    outs.chart.querySelectorAll('.pt').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var d = el.dataset.i !== undefined ? DATA[+el.dataset.i] : NOTPR[+el.dataset.j];
+        show(d);
+      });
+    });
+  }
+
+  function show(d) {
+    outs.detail.innerHTML = '<div class="note"><span class="lbl">' + d.k + '</span><p>' + d.note + '</p></div>';
+  }
+
+  var FILTERS = [['all', 'すべて'], ['online', 'オンライン実験のみ'], ['pseudo', '疑似オンライン評価のみ']];
+  FILTERS.forEach(function (f) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'sim-btn' + (f[0] === 'all' ? ' primary' : '');
+    b.textContent = f[1];
+    b.addEventListener('click', function () {
+      filter = f[0];
+      outs.filters.querySelectorAll('.sim-btn').forEach(function (o) { o.classList.remove('primary'); });
+      b.classList.add('primary');
+      outs.detail.innerHTML = '';
+      build();
+    });
+    outs.filters.appendChild(b);
+  });
+
+  sim.dataset.ready = 'true';
+  build();
+  show(DATA[2]);
+})();
+
+</script>
+</body>
+</html>

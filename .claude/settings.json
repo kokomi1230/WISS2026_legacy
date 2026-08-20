@@ -1,0 +1,81 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(rg:*)",
+      "Bash(grep:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(wc:*)",
+      "Bash(pwd)",
+      "Bash(git status)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git worktree list)",
+      "Bash(git worktree list:*)",
+      "Bash(bash .claude/scripts/sync-catalogs.sh:*)",
+      "Bash(python3 .claude/scripts/build_catalog.py:*)",
+      "Bash(python3 .claude/scripts/apply_profile.py:*)",
+      "Bash(bash .claude/scripts/setup-user-scope.sh:*)",
+      "Bash(bash .claude/scripts/setup-plugins.sh:*)",
+      "Bash(mkdir:*)",
+      "WebFetch",
+      "WebSearch"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git checkout --:*)",
+      "Bash(git clean:*)",
+      "Bash(git rebase:*)",
+      "Bash(rm:*)",
+      "Bash(rm -rf:*)",
+      "Bash(mv:*)",
+      "Bash(gh:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(chmod:*)",
+      "Bash(sudo:*)",
+      "Bash(npm publish:*)",
+      "Bash(pip install:*)",
+      "Bash(brew install:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Task|Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/announce-activity.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/catalog-sync.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "pinecone@claude-plugins-official": true
+  }
+}

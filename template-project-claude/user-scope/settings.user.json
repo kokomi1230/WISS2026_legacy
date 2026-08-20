@@ -1,0 +1,23 @@
+{
+  "_comment": "<config-dir>/settings.json へマージする非プラグイン設定。enabledPlugins と extraKnownMarketplaces は setup-plugins.sh (claude plugin enable/disable) の管理領域なので、ここには持たせず配置時も保全する。__STATUSLINE_SH__ は setup-user-scope.sh が実環境の絶対パスへ置換する。",
+  "permissions": {
+    "allow": [
+      "Bash(python3 ~/.claude/scripts/notion_sync.py:*)",
+      "Bash(python3 ~/.claude/scripts/cost_report.py:*)",
+      "Bash(python3 ~/.claude/scripts/swap_punctuation.py:*)"
+    ],
+    "defaultMode": "bypassPermissions"
+  },
+  "model": "opus",
+  "statusLine": {
+    "type": "command",
+    "command": "bash __STATUSLINE_SH__",
+    "padding": 0
+  },
+  "effortLevel": "high",
+  "autoUpdatesChannel": "latest",
+  "tui": "fullscreen",
+  "skipDangerousModePermissionPrompt": true,
+  "switchModelsOnFlag": false,
+  "skipAutoPermissionPrompt": true
+}

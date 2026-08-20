@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.lleoo.notion-weekly-digest</string>
+
+    <!-- __AGENT_SH__ と __LOG_DIR__ は install_launchd.sh が実環境の絶対パスへ置換する。 -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>__AGENT_SH__</string>
+        <string>weekly</string>
+    </array>
+
+    <!-- 月曜 00:30。日次（00:05）が前日ぶん＝日曜を書き終えてから走らせる。
+         両者はロックを共有するため、日次が長引いた場合は週次がスキップされる。
+         30分の間隔はそれを避けるための余裕である（Weekday 1 = 月曜）。 -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Weekday</key><integer>1</integer>
+        <key>Hour</key><integer>0</integer>
+        <key>Minute</key><integer>30</integer>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <false/>
+
+    <key>AbandonProcessGroup</key>
+    <false/>
+
+    <key>StandardOutPath</key>
+    <string>__LOG_DIR__/launchd.weekly.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>__LOG_DIR__/launchd.weekly.err.log</string>
+
+    <key>ProcessType</key>
+    <string>Background</string>
+</dict>
+</plist>

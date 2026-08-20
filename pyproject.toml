@@ -1,0 +1,52 @@
+# docs/CODING_STYLE_GUIDE.md §3 (Python) に基づく、black / ruff の設定。
+# 対象は第一者スクリプト、すなわち .claude/scripts/（プロジェクトスコープ）と
+# user-scope/scripts/（全プロジェクト共通資産の原本）の 2 箇所。同梱スキル
+# (vendored) や _archived/ 配下は対象外とする。実行はローカルの任意判断（CI には未接続）。
+#
+#   black .claude/scripts/ user-scope/scripts/
+#   ruff check .claude/scripts/ user-scope/scripts/
+
+[tool.black]
+line-length = 120
+target-version = ["py39"]
+include = '(\.claude|user-scope)/scripts/.*\.py$'
+extend-exclude = '''
+/(
+  \.claude/skills
+  | _archived
+)/
+'''
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+extend-exclude = [
+  ".claude/skills",
+  "_archived",
+]
+
+[tool.ruff.lint]
+# E/F = pycodestyle・pyflakes の基本セット, I = import 並び順,
+# N = pep8-naming（命名規則をリンタで機械チェック）, D = docstring 有無・書式
+select = ["E", "F", "I", "N", "D"]
+ignore = [
+  "D103", # 内部 CLI スクリプトの個々の関数まで docstring 必須にすると過剰。公開モジュール/クラス(D100/D101)は維持
+  "D203", # D211(空行なしclass docstring)と競合するため無効化
+  "D213", # D212(1行目summary)と競合するため無効化
+  "D403", # docstring 冒頭が識別子（enabledPlugins 等）の場合、大文字化すると誤りになるため無効化
+  "D415", # 本プロジェクトの docstring は日本語。「。」を終端記号として認識しないため無効化
+]
+
+[tool.ruff.lint.per-file-ignores]
+# build_catalog.py と md2html.py は HTML テンプレート文字列を多数含み、
+# マークアップを崩さず折り返すと可読性が落ちる（URL に至っては折り返すと壊れる）
+# ため、行長チェックのみ除外する
+"build_catalog.py" = ["E501"]
+"md2html.py" = ["E501"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

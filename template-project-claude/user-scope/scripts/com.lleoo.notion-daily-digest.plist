@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.lleoo.notion-daily-digest</string>
+
+    <!-- __AGENT_SH__ と __LOG_DIR__ は install_launchd.sh が実環境の絶対パスへ置換する。
+         このテンプレートを直接 launchctl へ読み込ませず、必ず install_launchd.sh 経由で
+         配置・再ロードすること。 -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>__AGENT_SH__</string>
+        <string>daily</string>
+    </array>
+
+    <!-- 日付が変わった直後に「前日」を記録する。23:55 に当日を書く方式だと
+         23:55〜24:00 の作業が落ちるため、翌日に前日ぶんを確定させる。
+         電源断で 00:05 を逃すと launchd の起動時キャッチアップは信頼できないため
+         （実測で復帰後も未発火のままだったことがある）、RunAtLoad で救済する。 -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key><integer>0</integer>
+        <key>Minute</key><integer>5</integer>
+    </dict>
+
+    <!-- 00:05 に電源が入っていないと StartCalendarInterval は発火しないため、
+         ログイン/起動のたびにも実行して未記録日を拾う。record_one() が記録済み日を
+         スキップするため、既に記録済みなら何度読み込まれても二重記録にはならない。 -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>AbandonProcessGroup</key>
+    <false/>
+
+    <key>StandardOutPath</key>
+    <string>__LOG_DIR__/launchd.daily.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>__LOG_DIR__/launchd.daily.err.log</string>
+
+    <key>ProcessType</key>
+    <string>Background</string>
+</dict>
+</plist>

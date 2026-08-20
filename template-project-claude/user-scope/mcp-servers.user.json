@@ -1,0 +1,13 @@
+{
+  "_comment": "user scope に登録する生 MCP サーバ。setup-user-scope.sh が <config-dir>/.claude.json の mcpServers へマージする（他のキーは触らない）。トークンは ${NOTION_TOKEN} 参照であり、実値は絶対に書かない。値の供給経路は docs/PLUGIN_INSTALL_SCOPE.md を参照。",
+  "mcpServers": {
+    "notion": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@notionhq/notion-mcp-server"],
+      "env": {
+        "NOTION_TOKEN": "${NOTION_TOKEN}"
+      }
+    }
+  }
+}

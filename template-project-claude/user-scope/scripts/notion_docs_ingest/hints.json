@@ -1,0 +1,56 @@
+{
+  "python-bci-platform/docs/BrainProducts.md": [
+    { "anchor": "最終データ品質の差」より", "kind": "note" },
+    { "anchor": "何もつけない状態で電源を入れて", "kind": "note" },
+    { "anchor": "心配すべきは「電源投入時の電流」ではなく", "kind": "caution" },
+    { "anchor": "actiCAP はMRI非対応のため", "kind": "caution" }
+  ],
+  "python-mri-experiment-kk/docs/PROTOCOL.md": [
+    { "anchor": "1 周のなかで全課題を 1 回ずつ提示し", "kind": "note" },
+    { "anchor": "整数倍の関係が成り立っているのは個々の秒数ではなく", "kind": "note" },
+    { "anchor": "トリガ待ちの時間はスキャナ次第で変わるため", "kind": "caution" },
+    { "anchor": "実験環境を変えるときは、まずここが機器と合っているか", "kind": "caution" }
+  ],
+  "python-mri-experiment-kk/docs/ANALYSIS.md": [
+    { "anchor": "3 つのファイルの時刻はすべて同じ時計です", "kind": "note" },
+    { "anchor": "課題の onset を作るときは", "kind": "note" },
+    { "anchor": "形式が違うため、そのままでは同じコードで読めません", "kind": "caution" }
+  ],
+  "python-bci-platform/docs/ROADMAP.md": [
+    { "anchor": "本プロジェクトの最終目標は", "kind": "note" },
+    { "anchor": "MNE-Python が EEGLAB 相当の可視化", "kind": "note" }
+  ],
+  "python-bci-platform/docs/ANALYSIS_REAL_DATA_MATRIX.md": [
+    { "anchor": "本書は analysis モードを実データ 1 ファイルに対して", "kind": "note" },
+    { "anchor": "いずれもコードの不具合ではなく", "kind": "caution" }
+  ],
+  "python-bci-platform/docs/CONFIG_VERIFICATION.md": [
+    { "anchor": "唯一の実行手段とする", "kind": "note" },
+    { "anchor": "サブセット実行では", "kind": "caution" }
+  ],
+  "python-bci-platform/docs/IMPLEMENTATION_STATUS.md": [
+    { "anchor": "現時点での実装内容", "kind": "note" }
+  ],
+  "python-bci-platform/docs/CODE_REVIEW.md": [
+    { "anchor": "本書は各ファイルを", "kind": "note" }
+  ],
+  "python-bci-platform/docs/CLAUDE_CODE_REFACTOR_PROMPTS.md": [
+    { "anchor": "着手前チェック", "kind": "caution" }
+  ],
+  "python-idea-generator/docs/アイデア発想法_調査レポート.md": [
+    { "anchor": "結論を先取りすると", "kind": "note" },
+    { "anchor": "最も頑健に", "kind": "caution" }
+  ],
+  "python-idea-generator/docs/superpowers/specs/2026-07-03-idea-generator-design.md": [
+    { "anchor": "アーキテクチャレベルの制約", "kind": "note" }
+  ],
+  "python-idea-generator/docs/superpowers/plans/2026-07-04-idea-generator-phase3.md": [
+    { "anchor": "全介入は発散フェーズ限定", "kind": "caution" }
+  ],
+  "claude-figma-slide/docs/SLIDE_DESIGN_TIPS.md": [
+    { "anchor": "スライドデザインで最初にやることは", "kind": "note" },
+    { "anchor": "色だけで情報を区別しない", "kind": "caution" }
+  ],
+  "claude-paper-summary/docs/paper_summary_notion_spec.md": [],
+  "processing-ep-exercises/docs/processing-next-token-prediction-spec.md": []
+}

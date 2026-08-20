@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>unity-bci-pseudo-haptics システム構成と設定・使い方</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f6f4ee;
+    --surface:#ffffff;
+    --ink:#232a2d;
+    --sub:#59636a;
+    --teal:#1c5a62;
+    --teal-deep:#164249;
+    --teal-tint:#e6efee;
+    --ochre:#9a5417;
+    --ochre-tint:#f4ebdf;
+    --info:#6c7176;
+    --info-tint:#ecebe4;
+    --line:#e2dccf;
+    --rule:#d6cfc1;
+    --maxcol:780px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Inter","Noto Sans JP",-apple-system,BlinkMacSystemFont,sans-serif;
+    font-size:16px;line-height:1.85;font-feature-settings:"palt";}
+  .masthead{border-bottom:2px solid var(--teal);background:var(--surface);}
+  .masthead .inner{max-width:1080px;margin:0 auto;padding:34px 28px 26px;}
+  .kicker{font-size:.78rem;letter-spacing:.14em;color:var(--teal);font-weight:600;text-transform:uppercase;margin:0 0 8px;}
+  .masthead h1{margin:0;font-size:1.8rem;font-weight:700;letter-spacing:.01em;line-height:1.35;}
+  .masthead p{margin:10px 0 0;color:var(--sub);font-size:.92rem;max-width:var(--maxcol);}
+  .layout{max-width:1080px;margin:0 auto;padding:0 28px;display:flex;gap:44px;align-items:flex-start;}
+  aside{position:sticky;top:0;flex:0 0 210px;padding:34px 0;align-self:flex-start;}
+  aside .toc-title{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);font-weight:600;margin:0 0 12px;}
+  aside ol{list-style:none;margin:0;padding:0;}
+  aside a{display:block;padding:6px 0 6px 14px;border-left:2px solid var(--line);
+    color:var(--sub);text-decoration:none;font-size:.86rem;line-height:1.5;transition:.15s;}
+  aside a:hover{color:var(--teal);border-color:var(--teal);}
+  aside a.active{color:var(--teal-deep);border-color:var(--teal);font-weight:600;}
+  aside .toc-part{border:0;background:none;border-radius:0;margin:0;overflow:visible;}
+  aside .toc-part>summary{display:flex;align-items:baseline;gap:6px;
+    padding:8px 0 8px 14px;border-left:2px solid var(--line);
+    font-size:.78rem;font-weight:700;color:var(--teal-deep);letter-spacing:.03em;}
+  aside .toc-part>summary::before{content:"▸";color:var(--sub);font-size:.7rem;}
+  aside .toc-part[open]>summary::before{content:"▾";}
+  aside .toc-part>summary::after{content:none;}
+  aside .toc-part[open]>summary{border-bottom:0;}
+  aside .toc-part.current>summary{border-left-color:var(--teal);}
+  aside .part-progress{margin-left:auto;font-weight:400;font-size:.72rem;color:var(--sub);
+    font-variant-numeric:tabular-nums;}
+  aside .toc-part>ol{margin:0 0 10px;}
+  aside .toc-part>ol a{padding-left:26px;}
+  main{flex:1 1 auto;min-width:0;max-width:var(--maxcol);padding:34px 0 80px;}
+  section{padding-top:26px;margin-top:20px;}
+  section:first-child{margin-top:0;}
+  .secnum{font-size:.8rem;font-weight:700;color:var(--teal);letter-spacing:.05em;}
+  h2{font-size:1.42rem;font-weight:700;margin:4px 0 4px;line-height:1.4;}
+  .h2rule{height:2px;background:var(--rule);border:0;margin:0 0 20px;}
+  h3{font-size:1.04rem;font-weight:700;color:var(--teal-deep);margin:26px 0 8px;}
+  p{margin:12px 0;}
+  .lead{font-size:1.02rem;}
+  strong{font-weight:700;}
+  a.inline{color:var(--teal);text-underline-offset:2px;}
+  .partmark{margin:52px 0 0;padding-top:22px;border-top:2px solid var(--teal);}
+  .partmark .lbl{font-size:.78rem;font-weight:700;letter-spacing:.12em;color:var(--teal);}
+  .partmark h2{font-size:1.24rem;margin:2px 0 0;}
+  .tablewrap{overflow-x:auto;margin:18px 0;}
+  table{width:100%;border-collapse:collapse;font-size:.9rem;line-height:1.6;min-width:460px;}
+  th,td{text-align:left;padding:10px 14px;vertical-align:top;border-bottom:1px solid var(--line);}
+  thead th{border-bottom:2px solid var(--teal);color:var(--teal-deep);font-weight:600;white-space:nowrap;}
+  td:first-child,th:first-child{padding-left:0;}
+  .rowhead{font-weight:600;color:var(--ink);white-space:nowrap;}
+  table.sortable thead th{cursor:pointer;user-select:none;position:relative;padding-right:22px;}
+  table.sortable thead th::after{content:"⇅";position:absolute;right:6px;color:var(--rule);font-size:.78em;font-weight:400;}
+  table.sortable thead th[aria-sort="ascending"]::after{content:"↑";color:var(--teal);}
+  table.sortable thead th[aria-sort="descending"]::after{content:"↓";color:var(--teal);}
+  .rowmore{appearance:none;background:none;border:0;border-bottom:1px solid var(--line);width:100%;
+    padding:8px 0;font:inherit;font-size:.82rem;font-weight:600;color:var(--teal);cursor:pointer;text-align:left;}
+  .rowmore:hover{color:var(--teal-deep);}
+  .note{border-left:3px solid var(--teal);background:var(--teal-tint);padding:14px 18px;margin:18px 0;border-radius:0 4px 4px 0;}
+  .note .lbl{display:block;font-size:.76rem;font-weight:700;letter-spacing:.08em;color:var(--teal-deep);text-transform:uppercase;margin-bottom:4px;}
+  .caution{border-left:3px solid var(--ochre);background:var(--ochre-tint);padding:14px 18px;margin:18px 0;border-radius:0 4px 4px 0;}
+  .caution .lbl{display:block;font-size:.76rem;font-weight:700;letter-spacing:.08em;color:var(--ochre);text-transform:uppercase;margin-bottom:4px;}
+  .info{border-left:3px solid var(--info);background:var(--info-tint);padding:14px 18px;margin:18px 0;border-radius:0 4px 4px 0;}
+  .info .lbl{display:block;font-size:.76rem;font-weight:700;letter-spacing:.08em;color:var(--info);text-transform:uppercase;margin-bottom:4px;}
+  .note p,.caution p,.info p{margin:6px 0;}
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:18px 0;}
+  .flow .node{border:1px solid var(--rule);background:var(--surface);padding:9px 15px;font-size:.86rem;font-weight:600;border-radius:3px;}
+  .flow .node small{display:block;font-weight:400;color:var(--sub);font-size:.74rem;}
+  .flow .sep{color:var(--teal);font-weight:700;}
+  .flow[data-ready] .node,.flow[data-ready] .sep{transition:opacity .18s;}
+  .flow[data-ready] .ahead{opacity:.22;}
+  .flow[data-ready] .node.now{border-color:var(--teal);box-shadow:inset 3px 0 0 var(--teal);}
+  .flow-ctl{display:flex;align-items:center;gap:12px;margin:-8px 0 18px;font-size:.8rem;color:var(--sub);}
+  .flow-ctl button{appearance:none;background:var(--surface);border:1px solid var(--rule);border-radius:3px;
+    padding:4px 12px;font:inherit;font-size:.8rem;font-weight:600;color:var(--teal);cursor:pointer;}
+  .flow-ctl button:disabled{color:var(--sub);opacity:.5;cursor:default;}
+  .flow-ctl .pos{font-variant-numeric:tabular-nums;}
+  .tabs{margin:18px 0;}
+  .tablist{display:flex;flex-wrap:wrap;gap:2px;border-bottom:1px solid var(--line);}
+  .tablist button{appearance:none;background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;
+    padding:8px 14px;font:inherit;font-size:.86rem;font-weight:600;color:var(--sub);cursor:pointer;}
+  .tablist button[aria-selected="true"]{color:var(--teal-deep);border-bottom-color:var(--teal);}
+  .tabs .panel>*:first-child{margin-top:14px;}
+  .tabs[data-ready] .panel[hidden]{display:none;}
+  .tabs:not([data-ready]) .tablist{display:none;}
+  .tabs:not([data-ready]) .panel::before{content:attr(data-label);display:block;margin-top:16px;
+    font-size:.82rem;font-weight:700;color:var(--teal-deep);}
+  ul.clean{margin:12px 0;padding-left:0;list-style:none;}
+  ul.clean li{position:relative;padding-left:20px;margin:7px 0;}
+  ul.clean li::before{content:"";position:absolute;left:2px;top:.72em;width:6px;height:6px;background:var(--teal);border-radius:50%;}
+  ul.clean li.warn::before{background:var(--ochre);}
+  .def{border:1px solid var(--line);border-radius:5px;padding:2px 20px 6px;margin:16px 0;background:var(--surface);}
+  .def h3{margin-top:16px;}
+  details{border:1px solid var(--line);border-radius:5px;margin:12px 0;background:var(--surface);overflow:hidden;}
+  summary{cursor:pointer;padding:14px 18px;font-weight:600;font-size:.95rem;list-style:none;position:relative;padding-right:44px;}
+  summary::-webkit-details-marker{display:none;}
+  summary::after{content:"＋";position:absolute;right:18px;top:13px;color:var(--teal);font-weight:700;}
+  details[open] summary::after{content:"－";}
+  details[open] summary{border-bottom:1px solid var(--line);}
+  .qbody{padding:14px 18px;font-size:.92rem;}
+  .qbody p:first-child{margin-top:0;}
+  .doclist .grp{font-size:.82rem;font-weight:700;color:var(--teal-deep);letter-spacing:.04em;margin:18px 0 8px;}
+  .doclist a{display:block;padding:8px 0;border-bottom:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:.9rem;transition:.15s;}
+  .doclist a:hover{color:var(--teal);padding-left:6px;}
+  .doclist a .u{display:block;font-size:.74rem;color:var(--sub);}
+  .muted{color:var(--sub);font-size:.84rem;}
+  footer{border-top:1px solid var(--rule);margin-top:40px;padding-top:18px;color:var(--sub);font-size:.8rem;line-height:1.7;}
+  code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.86em;background:#efece4;padding:1px 5px;border-radius:3px;}
+  pre{background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:14px 18px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,monospace;font-size:.82rem;line-height:1.7;margin:16px 0;}
+  pre code{background:none;padding:0;font-size:1em;}
+  @media(max-width:820px){
+    aside{display:none;}
+    .layout{padding:0 20px;}
+    .masthead .inner{padding:26px 20px 22px;}
+    main{padding:24px 0 60px;max-width:none;}
+    .masthead h1{font-size:1.5rem;}
+  }
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="inner">
+    <p class="kicker">unity-bci-pseudo-haptics / システム解説</p>
+    <h1>システム構成と設定パラメータ・使い方</h1>
+<p>脳波デコーダから届く分類結果で仮想の手を動かし、試行を回して記録する Unity プロジェクトの全体像をまとめる。第 1 部で構成と信号の流れ、第 2 部で設定パラメータの置き場所と一覧、第 3 部で実験の回し方と記録・検証の手順を扱う。<strong>2 つのシーンは別の実験である</strong>（把握の想起と、腕の持ち上げの想起）。<strong>発火の判定は Unity 側にあり</strong>、閾値と連続 N 回は設定 asset から振れる。実験デザインの根拠は別資料「MRCP 想起オンセット同期システムの説明と実験プロトコル」にある。</p>
+  </div>
+</div>
+
+<div class="layout">
+  <aside>
+    <p class="toc-title">目次</p>
+    <nav id="toc">
+      <details class="toc-part" open>
+        <summary>第1部　システム<span class="part-progress">0/3</span></summary>
+        <ol>
+          <li><a href="#s1">1. 何をするシステムか</a></li>
+          <li><a href="#s2">2. 信号の流れと発火判定</a></li>
+          <li><a href="#s3">3. UDP パケットの仕様</a></li>
+        </ol>
+      </details>
+      <details class="toc-part" open>
+        <summary>第2部　設定<span class="part-progress">0/2</span></summary>
+        <ol>
+          <li><a href="#s4">4. どこに何を置くか</a></li>
+          <li><a href="#s5">5. パラメータ一覧</a></li>
+        </ol>
+      </details>
+      <details class="toc-part" open>
+        <summary>第3部　使い方<span class="part-progress">0/4</span></summary>
+        <ol>
+          <li><a href="#s6">6. 実験の実行と設定</a></li>
+          <li><a href="#s7">7. 記録されるデータ</a></li>
+          <li><a href="#s8">8. 動作確認とセッション前の調整</a></li>
+          <li><a href="#s9">9. まとめ・Q&amp;A</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+
+  <main>
+
+    <div class="partmark"><span class="lbl">第1部</span><h2>システム</h2></div>
+
+    <section id="s1">
+      <span class="secnum">SECTION 1</span>
+      <h2>何をするシステムか</h2>
+      <hr class="h2rule">
+      <p class="lead">脳波から被験者の運動想起を読み取り、その結果で一人称の仮想の手を動かす。Unity 側の役割は、キューを出し、届いた推定から発火を判定して手を動かし、時刻を記録することの 3 つである。</p>
+
+      <p>脳波の計測とデコードは別プロジェクトの python-bci-platform が受け持つ。本リポジトリは <strong>UDP でつながる受信側と提示側</strong>であり、脳波そのものには触れない。</p>
+
+      <div class="note">
+        <span class="lbl">要点</span>
+        <p><strong>発火の判定は Unity 側にある。</strong>python 側は一定レートで「いま何を推定しているか」を流すだけで、いつ手を動かすかは決めない。確信度の閾値と連続 N 回の成立条件は Unity の設定 asset にあり、実験者がその場で振れる。</p>
+      </div>
+
+      <h3>2 つのシーンは別の実験である</h3>
+
+      <p>被験者が想起する内容も、検証したいことも違う。共通なのは UDP でデコーダと話す部分と手の駆動だけである。</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th></th><th>HandExperiment</th><th>PseudoHapticsExperiment</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">被験者が行う想起</td><td><strong>把握</strong></td><td><strong>腕の持ち上げ</strong></td></tr>
+            <tr><td class="rowhead">発火で起きること</td><td>手が閉じる</td><td>掴んだ物体ごと腕が上がる</td></tr>
+            <tr><td class="rowhead">把持の扱い</td><td>検証対象そのもの</td><td>前提条件（BCI モード入りで既に握っている）</td></tr>
+            <tr><td class="rowhead">C/D 比</td><td>使わない</td><td>持ち上げ変位に掛ける（検証対象）</td></tr>
+            <tr><td class="rowhead">手首</td><td>BCI 駆動中は凍結する</td><td>トラッキングを続ける</td></tr>
+            <tr><td class="rowhead">測るもの</td><td>キューからの発火誤差 Δt と主観的一致度</td><td>持ち上げ距離と重さの知覚</td></tr>
+            <tr><td class="rowhead">Settings asset</td><td><code>HandExperimentSettings</code> のみ</td><td><code>PseudoHapticsSettings</code> のみ</td></tr>
+            <tr><td class="rowhead">試行タイムライン</td><td>ある（ExperimentRunner が回す）</td><td>無い</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="def">
+        <h3>疑似触覚（C/D 比）とは</h3>
+        <p>Control / Display 比。実際の指令に対して、画面上の手をわざと違う量だけ動かす。物を持ち上げるときに指令より仮想の手が遅れて付いてくると、人はその物を「重い」と感じる。触覚提示装置を使わずに重さの知覚を作る手法である（Samad et al., CHI 2019）。</p>
+        <p>本システムでは持ち上げの指令変位に掛ける。指令の出どころは BCI でもデバッグキーでも同じ経路を通るため、C/D 比の効き方は変わらない。</p>
+      </div>
+
+      <div class="info">
+        <span class="lbl">補足</span>
+        <p>環境は Unity 6000.4.8f1、URP 17.4、XR Hands 1.8、XR Interaction Toolkit 3.4、Animation Rigging 1.4。スクリプトのアセンブリは <code>PseudoHaptics</code> の 1 つで、名前空間も同名である。</p>
+      </div>
+    </section>
+
+    <section id="s2">
+      <span class="secnum">SECTION 2</span>
+      <h2>信号の流れと実行順</h2>
+      <hr class="h2rule">
+      <p class="lead">脳波が計測器から出て手が動くまでを 8 段に分けられる。Unity が受け持つのは 5 段目から 8 段目である。<strong>発火判定が Unity 側にある</strong>のが以前の設計との違いである。</p>
+
+      <div class="flow" data-steps>
+        <span class="node">取得<small>python / LSL</small></span>
+        <span class="sep">→</span>
+        <span class="node">フィルタ<small>python</small></span>
+        <span class="sep">→</span>
+        <span class="node">推論<small>shrinkage LDA</small></span>
+        <span class="sep">→</span>
+        <span class="node">UDP 送信<small>ポート 5001 へ</small></span>
+        <span class="sep">→</span>
+        <span class="node">受信<small>UdpPacketReceiver</small></span>
+        <span class="sep">→</span>
+        <span class="node">発火判定<small>連続 N 回・Unity 側</small></span>
+        <span class="sep">→</span>
+        <span class="node">開閉の速度制限<small>GraspLevelController</small></span>
+        <span class="sep">→</span>
+        <span class="node">描画<small>HandGraspAnimator / BciLiftDriver</small></span>
+      </div>
+
+      <div class="def">
+        <h3>「開閉の速度制限」とは（旧称: 平滑化）</h3>
+        <p>信号のノイズ除去ではない。<code>GraspLevelSmoother</code> は把持レベルを 0 から 1 へ <code>closeSeconds</code> かけて線形に動かすだけの、<strong>開閉アニメーションの速度制限</strong>である。</p>
+        <p>これが無いと手は 1 フレームで握り込み、<code>grasp_reach_unix</code>（把持到達時刻）も測れない。また、0/1 の硬い分類を出すデコーダと連続的な確信度を出すデコーダのどちらを繋いでも、手の見た目の動きが同じになる。以前の資料が「平滑化」と呼んでいたのはこの処理であり、ノイズ対策ではないので名前を改めた。</p>
+      </div>
+
+      <h3>Unity 側のコンポーネント</h3>
+
+      <p>1 フレーム内の処理順は <code>DefaultExecutionOrder</code> で固定してある。受信が最も早く、記録とリグ評価が最も遅い。</p>
+
+      <div class="tablewrap" data-collapse="8">
+        <table class="sortable">
+          <thead><tr><th>実行順</th><th>コンポーネント</th><th>役割</th><th>シーン</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">-20</td><td>UdpPacketReceiver</td><td>UDP ソケットを 1 つだけ所有し、受信 JSON をメインスレッドへ渡す</td><td>両方</td></tr>
+            <tr><td class="rowhead">-15</td><td>ExperimentRunner</td><td>試行タイムラインを駆動し、t=0 でキューを提示して python 側へ打刻する</td><td>Hand</td></tr>
+            <tr><td class="rowhead">-10</td><td>UdpBciSignalSource</td><td>受信 JSON をクラス対応表で行動に変え、連続 N 回で発火を判定する</td><td>両方</td></tr>
+            <tr><td class="rowhead">0</td><td>GraspLevelController</td><td>把持レベルの開閉速度を制限して 1 つ公開する</td><td>両方</td></tr>
+            <tr><td class="rowhead">0</td><td>HandRootDriver</td><td>トラッキングから手首の位置と回転を書く（LateUpdate）</td><td>両方</td></tr>
+            <tr><td class="rowhead">50</td><td>HandControlModeSwitch</td><td>トラッキングと BCI 駆動を切り替え、レベルを指へ流す</td><td>両方</td></tr>
+            <tr><td class="rowhead">100</td><td>HandGraspAnimator</td><td>把持レベルから各指ボーンの屈曲を作る</td><td>両方</td></tr>
+            <tr><td class="rowhead">150</td><td>GraspGrabber</td><td>近くの <code>Grabbable</code> を掴む / 離す</td><td>Pseudo</td></tr>
+            <tr><td class="rowhead">200</td><td>LiftTask</td><td>持ち上げ課題を計測し、離した物体を元へ戻す</td><td>Pseudo</td></tr>
+            <tr><td class="rowhead">220</td><td>BciLiftDriver</td><td>持ち上げ指令に C/D 比を掛けて手首へ足す（LateUpdate）</td><td>Pseudo</td></tr>
+            <tr><td class="rowhead">250</td><td>Grabbable</td><td>掴まれた物体を手首へ追従させる（LateUpdate）</td><td>Pseudo</td></tr>
+            <tr><td class="rowhead">250</td><td>CueDisplay</td><td>HMD 内にカウントダウンと状態を出す</td><td>Hand</td></tr>
+            <tr><td class="rowhead">260</td><td>RatingPanel</td><td>主観的一致度の 7 ボタンを出し、指先の押下を判定する</td><td>Hand</td></tr>
+            <tr><td class="rowhead">300</td><td>TrialRecorder</td><td>試行 CSV と設定スナップショットを書く</td><td>Hand</td></tr>
+            <tr><td class="rowhead">300</td><td>FirstPersonAvatarAnchor</td><td>アバターの頭ボーンをカメラに合わせる（LateUpdate）</td><td>Pseudo</td></tr>
+            <tr><td class="rowhead">350</td><td>ArmRigEvaluator</td><td>腕 IK を LateUpdate の最後で手動評価する</td><td>Pseudo</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="caution">
+        <span class="lbl">持ち上げの実行順は入れ替えられない</span>
+        <p><code>BciLiftDriver</code>（220）は <code>HandRootDriver</code>（0）と <code>Grabbable</code>（250）の<strong>あいだ</strong>になければならない。HandRootDriver は毎フレーム手首へ生のトラッキング姿勢を書き込むので、前フレームのオフセットはそこで消える。</p>
+        <p>これを Grabbable より後ろへ置くと、物体は<strong>オフセットを足す前</strong>の手首を追い、腕だけが上がって物体が机に残る。しかもハンドトラッキングが無い環境では HandRootDriver が書き込まないため 1 フレーム遅れで追従してしまい、症状が出ない。実機に入って初めて気づく類の壊れ方である。</p>
+      </div>
+
+      <div class="def">
+        <h3>発火と解放の判定</h3>
+        <p><strong>発火</strong> — 対象の行動が連続 <code>consecutiveHits</code> 回届いたら、その場で開始する。単発で発火させないのは、デコーダの出力が 1 通だけ跳ねるのが普通にあるためである。N を上げるほど誤発火は減り、そのぶん発火が遅れる。</p>
+        <p><strong>解放</strong> — 対象でない行動が連続 <code>consecutiveHits</code> 回届き、<strong>かつ</strong> <code>holdSeconds</code>（最小保持）を過ぎたら離す。最小保持を置くのは、パケットを 1 通取りこぼしただけで動作が点滅しないようにするためである。</p>
+        <p>この規則ひとつで「想起している間は握り続ける」（HandExperiment）と「持ち上げている間ずっと保つ」（PseudoHapticsExperiment）の両方が成立する。</p>
+      </div>
+
+      <div class="caution">
+        <span class="lbl">注意</span>
+        <p><strong><code>B</code> キーで BciDriven モードに入らない限り、UDP は手へ届かない。</strong>Tracking モードでは信号源が読まれないうえ、<code>HandGraspAnimator</code> も開いた姿勢を捕捉する前は書き込みを行わない。二重に止まっている。</p>
+        <p>ただし <code>ExperimentRunner</code> が Task セッションを開始するときは自動的に BciDriven へ切り替える。実験者がキーを押し忘れたまま試行が流れる事故はこれで塞いである。</p>
+      </div>
+
+      <div class="def">
+        <h3>「凍結」の仕組み</h3>
+        <p>BCI 駆動へ入ると手首のドライバを <code>enabled = false</code> にする。ドライバは LateUpdate でしか書き込まないため、無効化されたドライバは全ボーンを最後に書いた位置にそのまま残す。姿勢をキャッシュして書き戻す方式と違い、凍結した姿勢とライブの姿勢が 1 フレームずれる余地がない。</p>
+        <p>凍結するかどうかは <code>HandControlModeSwitch.freezeRootWhileBciDriven</code> が決める。HandExperiment は true（指だけを見る）、PseudoHapticsExperiment は false（手首は動かして持ち上げる）。<strong>これは実験条件ではなくシーンの設計そのもの</strong>なので、Settings asset ではなくコンポーネント側に置いてある。同じ場所にある <code>grabOnBciDriven</code>（BCI モード入りで掴みを固定するか）も同じ理由である。</p>
+      </div>
+    </section>
+
+    <section id="s3">
+      <span class="secnum">SECTION 3</span>
+      <h2>UDP パケットの仕様</h2>
+      <hr class="h2rule">
+      <p class="lead">1 パケットに 1 個の JSON オブジェクトを UTF-8 で載せる。受信は 5001 番、送信は 5000 番で、<strong>向きによってキー名が違う</strong>。どちらも python-bci-platform の実装に合わせてある。</p>
+
+      <h3>受信（python → Unity、ポート 5001）</h3>
+
+      <p>python-bci-platform の <code>UdpSender</code> が推論のたびに 1 通送る形そのままである。</p>
+
+      <pre><code>{ "format_version": 1, "name": "Grasp", "class": 2, "confidence": 0.87,
+  "probabilities": { "Rest": 0.13, "Grasp": 0.87 } }</code></pre>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>キー</th><th>扱い</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">format_version</td><td><strong>必須。</strong>1 以外は丸ごと捨てる。送信仕様が変わったことに気づけるようにするため</td></tr>
+            <tr><td class="rowhead">class</td><td><strong>判定の主役。</strong>クラス対応表（<code>classMap</code>）と突き合わせて行動を決める。0 は「キーが無かった」と区別できないため 1 始まり。<code>-1</code> は platform の「分類なしセンチネル」なので捨てる</td></tr>
+            <tr><td class="rowhead">confidence</td><td><code>confidenceThreshold</code> 未満なら「意図なし」として扱う。捨てずに解放の連続判定へ流す</td></tr>
+            <tr><td class="rowhead">name</td><td>判定には使わない。Inspector とログの可読性のためだけに読む。一致を要求すると、python 側でクラス名を変えただけで実験が止まる</td></tr>
+            <tr><td class="rowhead">probabilities</td><td>読まない。キーがクラス名で動的に変わるため <code>JsonUtility</code> で表現できず、判定にも不要。あっても解析は通る</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <span class="lbl">確信度が低いパケットを捨てないのはなぜか</span>
+        <p>確信度が足りないパケットは「意図なし」であって「無かったこと」ではない。捨ててしまうと解放の連続判定が進まず、<strong>確信度が落ちただけで握りが解けなくなる</strong>。だから <code>None</code> として数え続ける。</p>
+      </div>
+
+      <h3>送信（Unity → python、ポート 5000）</h3>
+
+      <p>platform 側が読むのは <code>type</code> / <code>event_id</code> の 2 つだけである。打刻は<strong>すべて同じ内容</strong>で送る。</p>
+
+      <pre><code>{ "type": "grasp", "event_id": 1 }</code></pre>
+
+      <div class="caution">
+        <span class="lbl">突合は ID ではなく順序で行う</span>
+        <p><code>event_id</code> が固定値なので、試行 CSV の <code>trial_index</code> と EEG アノテーションを ID で対応づけることはできない。「N 番目の grasp アノテーション ↔ N 番目の試行」という<strong>順序照合</strong>になる。</p>
+        <p>したがって<strong>打刻が 1 通落ちると、以降の全試行がずれる</strong>。Unity は送信の成否を試行 CSV の <code>cue_sent</code> 列に残すので、0 の行は必ず解析から落とすこと。失敗はその場で HMD 内とコンソールにも警告が出る。</p>
+      </div>
+
+      <div class="caution">
+        <span class="lbl">送受信でキー名が非対称である</span>
+        <p>受信は <code>format_version</code> / <code>name</code> / <code>class</code> / <code>confidence</code> / <code>probabilities</code>、送信は <code>type</code> / <code>event_id</code> の 2 つだけ。連携実装で最も踏みやすい落とし穴で、受信側の形をそのまま送り返しても platform は解釈しない。</p>
+      </div>
+
+      <div class="caution">
+        <span class="lbl">後方互換は無い</span>
+        <p><code>format_version</code> が 1 でないパケットと <code>class &lt;= 0</code> のパケットは、黙って解釈されず捨てられ、<code>UdpBciSignalSource.RejectedCount</code> に積まれる。後方互換の分岐を置くと、送信側の設定ミスがエラーではなく<strong>データの静かな汚染</strong>として現れる経路ができるためである。</p>
+      </div>
+
+      <div class="note">
+        <span class="lbl">要点</span>
+        <p>受信が途絶えると <code>IsAvailable</code> が false に落ち、手は最後の値で固まらず脱力する。デコーダが落ちたまま握りっぱなしになる事故を防ぐための設計である。</p>
+        <p>ただし<strong>最小保持（<code>holdSeconds</code>）のあいだは例外</strong>で、受信が途絶えていても動作を続ける。1 通の取りこぼしで動作が点滅しないようにするためである。判定は <code>UdpBciSignalSource.staleAfterSeconds</code>（既定 0.5 秒）で行う。これは実験条件ではなく通信の健全性判定なので、設定 asset ではなくコンポーネント側にある。</p>
+      </div>
+    </section>
+
+    <div class="partmark"><span class="lbl">第2部</span><h2>設定</h2></div>
+
+    <section id="s4">
+      <span class="secnum">SECTION 4</span>
+      <h2>どこに何を置くか</h2>
+      <hr class="h2rule">
+      <p class="lead">Settings asset に置くのは<strong>実験条件として動かす値だけ</strong>である。リグの定数やキー割り当てを混ぜると、「実験中にどれを触ってよいか」が asset を見ても分からなくなる。</p>
+
+      <h3>asset は実験ごとに 1 枚である</h3>
+
+      <p>2 つのシーンは別の実験なので、asset を共有しない。<strong>各シーンが参照する Settings asset は 1 枚だけ</strong>であり、片方を触ってももう一方には一切影響しない。</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>asset</th><th>参照するシーン</th><th>内容</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">HandExperimentSettings</td><td>HandExperiment のみ</td><td>UDP 受信 / 送信・クラス対応表・発火判定・動作のタイミング・実験設定・記録</td></tr>
+            <tr><td class="rowhead">PseudoHapticsSettings</td><td>PseudoHapticsExperiment のみ</td><td>同上の共通部分 ＋ 持ち上げ・C/D 比・掴み / 解放・物体の復帰・アバター</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>共通する部分（UDP 受信・イベント UDP 送信・動作のタイミング）はフィールドの定義を基底クラス <code>BciSignalSettings</code> に 1 度だけ書いてあるが、<strong>値は asset ごとに独立に持つ</strong>。定義の重複は避けつつ、実験は分かれている。</p>
+
+      <h3>asset に置かないもの</h3>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>置き場所</th><th>内容</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">HandGraspAnimator</td><td>握り拳の屈曲角と応答カーブ。リグと手モデルの性質であって実験条件ではない</td></tr>
+            <tr><td class="rowhead">HandRootDriver</td><td>校正の基準姿勢、机とのクリアランス</td></tr>
+            <tr><td class="rowhead">HandControlModeSwitch</td><td><code>freezeRootWhileBciDriven</code> / <code>grabOnBciDriven</code>。シーンの設計そのもの</td></tr>
+            <tr><td class="rowhead">UdpBciSignalSource</td><td><code>staleAfterSeconds</code>。通信の健全性判定であって実験条件ではない</td></tr>
+            <tr><td class="rowhead">DeskCalibrator</td><td>机キャリブレーションのサンプリング条件</td></tr>
+            <tr><td class="rowhead">ExperimentHotkeys / KeyboardBciSignalSource</td><td>キー割り当て。操作系の結線である</td></tr>
+            <tr><td class="rowhead">RatingPanel</td><td>指先の押下半径と解放半径</td></tr>
+            <tr><td class="rowhead">シーン</td><td>オブジェクト間の結線、左右の別、関節とボーンの対応表</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <span class="lbl">要点</span>
+        <p>スカラーは毎フレーム読み直される前提なので、<strong>Play Mode 中に Inspector で書き換えればその場で効く</strong>。派生キャッシュを持つもの（<code>UdpPacketReceiver</code> のソケット、<code>UdpEventSender</code> の宛先）だけが <code>Changed</code> イベントを購読して作り直す。</p>
+      </div>
+
+      <div class="caution">
+        <span class="lbl">実験中に触ってよい値</span>
+        <p><strong>被験者ごとに調整してよいのは <code>avatarHeadOffset</code>（PseudoHapticsSettings）だけ</strong>である。他は全被験者で固定する。とくに <code>foreperiodSeconds</code>（予告 2.0 秒）と <code>closeSeconds</code> / <code>openSeconds</code> は動かしてはならない。前者を可変にすると検出したい脳波信号が有意に減弱し、後者が変わると主観評価が被験者間で比較できなくなる。</p>
+        <p><code>confidenceThreshold</code> と <code>consecutiveHits</code> はセッション前の調整で決め、<strong>本番のあいだは動かさない</strong>。途中で変えると、同じ被験者の試行が別の判定条件で混ざる。</p>
+      </div>
+
+      <div class="info">
+        <span class="lbl">補足</span>
+        <p>両 asset の既定値は EditMode テスト（<code>Asset_*</code>）が実物を読んで押さえている。検証でタイムラインや C/D 比や出力先を書き換えたまま戻し忘れると、テストが落ちて気づける。</p>
+      </div>
+    </section>
+
+    <section id="s5">
+      <span class="secnum">SECTION 5</span>
+      <h2>パラメータ一覧</h2>
+      <hr class="h2rule">
+      <p class="lead">実体は <code>Assets/Settings/</code> の 2 つの asset である。上 3 セクションは両方に同じ形で存在し、値だけが独立している。列見出しをクリックすると並べ替えられる。</p>
+
+      <h3>共通のセクション（両方の asset にある）</h3>
+
+      <div class="tablewrap">
+        <table class="sortable">
+          <thead><tr><th>セクション</th><th>パラメータ</th><th>既定値</th><th>意味</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">UDP デコーダ受信</td><td>udpPort</td><td>5001</td><td>デコーダからのパケットを待ち受けるポート</td></tr>
+            <tr><td class="rowhead">UDP デコーダ受信</td><td>classMap</td><td>下記</td><td>クラス番号が何を意味するかの対応表。python 側のクラス定義に合わせて書き換える</td></tr>
+            <tr><td class="rowhead">UDP デコーダ受信</td><td>confidenceThreshold</td><td>0.6</td><td>これ未満の確信度は意図なしとして扱う</td></tr>
+            <tr><td class="rowhead">UDP デコーダ受信</td><td>consecutiveHits</td><td>3</td><td>同じ行動が連続でこの回数だけ届いたら発火する。解放の判定にも同じ回数を使う</td></tr>
+            <tr><td class="rowhead">UDP デコーダ受信</td><td>logPackets</td><td>false</td><td>受け入れたパケットを毎回コンソールに出す。疎通確認用</td></tr>
+            <tr><td class="rowhead">イベント UDP 送信</td><td>eventHost</td><td>127.0.0.1</td><td>打刻の送信先ホスト</td></tr>
+            <tr><td class="rowhead">イベント UDP 送信</td><td>eventPort</td><td>5000</td><td>platform 側の受信ポート</td></tr>
+            <tr><td class="rowhead">動作のタイミング</td><td>closeSeconds</td><td>0.6</td><td>開いた状態から閉じ切るまでの秒数。全被験者で固定</td></tr>
+            <tr><td class="rowhead">動作のタイミング</td><td>openSeconds</td><td>0.4</td><td>閉じた状態から開くまでの秒数</td></tr>
+            <tr><td class="rowhead">動作のタイミング</td><td>holdSeconds</td><td>1.5</td><td>発火のあと、解放判定が立っても動作を保つ最小秒数</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>クラス対応表の既定は実験ごとに違う。<code>className</code> は Inspector とログの可読性のためだけで、判定には使わない。</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>asset</th><th>className</th><th>classId</th><th>action</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">HandExperimentSettings</td><td>Rest</td><td>1</td><td>None</td></tr>
+            <tr><td class="rowhead">HandExperimentSettings</td><td>Grasp</td><td>2</td><td><strong>Grasp</strong></td></tr>
+            <tr><td class="rowhead">PseudoHapticsSettings</td><td>Rest</td><td>1</td><td>None</td></tr>
+            <tr><td class="rowhead">PseudoHapticsSettings</td><td>Lift</td><td>2</td><td><strong>Lift</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>HandExperimentSettings の固有セクション</h3>
+
+      <div class="tablewrap" data-collapse="10">
+        <table class="sortable">
+          <thead><tr><th>セクション</th><th>パラメータ</th><th>既定値</th><th>意味</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">実験設定</td><td>experimentMode</td><td>Off</td><td>Off（自由制御）/ Training / Task</td></tr>
+            <tr><td class="rowhead">実験設定</td><td>trialCount</td><td>20</td><td>1 回の実行で繰り返す試行数</td></tr>
+            <tr><td class="rowhead">実験設定</td><td>restSeconds</td><td>3.0</td><td>予告が出るまでの安静区間</td></tr>
+            <tr><td class="rowhead">実験設定</td><td>restJitterSeconds</td><td>0.5</td><td>安静区間に乗せるジッタ（±秒）。ここにだけ置く</td></tr>
+            <tr><td class="rowhead">実験設定</td><td>foreperiodSeconds</td><td>2.0</td><td>予告から t=0 まで。<strong>固定する</strong>。可変だと運動前活動が有意に減弱する</td></tr>
+            <tr><td class="rowhead">実験設定</td><td>imageryHoldSeconds</td><td>3.0</td><td>t=0 から、想起を保持してもらう時間</td></tr>
+            <tr><td class="rowhead">実験設定</td><td>returnSeconds</td><td>2.0</td><td>保持のあと次の試行へ移るまでの復帰</td></tr>
+            <tr><td class="rowhead">記録</td><td>recordTrials</td><td>true</td><td>試行 CSV と設定スナップショットを書き出す</td></tr>
+            <tr><td class="rowhead">記録</td><td>outputDirectory</td><td>（空）</td><td>出力先。空なら <code>persistentDataPath</code> の下</td></tr>
+            <tr><td class="rowhead">記録</td><td>participantId</td><td>P00</td><td>被験者 ID。出力ディレクトリ名に入る</td></tr>
+            <tr><td class="rowhead">記録</td><td>sessionLabel</td><td>（空）</td><td>セッションの識別ラベル。空でもよい</td></tr>
+            <tr><td class="rowhead">記録</td><td>graspReachLevel</td><td>0.9</td><td>この値を上向きに跨いだ時刻を <code>grasp_reach_unix</code> として記録する</td></tr>
+            <tr><td class="rowhead">記録</td><td>detectionWindowSeconds</td><td>1.5</td><td>キュー ±この秒数に入った発火を「その試行の検出」とみなす。外は誤発火</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>PseudoHapticsSettings の固有セクション</h3>
+
+      <div class="tablewrap">
+        <table class="sortable">
+          <thead><tr><th>セクション</th><th>パラメータ</th><th>既定値</th><th>意味</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">持ち上げ</td><td>liftDriveMode</td><td>OneShot</td><td>OneShot（台本どおり上がって戻る）/ Continuous（信号が続く間だけ上がる）</td></tr>
+            <tr><td class="rowhead">持ち上げ</td><td>liftHeight</td><td>0.2 m</td><td>OneShot の到達高さ、Continuous の上限。C/D 比を掛ける前の指令値</td></tr>
+            <tr><td class="rowhead">持ち上げ</td><td>liftSeconds</td><td>1.0</td><td>OneShot で上がりきるのにかける秒数</td></tr>
+            <tr><td class="rowhead">持ち上げ</td><td>liftSpeed</td><td>0.15 m/s</td><td>Continuous で上昇する速さ</td></tr>
+            <tr><td class="rowhead">持ち上げ</td><td>liftReturnSeconds</td><td>1.0</td><td>元の高さへ戻るのにかける秒数。両モード共通</td></tr>
+            <tr><td class="rowhead">C/D 比</td><td>cdRatio</td><td>1</td><td>持ち上げの変位へ掛ける C/D 比。1 が 1:1。1 未満だと重く感じる</td></tr>
+            <tr><td class="rowhead">把持と解放</td><td>grabRadius</td><td>0.1</td><td>手と物体の距離がこの値以内なら掴める（m）</td></tr>
+            <tr><td class="rowhead">把持と解放</td><td>grabLevelThreshold</td><td>0.6</td><td>把持レベルがこれを超えたら掴む。<strong>自由制御モードでだけ使う</strong></td></tr>
+            <tr><td class="rowhead">把持と解放</td><td>releaseLevelThreshold</td><td>0.4</td><td>これを下回ったら離す。掴む閾値より小さくしてヒステリシスを作る</td></tr>
+            <tr><td class="rowhead">物体の復帰</td><td>returnSpeed</td><td>0</td><td>離した物体が元へ戻る速さ。0 で瞬時</td></tr>
+            <tr><td class="rowhead">アバター</td><td>avatarHeadOffset</td><td>(0,0,0)</td><td>カメラから見た頭ボーンの位置ずれ。<strong>被験者ごとに調整する唯一の値</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>コンポーネント側の主な調整値</h3>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>コンポーネント</th><th>パラメータ</th><th>既定値</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">UdpBciSignalSource</td><td>staleAfterSeconds</td><td>0.5 秒</td></tr>
+            <tr><td class="rowhead">HandControlModeSwitch</td><td>freezeRootWhileBciDriven / grabOnBciDriven</td><td>Hand: true / false、Pseudo: false / true</td></tr>
+            <tr><td class="rowhead">KeyboardBciSignalSource</td><td>graspKey / liftKey</td><td>Space / UpArrow</td></tr>
+            <tr><td class="rowhead">HandGraspAnimator</td><td>proximalCurl / intermediateCurl / distalCurl</td><td>60 / 80 / 45 度</td></tr>
+            <tr><td class="rowhead">HandGraspAnimator</td><td>thumbCurlScale / curlResponse</td><td>0.45 / EaseInOut</td></tr>
+            <tr><td class="rowhead">HandRootDriver</td><td>referenceEuler / clampClearance</td><td>(0,0,0) / 0.02 m</td></tr>
+            <tr><td class="rowhead">DeskCalibrator</td><td>countdownSeconds / sampleWindowSeconds / maxStillnessSpeed</td><td>3 / 0.5 秒 / 0.05 m/s</td></tr>
+            <tr><td class="rowhead">RatingPanel</td><td>pressRadius / releaseRadius</td><td>0.03 / 0.045 m</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="partmark"><span class="lbl">第3部</span><h2>使い方</h2></div>
+
+    <section id="s6">
+      <span class="secnum">SECTION 6</span>
+      <h2>実験の実行</h2>
+      <hr class="h2rule">
+      <p class="lead">2 つのシーンは回し方が違う。HandExperiment は試行タイムラインを持ち、PseudoHapticsExperiment は持たない。</p>
+
+      <h3>HandExperiment — 試行を回す</h3>
+
+      <p><code>experimentMode</code> を Off 以外にして <code>Enter</code> を押すと <code>ExperimentRunner</code> が試行タイムラインを駆動する。1 回の実行で回す試行数は <code>trialCount</code> で決める。</p>
+
+      <div class="tabs">
+        <div class="tablist" role="tablist" aria-label="実験モードの切り替え">
+          <button type="button" role="tab" aria-controls="mode-off">Off</button>
+          <button type="button" role="tab" aria-controls="mode-training">Training</button>
+          <button type="button" role="tab" aria-controls="mode-task">Task</button>
+        </div>
+        <div class="panel" id="mode-off" role="tabpanel" data-label="Off（自由制御モード）">
+          <p>ランナーは動かず、試行も回らない。<code>B</code> キーで手動に BCI 駆動へ切り替えて手を触る、動作確認と調整のための状態である。</p>
+          <ul class="clean">
+            <li>結線の確認、机キャリブレーション、<code>avatarHeadOffset</code> の調整をこの状態で行う</li>
+            <li>デコーダの疎通確認もここでする。<code>Space</code> で代役入力もできる</li>
+            <li><code>Enter</code> を押しても何も起きない。セッションを始めるには先にモードを変える</li>
+          </ul>
+        </div>
+        <div class="panel" id="mode-training" role="tabpanel" data-label="Training（トレーニング計測）">
+          <p>キューだけを出し、手は動かさない。分類器の学習データを取る。</p>
+          <ul class="clean">
+            <li>発火なし・主観入力なし。Unity は<strong>キューを出して打刻するだけ</strong></li>
+            <li>手の駆動モードは Tracking のままにする。手が動くと想起以外の運動が脳波に乗る</li>
+            <li>陽性クラスは各試行の <code>[-1.5, 0.0]</code>、陰性クラスは同じ試行の安静区間から取る</li>
+          </ul>
+        </div>
+        <div class="panel" id="mode-task" role="tabpanel" data-label="Task（タスク）">
+          <p>BCI が発火して仮想の手が握られ、試行ごとに主観的一致度を答えてもらう。</p>
+          <ul class="clean">
+            <li>セッション開始時に自動で BciDriven へ切り替わる。キーの押し忘れ事故を塞いである</li>
+            <li>復帰区間のあとに机上の 7 ボタンが出る。指先で −3（早すぎ）〜 0（ちょうど）〜 +3（遅すぎ）を押す</li>
+            <li>回答が滞る場合は実験者が <code>1</code>〜<code>7</code> キーで代打ちできる。<strong>上限時間は設けない</strong>（遅い回答を黙って捨てないため）</li>
+            <li class="warn">ボタンはいちど指先が離れるまで反応しない。机に指を置いたまま次の試行を迎えても、勝手に確定しない</li>
+          </ul>
+        </div>
+      </div>
+
+      <p><strong>Training と Task はタイムラインを共有し、違いは発火の有無と主観入力の有無だけである。</strong>構造を揃えるのは、トレーニングで作ったモデルの入力分布をタスクでずらさないためである。</p>
+
+      <h3>1 試行の構造</h3>
+
+      <pre><code>安静 3.0 s（±0.5 s ジッタ）  →  予告 2.0 s（3-2-1 カウントダウン、固定）  →  t=0 キュー
+   →  想起の保持 3.0 s  →  復帰 2.0 s  →  ［Task のみ］主観入力</code></pre>
+
+      <div class="note">
+        <span class="lbl">2 つのジッタの役割は正反対である</span>
+        <p><strong>安静区間にジッタを入れる</strong>のは、試行の開始時刻が完全に周期的だと、脳波を一切見ない周期発火ベースラインと区別がつかなくなるからである。</p>
+        <p><strong>予告から t=0 までを固定する</strong>のは、この間隔が可変だと運動前活動が有意に減弱するからである（Cui &amp; MacKinnon 2009, P &lt; 0.005）。この 2 つは両立する。</p>
+      </div>
+
+      <h3>PseudoHapticsExperiment — 持ち上げを回す</h3>
+
+      <p>試行タイムラインは持たない。<code>B</code> で BCI 駆動へ入り、そこから持ち上げの想起を繰り返す。</p>
+
+      <ol>
+        <li><code>D</code> で机を実際の机に合わせ、<code>C</code> で手首を較正する</li>
+        <li><code>B</code> を押す。手が閉じて <code>TargetCube</code> を掴んだ状態になる（<code>grabOnBciDriven</code>）。ここで把持は成立済みであり、以降デコードが揺れても取り落とさない</li>
+        <li>持ち上げの想起（または <code>↑</code>）で腕が上がる。上がり方は <code>liftDriveMode</code> で決まる。<strong>持ち上げが効くのは BCI 駆動のあいだだけ</strong>である（トラッキングのままで腕が上がると、被験者が自分で動かしたのか BCI が動かしたのか分からなくなる）</li>
+        <li>指令変位に <code>cdRatio</code> を掛けたものが実際の腕の動きになる。<code>LiftTask</code> が到達高さを計測する</li>
+      </ol>
+
+      <div class="def">
+        <h3>持ち上げの 2 つのモード</h3>
+        <p><strong>OneShot</strong> — 発火を引き金に、台本どおり <code>liftHeight</code> まで上がり、<code>holdSeconds</code> 保ち、<code>liftReturnSeconds</code> で戻る。到達高さと所要時間が全試行で揃うので、<strong>C/D 比を振ったときの重さ知覚の比較が成立する</strong>。既定はこちら。</p>
+        <p><strong>Continuous</strong> — 信号が続く間だけ <code>liftSpeed</code> で上がり続け、<code>liftHeight</code> で頭打ちになる。途絶えたら戻る。被験者の制御感は高いが、試行ごとの到達高さが揃わない。</p>
+      </div>
+
+      <div class="note">
+        <span class="lbl">C/D 比の掛け方は「普通に腕を動かしたとき」と同じである</span>
+        <p><code>BciLiftDriver</code> は指令変位を <code>CdRatioMath.Scale</code> に通す。実トラッキング変位を扱う <code>CdRatioHandProcessor</code> と同じ関数なので、効き方が一致する。変位の出どころが違うので二重には掛からない。</p>
+        <p><code>BciLiftDriver</code> は Transform を直接書くため、<strong>HMD もハンドトラッキングも無い環境で動く</strong>。<code>CdRatioHandProcessor</code> は <code>hand.isTracked</code> でなければ何もしないので、実機なしの確認はこちらの経路で行う。</p>
+      </div>
+
+      <h3>キー操作</h3>
+
+      <p>実験中のキーは <code>[Systems]/Hotkeys</code> が一手に引き受ける。割り当ては <code>ExperimentHotkeys</code> の Inspector で変えられる。把握と持ち上げの代役入力だけは <code>KeyboardBciSignalSource</code> にある（信号ソースの一部であって操作系ではないため）。</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>キー</th><th>動作</th><th>シーン</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">B</td><td>トラッキングと BCI 駆動の切り替え。Pseudo では同時に物体を掴む</td><td>両方</td></tr>
+            <tr><td class="rowhead">C</td><td>手首の回転オフセットの再測定（手を平らにして脱力してから押す）</td><td>両方</td></tr>
+            <tr><td class="rowhead">D</td><td>仮想の机を実際の机に合わせるキャリブレーションの開始</td><td>両方</td></tr>
+            <tr><td class="rowhead">Enter / Esc</td><td>実験セッションの開始 / 中断</td><td>Hand</td></tr>
+            <tr><td class="rowhead">1〜7</td><td>主観的一致度 −3〜+3 の代打ち</td><td>Hand</td></tr>
+            <tr><td class="rowhead">Space</td><td>把握の代役入力</td><td>両方</td></tr>
+            <tr><td class="rowhead">↑</td><td>持ち上げの代役入力。BCI 駆動のあいだだけ効く</td><td>Pseudo</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <span class="lbl">BCI 入力とキー入力は併用できる</span>
+        <p><code>CompositeBciSignalSource</code> が UDP のソースとキーボードのスタブを最大値で束ねる。デコーダを繋いだまま、いつでもキーで手動介入できる。片方だけを繋いだ構成でも同じように動く。</p>
+      </div>
+    </section>
+
+    <section id="s7">
+      <span class="secnum">SECTION 7</span>
+      <h2>記録されるデータ</h2>
+      <hr class="h2rule">
+      <p class="lead">HandExperiment がセッションごとにディレクトリを作り、試行 CSV 1 つと設定のスナップショット JSON 1 つを置く。PseudoHapticsExperiment には試行記録の仕組みは無く、<code>LiftTask</code> の計測値を Inspector で読む。</p>
+
+      <pre><code>&lt;outputDirectory または persistentDataPath&gt;/&lt;被験者ID&gt;_&lt;モード&gt;_&lt;日時&gt;/
+    trials.csv        1 試行 1 行・8 列
+    settings.json     設定のスナップショット（ジッタの seed を含む）</code></pre>
+
+      <h3>試行 CSV の 8 列</h3>
+
+      <p>各列が特定の指標に 1 対 1 で対応し、<strong>どれも他の列や設定から導出できない</strong>ものだけに絞ってある。</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>列</th><th>その列が支える指標</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">trial_index</td><td>試行の通し番号。EEG との突合はこの順序で行う</td></tr>
+            <tr><td class="rowhead">cue_unix</td><td><strong>Δt の基準</strong>。python 側へ打刻したのと同じ値</td></tr>
+            <tr><td class="rowhead">cue_sent</td><td>0 なら打刻が届いておらず、その試行の EEG は解析から落ちる</td></tr>
+            <tr><td class="rowhead">fire_unix</td><td><strong>Δt の本体</strong>と検出率。空欄が未発火の試行</td></tr>
+            <tr><td class="rowhead">grasp_reach_unix</td><td>把持到達時刻誤差。<code>closeSeconds</code> からの定数ではなく実測値</td></tr>
+            <tr><td class="rowhead">fire_count</td><td>試行成功率、および不応期の設定の確認（2 以上なら疑う）</td></tr>
+            <tr><td class="rowhead">rest_fire_count</td><td>誤発火率 FP/min の分子。検出窓の外に出た発火</td></tr>
+            <tr><td class="rowhead">subjective_timing</td><td>主観的一致度（−3〜+3）。空欄は未回答</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <span class="lbl">主要な導出値</span>
+        <p><strong>Δt ＝ <code>fire_unix − cue_unix</code></strong>。主要評価項目である。</p>
+        <p><strong>試行成功率 ＝ <code>|Δt| ≤ 200 ms</code> かつ <code>fire_count == 1</code></strong> の試行の割合。</p>
+      </div>
+
+      <div class="info">
+        <span class="lbl">列に持たない値</span>
+        <p><code>block_index</code> はブロックの概念ごと無くなった。1 回の実行は試行の列 1 本である。<code>applied_unix</code> は発火の予約（<code>delay_ms</code>）が無くなり <code>fire_unix</code> と常に同値になったため落とした。<code>delta_ms</code> は引けば出る。<code>peak_grasp_level</code> は把持レベルが 0/1 を速度制限したものである以上ほぼ常に 1 になる。<code>grasp_level_series</code> は <code>closeSeconds</code> と <code>fire_unix</code> から再構成できる。いずれも冗長なので持たない。設定値も行ごとには出さず、隣のスナップショットに 1 回だけ書く。</p>
+      </div>
+
+      <div class="caution">
+        <span class="lbl">注意</span>
+        <p><strong>打刻に失敗した試行は、その EEG が解析から落ちるだけでなく、以降の突合を全部ずらす。</strong>打刻はすべて同じ内容（<code>event_id: 1</code>）で送るため、突合は順序で行うしかない。1 通の欠落が以降の全対応をずらす。送信失敗はその場で HMD 内とコンソールに警告が出るので、実験者が必ず確認し、<code>cue_sent</code> が 0 の行は解析から落とすこと。</p>
+      </div>
+    </section>
+
+    <section id="s8">
+      <span class="secnum">SECTION 8</span>
+      <h2>動作確認と校正</h2>
+      <hr class="h2rule">
+      <p class="lead">EEG デコーダや実機が無くても、経路の疎通を確かめられる。<code>tools/</code> の 2 本はいずれも標準ライブラリだけで動く。</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>スクリプト</th><th>役割</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">send_grasp_udp.py</td><td>デコーダの代役。platform と同じ形の分類パケットを送る</td></tr>
+            <tr><td class="rowhead">recv_events_udp.py</td><td>platform の代役。5000 番でイベント打刻を受け取って表示する</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <pre><code># 対象クラスを 10 Hz で送る（連続 N 回で発火するのを確かめる）
+python3 tools/send_grasp_udp.py --class-id 2
+
+# 対象 / 安静を 2 秒ずつ交互に送る（発火と解放の両方を確かめる）
+python3 tools/send_grasp_udp.py --alternate 2
+
+# 分類なしのセンチネルを送り、捨てられることを確かめる
+python3 tools/send_grasp_udp.py --sentinel --duration 1
+
+# 旧仕様を送り、捨てられることを確かめる
+python3 tools/send_grasp_udp.py --bad-version --duration 1
+
+# イベント打刻を受け取る
+python3 tools/recv_events_udp.py</code></pre>
+
+      <h3>セッション前に決めること</h3>
+
+      <p>発火の判定が Unity 側へ移ったので、セッション前に決めるのは<strong>閾値と連続回数の 2 つ</strong>である。トレーニング計測で作ったモデルを使い、Off モードで実際にパケットを流しながら詰める。</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>値</th><th>上げると</th><th>下げると</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">confidenceThreshold</td><td>誤発火が減り、検出率も下がる</td><td>検出率が上がり、誤発火も増える</td></tr>
+            <tr><td class="rowhead">consecutiveHits</td><td>誤発火が減り、発火が遅れる</td><td>反応が早くなり、単発の跳ねで発火する</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><code>consecutiveHits</code> の 1 回ぶんの遅れは、python 側の <code>interval</code>（推論間隔）で決まる。既定の 5 Hz なら 1 回あたり 0.2 秒であり、N=3 は約 0.4 秒の遅れを意味する。Δt の許容が ±100 ms であることを考えると、<strong>N を上げるほどタイミング精度は取り返せなくなる</strong>。誤発火とのトレードオフをここで決める。</p>
+
+      <div class="caution">
+        <span class="lbl">実験中は動かさない</span>
+        <p>閾値と連続回数はセッション前に決め、本番のあいだは固定する。途中で変えると、同じ被験者の試行が別の判定条件で混ざり、Δt の分布が何を測ったものか分からなくなる。</p>
+      </div>
+
+      <h3>テスト</h3>
+
+      <p>EditMode テストは Unity Test Runner（Window &gt; General &gt; Test Runner）から実行する。対象アセンブリは <code>PseudoHaptics.Tests.EditMode</code>。</p>
+
+      <p>テストの対象は、ソケットも Unity のランタイムも要らない<strong>純粋な static クラス</strong>に切り出してある（<code>BciPacketDecoder</code> / <code>BciClassMap</code> / <code>ConsecutiveHitCounter</code> / <code>BciHoldSchedule</code> / <code>LiftTrajectory</code> / <code>TrialSchedule</code> / <code>TrialCsvWriter</code> / <code>EventPacketEncoder</code> / <code>PressTrigger</code> / <code>GraspLevelSmoother</code> / <code>GraspTrigger</code> / <code>CdRatioMath</code>）。加えて <code>Asset_*</code> テストが両方の Settings asset の実物を読み、既定値がプロトコルどおりであることを押さえている。</p>
+    </section>
+
+    <section id="s9">
+      <span class="secnum">SECTION 9</span>
+      <h2>まとめ・Q&amp;A</h2>
+      <hr class="h2rule">
+
+      <ul class="clean">
+        <li>Unity の役割は<strong>キュー提示・発火の判定と描画・記録</strong>の 3 つ。脳波の計測とデコードは python-bci-platform が持つ</li>
+        <li><strong>発火の判定は Unity 側にある。</strong>閾値と連続 N 回は設定 asset にあり、実験者がその場で振れる</li>
+        <li>UDP は受信 5001 / 送信 5000 で、<strong>向きによってキー名が違う</strong>。受信は <code>format_version: 1</code> が必須で、旧版と <code>class &lt;= 0</code> は捨てる</li>
+        <li>2 つのシーンは<strong>別の実験</strong>。Hand は把握を、Pseudo は腕の持ち上げを想起させる。参照する asset は 1 枚ずつに分かれている</li>
+        <li>実験モードは Off（自由制御）/ Training / Task の 3 つ。Training と Task の違いは<strong>発火の有無と主観入力の有無だけ</strong></li>
+        <li>試行 CSV は 8 列。設定値は隣のスナップショットに 1 回だけ書く</li>
+        <li class="warn">打刻は <code>event_id: 1</code> 固定なので、EEG との突合は順序で行う。<code>cue_sent</code> が 0 の行は必ず落とす</li>
+        <li class="warn">実験中に被験者ごとへ変えてよいのは <code>avatarHeadOffset</code> だけ</li>
+      </ul>
+
+      <details>
+        <summary>手が動きません。何を確認すればよいですか</summary>
+        <div class="qbody">
+          <p>上から順に確認します。</p>
+          <ul class="clean">
+            <li><strong>モード</strong>。<code>B</code> キーで BciDriven に入っていますか。Tracking のままだと二重に止まっています（Task セッションを開始すれば自動で切り替わります）</li>
+            <li><strong>パケット形式</strong>。<code>UdpBciSignalSource.RejectedCount</code> が増えていれば、送信側の <code>format_version</code> が 1 でないか、<code>class</code> が 0 以下です</li>
+            <li><strong>ポート</strong>。<code>UdpPacketReceiver.BoundPort</code> が -1 なら別プロセスが 5001 を掴んでいます</li>
+            <li><strong>クラス対応表</strong>。届いている <code>class</code> が <code>classMap</code> に登録され、目的の <code>action</code> が割り当たっていますか。<code>LatestClass</code> と <code>LatestAction</code> で確かめられます</li>
+            <li><strong>確信度と連続回数</strong>。<code>confidenceThreshold</code> を超えるパケットが <code>consecutiveHits</code> 回続いていますか。閾値を 0、回数を 1 にすれば切り分けられます</li>
+          </ul>
+          <p><code>logPackets</code> をオンにすると、受け入れたパケットが行動の判定結果つきで毎回コンソールに出ます。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>PseudoHapticsExperiment で B キーを押すと何が起きますか</summary>
+        <div class="qbody">
+          <p><strong>手が閉じて <code>TargetCube</code> を掴んだ状態になります</strong>（<code>HandControlModeSwitch.grabOnBciDriven</code>）。腕はまだ上がりません。上がるのは、そのあと持ち上げの想起（または <code>↑</code>）が届いてからです。</p>
+          <p>このシーンでは把握は検証対象ではなく前提条件です。把握のデコードが揺れて物体を取り落とすと、検証したい持ち上げのほうが成立しなくなるため、モード入りで掴みを固定しています。<code>grabLevelThreshold</code> / <code>releaseLevelThreshold</code> は自由制御モード（Off）で手動に掴むときにだけ効きます。</p>
+          <p>なお HandExperiment では <code>grabOnBciDriven</code> は false です。あちらは把握そのものを測るので、掴みを固定してしまっては意味がありません。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>持ち上げていないのに腕が動きます。原因は何ですか</summary>
+        <div class="qbody">
+          <p><code>BciLiftDriver</code> 以外に、手首を動かす経路が 4 つあります。<code>CommandedHeight</code> が 0 のままなら持ち上げ以外が原因です。</p>
+          <ul class="clean">
+            <li><strong><code>C</code> キーの手首較正</strong>。<code>HandRootDriver.Calibrate()</code> はトラッキングされた手首を <code>referenceEuler</code> へ写す offset を測り直します。押した瞬間に手首の向きが一段跳び、IK の前腕と肘が追従します</li>
+            <li><strong>トラッキングのロスト</strong>。<code>HandRootDriver</code> は <code>hand.isTracked</code> でなければ書き込まないため、手首は最後の位置に取り残されます。一方 <code>FirstPersonAvatarAnchor</code> は毎フレーム胴をカメラへ寄せ続けるので、腕が伸びるように見えます</li>
+            <li><strong>机のクリアランス</strong>。<code>ClampAboveSurface</code> が手首を机の上端 + <code>clampClearance</code> より下へ行かせません。手を机へ押し付けると腕が持ち上がります</li>
+            <li><strong>C/D 比</strong>。<code>cdRatio</code> が 1 でなければ、持ち上げの指令に対して腕が違う量だけ動きます</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>「平滑化」という処理は何ですか。必要ですか</summary>
+        <div class="qbody">
+          <p>信号のノイズ除去ではありません。<code>GraspLevelSmoother</code> は把持レベルを 0 から 1 へ <code>closeSeconds</code> かけて線形に動かすだけの<strong>開閉アニメーションの速度制限</strong>です。呼び名が誤解を招くので、資料では「開閉の速度制限」と書いています。</p>
+          <p>必要です。これが無いと手は 1 フレームで握り込み、<code>grasp_reach_unix</code>（把持到達時刻）も測れません。また 0/1 の硬い分類を出すデコーダと連続的な確信度を出すデコーダのどちらを繋いでも、手の見た目の動きが同じになります。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>なぜ設定 asset を 2 つに分けているのですか</summary>
+        <div class="qbody">
+          <p>別の実験だからです。HandExperiment は把握を想起させて発火のタイミング精度を測り、PseudoHapticsExperiment は腕の持ち上げを想起させて C/D 比による重さ知覚を測ります。1 枚に混ぜると、いま自分がどちらの条件を触っているのかが分からなくなります。</p>
+          <p><strong>各シーンが参照する asset は 1 枚だけ</strong>です。共通する部分（UDP・発火判定・動作のタイミング）はフィールドの定義を基底クラス <code>BciSignalSettings</code> に 1 度だけ書いてありますが、値は asset ごとに独立に持ちます。片方を触ってももう一方には影響しません。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>なぜ発火判定を python 側ではなく Unity 側に置いたのですか</summary>
+        <div class="qbody">
+          <p>閾値と連続回数を実験者がその場で振れるようにするためです。python 側に置くと、被験者ごとの調整のたびに実験を止めて別リポジトリの設定を触ることになります。</p>
+          <p>加えて、python-bci-platform の送信仕様には発火を表すキーがありません。送るのは <code>format_version</code> / <code>name</code> / <code>class</code> / <code>confidence</code> / <code>probabilities</code> の 5 つだけで、「いつ動かすか」を表現する余地がない。判定を Unity 側へ置くと、platform を改造せずに繋がります。</p>
+          <p>引き換えに、<code>delay_ms</code> による遅延補償は無くなりました。発火は連続 N 回が成立したフレームで即座に起きます。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>HMD の中の文字が四角（豆腐）になります</summary>
+        <div class="qbody">
+          <p>TextMeshPro の既定フォント <code>LiberationSans SDF</code> は ASCII しか持たないためです。表示文字列は <code>CueDisplay</code> の Inspector に出してあり、既定値は必ず描ける ASCII（<code>GO</code> / <code>RATE</code> / <code>END</code> など）にしてあります。日本語で出したい場合は、日本語グリフを含む TMP フォントアセットを用意してテキストに割り当ててください。カウントダウンの数字は言語に依存しません。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Δt が 0 に集まれば「イメージと一致した」と言えますか</summary>
+        <div class="qbody">
+          <p>言えません。Δt は「キューからの発火誤差」であって「イメージ開始からのズレ」ではなく、被験者が教示どおり t=0 に想起を始めたという仮定に依存しています。キュー基準での被験者側のばらつきは 100 ms 台に達します（Jochumsen et al. 2019 の報告値は 11.73 ± 165 ms。桁の目安）。</p>
+          <p>だから主観的一致度を対で取ります。<strong>Δt と主観の対応こそが本研究の新規性の核</strong>です。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>発火しない試行が多いのですが、実験として成立しますか</summary>
+        <div class="qbody">
+          <p>成立します。想像課題の TPR は文献値で 65〜75% であり、<strong>3 割前後の試行が発火しない前提で設計してあります</strong>。検出率と Δt は別々に報告する指標で、発火しなかった試行は検出率の分母に入り、発火した試行だけが Δt の分布を作ります。</p>
+          <p>検出率が極端に低い場合は <code>confidenceThreshold</code> と <code>consecutiveHits</code> を下げて調整できますが、そのぶん誤発火（<code>rest_fire_count</code>）が増えます。両方を報告してください。</p>
+        </div>
+      </details>
+
+      <h3>参考リンク</h3>
+      <div class="doclist">
+        <p class="grp">関連資料</p>
+        <a href="../実験/mrcp-hand-grasp-experiment-protocol.html" target="_blank">MRCP 想起オンセット同期システムの説明と実験プロトコル<span class="u">実験デザインの根拠、文献レビュー、解析方法。本資料の姉妹編</span></a>
+        <a href="../../_unsorted/python-bci-platform/UDP_COMMUNICATION_GUIDE.html" target="_blank">UDP 通信ガイド — python-bci-platform<span class="u">送信側の一次情報。本資料のパケット仕様はこれに合わせてある</span></a>
+        <a href="./mrcp-onset-detection-design.html" target="_blank">想起オンセット先読みの検討とクラス定義機構<span class="u">python-bci-platform 側の検討メモ</span></a>
+        <a href="../実験/bci-golf-experiment-protocol.html" target="_blank">AR スポットライト型 SMR ニューロフィードバックの実験プロトコル<span class="u">unity-bci-golf。構成の参考にした先行プロジェクト</span></a>
+
+        <p class="grp">設計の根拠になった文献</p>
+        <a href="https://doi.org/10.1007/s00221-009-1725-5" target="_blank">Cui, R. &amp; MacKinnon, C. D. (2009). The effect of temporal accuracy constraints on movement-related potentials<span class="u">Exp Brain Res 194(3) — 予告間隔を固定する根拠。不規則キューでは運動前活動が有意に減弱（P &lt; 0.005）</span></a>
+        <a href="https://doi.org/10.1371/journal.pone.0159619" target="_blank">Shibuya, S. et al. (2016). 'Robot' Hand Illusion under Delayed Visual Feedback<span class="u">PLOS ONE 11(7) — ±100 ms という要件の根拠。所有感は遅延 190 ms を超えると消える</span></a>
+        <a href="https://doi.org/10.1145/3290605.3300550" target="_blank">Samad, M. et al. (2019). Pseudo-Haptic Weight<span class="u">CHI 2019 — C/D 比による重さ知覚。本リポジトリの疑似触覚の基礎</span></a>
+      </div>
+    </section>
+
+    <footer>
+出典: 本リポジトリ <code>unity-bci-pseudo-haptics</code> のソースコード、<code>Assets/Settings/</code> の 2 つの Settings asset、および両シーンの現行実装（Unity 6000.4.8f1 / XR Hands 1.8.0）。受信パケットの仕様は python-bci-platform の <code>UDP_COMMUNICATION_GUIDE</code>（送信ペイロード仕様 format_version 1）に合わせてある。パラメータの既定値は asset の実測値であり、EditMode テストで確認している。<br>
+      実験デザインの根拠と文献値は姉妹編「MRCP 想起オンセット同期システムの説明と実験プロトコル」を参照。<br>
+      2026-08-11 改訂: 発火判定を python 側から Unity 側へ移し（閾値と連続 N 回）、受信仕様を platform の実装に合わせた（<code>type</code> / <code>onset</code> / <code>delay_ms</code> / <code>echo</code> を廃止）。PseudoHapticsExperiment を「腕の持ち上げ」の実験として作り直し、設定 asset をシーンごとに完全分離した。実験モードから Practice を落とし、ブロック構成・自動開始・回答タイムアウトを撤去した。<br>
+      作成日：2026-08-11
+    </footer>
+  </main>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var seen = {};
+
+  function updateParts() {
+    document.querySelectorAll('#toc .toc-part').forEach(function (part) {
+      var items = Array.prototype.slice.call(part.querySelectorAll('a'));
+      var done = items.filter(function (a) { return seen[a.getAttribute('href').slice(1)]; }).length;
+      var counter = part.querySelector('.part-progress');
+      if (counter) counter.textContent = done + '/' + items.length;
+      var current = items.some(function (a) { return a.classList.contains('active'); });
+      part.classList.toggle('current', current);
+      if (current) part.open = true;
+    });
+  }
+
+  if (typeof IntersectionObserver === 'function') {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        seen[entry.target.id] = true;
+        links.forEach(function (a) { a.classList.remove('active'); });
+        if (byId[entry.target.id]) byId[entry.target.id].classList.add('active');
+        updateParts();
+      });
+    }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+    document.querySelectorAll('main section').forEach(function (s) { observer.observe(s); });
+  }
+
+  function applyCollapse(wrap) {
+    if (!wrap || !wrap.dataset.collapse || !wrap.dataset.expanded) return;
+    var limit = parseInt(wrap.dataset.collapse, 10);
+    var rows = Array.prototype.slice.call(wrap.querySelectorAll('tbody tr'));
+    var expanded = wrap.dataset.expanded === 'true';
+    rows.forEach(function (row, index) { row.hidden = !expanded && index >= limit; });
+    var button = wrap.querySelector('.rowmore');
+    if (!button) return;
+    button.textContent = expanded ? '折りたたむ' : '残り ' + (rows.length - limit) + ' 行を表示';
+    button.setAttribute('aria-expanded', String(expanded));
+  }
+
+  document.querySelectorAll('.tablewrap[data-collapse]').forEach(function (wrap) {
+    var limit = parseInt(wrap.dataset.collapse, 10);
+    var rows = wrap.querySelectorAll('tbody tr');
+    if (!limit || rows.length <= limit) return;
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'rowmore';
+    button.addEventListener('click', function () {
+      wrap.dataset.expanded = wrap.dataset.expanded === 'true' ? 'false' : 'true';
+      applyCollapse(wrap);
+    });
+    wrap.appendChild(button);
+    wrap.dataset.expanded = 'false';
+    applyCollapse(wrap);
+  });
+
+  function cellValue(row, index) {
+    var cell = row.cells[index];
+    return cell ? cell.textContent.trim() : '';
+  }
+
+  var NUMERIC = /^[+-]?\d[\d,]*(?:\.\d+)?$/;
+
+  function compareValues(x, y) {
+    if (NUMERIC.test(x) && NUMERIC.test(y)) {
+      return parseFloat(x.replace(/,/g, '')) - parseFloat(y.replace(/,/g, ''));
+    }
+    return x.localeCompare(y, 'ja', { numeric: true });
+  }
+
+  function comparator(index, descending) {
+    return function (a, b) {
+      var result = compareValues(cellValue(a, index), cellValue(b, index));
+      return descending ? -result : result;
+    };
+  }
+
+  document.querySelectorAll('table.sortable').forEach(function (table) {
+    if (!table.tHead || !table.tBodies.length) return;
+    var headers = Array.prototype.slice.call(table.tHead.rows[0].cells);
+    headers.forEach(function (th, index) {
+      th.setAttribute('tabindex', '0');
+      th.setAttribute('role', 'button');
+      function sort() {
+        var descending = th.getAttribute('aria-sort') === 'ascending';
+        headers.forEach(function (other) { other.removeAttribute('aria-sort'); });
+        th.setAttribute('aria-sort', descending ? 'descending' : 'ascending');
+        var body = table.tBodies[0];
+        Array.prototype.slice.call(body.rows)
+          .sort(comparator(index, descending))
+          .forEach(function (row) { body.appendChild(row); });
+        applyCollapse(table.closest('.tablewrap'));
+      }
+      th.addEventListener('click', sort);
+      th.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
+        sort();
+      });
+    });
+  });
+
+  document.querySelectorAll('.tabs').forEach(function (tabs) {
+    var buttons = Array.prototype.slice.call(tabs.querySelectorAll('[role="tab"]'));
+    var panels = buttons.map(function (b) { return document.getElementById(b.getAttribute('aria-controls')); });
+    if (!buttons.length || panels.indexOf(null) !== -1) return;
+
+    function select(index) {
+      buttons.forEach(function (button, i) {
+        button.setAttribute('aria-selected', String(i === index));
+        button.setAttribute('tabindex', i === index ? '0' : '-1');
+        panels[i].hidden = i !== index;
+      });
+    }
+
+    buttons.forEach(function (button, index) {
+      button.addEventListener('click', function () { select(index); });
+      button.addEventListener('keydown', function (e) {
+        var step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!step) return;
+        e.preventDefault();
+        var next = (index + step + buttons.length) % buttons.length;
+        select(next);
+        buttons[next].focus();
+      });
+    });
+    tabs.dataset.ready = 'true';
+    select(0);
+  });
+
+  document.querySelectorAll('.flow[data-steps]').forEach(function (flow) {
+    var nodes = Array.prototype.slice.call(flow.querySelectorAll('.node'));
+    if (nodes.length < 3) return;
+    var parts = Array.prototype.slice.call(flow.children);
+    var position = 0;
+
+    var control = document.createElement('div');
+    control.className = 'flow-ctl';
+    var prev = document.createElement('button');
+    prev.type = 'button';
+    prev.textContent = '前へ';
+    var next = document.createElement('button');
+    next.type = 'button';
+    next.textContent = '次へ';
+    var label = document.createElement('span');
+    label.className = 'pos';
+    control.appendChild(prev);
+    control.appendChild(label);
+    control.appendChild(next);
+    flow.parentNode.insertBefore(control, flow.nextSibling);
+
+    function render() {
+      var head = nodes[position];
+      var passed = false;
+      parts.forEach(function (part) {
+        part.classList.toggle('ahead', passed);
+        part.classList.toggle('now', part === head);
+        if (part === head) passed = true;
+      });
+      label.textContent = (position + 1) + ' / ' + nodes.length;
+      prev.disabled = position === 0;
+      next.disabled = position === nodes.length - 1;
+    }
+
+    prev.addEventListener('click', function () { position = Math.max(0, position - 1); render(); });
+    next.addEventListener('click', function () { position = Math.min(nodes.length - 1, position + 1); render(); });
+    flow.dataset.ready = 'true';
+    render();
+  });
+})();
+</script>
+</body>
+</html>

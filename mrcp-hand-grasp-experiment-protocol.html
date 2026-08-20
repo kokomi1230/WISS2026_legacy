@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MRCP 想起オンセット同期 実験プロトコル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f6f4ee;
+    --surface:#ffffff;
+    --ink:#232a2d;
+    --sub:#59636a;
+    --teal:#1c5a62;
+    --teal-deep:#164249;
+    --teal-tint:#e6efee;
+    --ochre:#9a5417;
+    --ochre-tint:#f4ebdf;
+    --info:#6c7176;
+    --info-tint:#ecebe4;
+    --line:#e2dccf;
+    --rule:#d6cfc1;
+    --maxcol:780px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Inter","Noto Sans JP",-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;
+    font-size:16px;line-height:1.85;font-feature-settings:"palt";}
+  .masthead{border-bottom:2px solid var(--teal);background:var(--surface);}
+  .masthead .inner{max-width:1080px;margin:0 auto;padding:34px 28px 26px;}
+  .kicker{font-size:.78rem;letter-spacing:.14em;color:var(--teal);font-weight:600;text-transform:uppercase;margin:0 0 8px;}
+  .masthead h1{margin:0;font-size:1.8rem;font-weight:700;letter-spacing:.01em;line-height:1.35;}
+  .masthead p{margin:10px 0 0;color:var(--sub);font-size:.92rem;max-width:var(--maxcol);}
+  .layout{max-width:1080px;margin:0 auto;padding:0 28px;display:flex;gap:44px;align-items:flex-start;}
+  aside{position:sticky;top:0;flex:0 0 210px;padding:34px 0;align-self:flex-start;}
+  aside .toc-title{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);font-weight:600;margin:0 0 12px;}
+  aside ol{list-style:none;margin:0;padding:0;}
+  aside a{display:block;padding:6px 0 6px 14px;border-left:2px solid var(--line);
+    color:var(--sub);text-decoration:none;font-size:.86rem;line-height:1.5;transition:.15s;}
+  aside a:hover{color:var(--teal);border-color:var(--teal);}
+  aside a.active{color:var(--teal-deep);border-color:var(--teal);font-weight:600;}
+  aside .toc-part{border:0;background:none;border-radius:0;margin:0;overflow:visible;}
+  aside .toc-part>summary{display:flex;align-items:baseline;gap:6px;
+    padding:8px 0 8px 14px;border-left:2px solid var(--line);
+    font-size:.78rem;font-weight:700;color:var(--teal-deep);letter-spacing:.03em;}
+  aside .toc-part>summary::before{content:"▸";color:var(--sub);font-size:.7rem;}
+  aside .toc-part[open]>summary::before{content:"▾";}
+  aside .toc-part>summary::after{content:none;}
+  aside .toc-part[open]>summary{border-bottom:0;}
+  aside .toc-part.current>summary{border-left-color:var(--teal);}
+  aside .part-progress{margin-left:auto;font-weight:400;font-size:.72rem;color:var(--sub);
+    font-variant-numeric:tabular-nums;}
+  aside .toc-part>ol{margin:0 0 10px;}
+  aside .toc-part>ol a{padding-left:26px;}
+  main{flex:1 1 auto;min-width:0;max-width:var(--maxcol);padding:34px 0 80px;}
+  section{padding-top:26px;margin-top:20px;}
+  section:first-child{margin-top:0;}
+  .secnum{font-size:.8rem;font-weight:700;color:var(--teal);letter-spacing:.05em;}
+  h2{font-size:1.42rem;font-weight:700;margin:4px 0 4px;line-height:1.4;}
+  .h2rule{height:2px;background:var(--rule);border:0;margin:0 0 20px;}
+  h3{font-size:1.04rem;font-weight:700;color:var(--teal-deep);margin:26px 0 8px;}
+  p{margin:12px 0;}
+  .lead{font-size:1.02rem;}
+  strong{font-weight:700;}
+  a.inline{color:var(--teal);text-underline-offset:2px;}
+  .partmark{margin:52px 0 0;padding-top:22px;border-top:2px solid var(--teal);}
+  .partmark .lbl{font-size:.78rem;font-weight:700;letter-spacing:.12em;color:var(--teal);}
+  .partmark h2{font-size:1.24rem;margin:2px 0 0;}
+  .tablewrap{overflow-x:auto;margin:18px 0;}
+  table{width:100%;border-collapse:collapse;font-size:.9rem;line-height:1.6;min-width:460px;}
+  th,td{text-align:left;padding:10px 14px;vertical-align:top;border-bottom:1px solid var(--line);}
+  thead th{border-bottom:2px solid var(--teal);color:var(--teal-deep);font-weight:600;white-space:nowrap;}
+  td:first-child,th:first-child{padding-left:0;}
+  .rowhead{font-weight:600;color:var(--ink);white-space:nowrap;}
+  table.sortable thead th{cursor:pointer;user-select:none;position:relative;padding-right:22px;}
+  table.sortable thead th::after{content:"⇅";position:absolute;right:6px;color:var(--rule);font-size:.78em;font-weight:400;}
+  table.sortable thead th[aria-sort="ascending"]::after{content:"↑";color:var(--teal);}
+  table.sortable thead th[aria-sort="descending"]::after{content:"↓";color:var(--teal);}
+  .rowmore{appearance:none;background:none;border:0;border-bottom:1px solid var(--line);width:100%;
+    padding:8px 0;font:inherit;font-size:.82rem;font-weight:600;color:var(--teal);cursor:pointer;text-align:left;}
+  .rowmore:hover{color:var(--teal-deep);}
+  .note{border-left:3px solid var(--teal);background:var(--teal-tint);padding:14px 18px;margin:18px 0;border-radius:0 4px 4px 0;}
+  .note .lbl{display:block;font-size:.76rem;font-weight:700;letter-spacing:.08em;color:var(--teal-deep);text-transform:uppercase;margin-bottom:4px;}
+  .caution{border-left:3px solid var(--ochre);background:var(--ochre-tint);padding:14px 18px;margin:18px 0;border-radius:0 4px 4px 0;}
+  .caution .lbl{display:block;font-size:.76rem;font-weight:700;letter-spacing:.08em;color:var(--ochre);text-transform:uppercase;margin-bottom:4px;}
+  .info{border-left:3px solid var(--info);background:var(--info-tint);padding:14px 18px;margin:18px 0;border-radius:0 4px 4px 0;}
+  .info .lbl{display:block;font-size:.76rem;font-weight:700;letter-spacing:.08em;color:var(--info);text-transform:uppercase;margin-bottom:4px;}
+  .note p,.caution p,.info p{margin:6px 0;}
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:18px 0;}
+  .flow .node{border:1px solid var(--rule);background:var(--surface);padding:9px 15px;font-size:.86rem;font-weight:600;border-radius:3px;}
+  .flow .node small{display:block;font-weight:400;color:var(--sub);font-size:.74rem;}
+  .flow .sep{color:var(--teal);font-weight:700;}
+  .flow[data-ready] .node,.flow[data-ready] .sep{transition:opacity .18s;}
+  .flow[data-ready] .ahead{opacity:.22;}
+  .flow[data-ready] .node.now{border-color:var(--teal);box-shadow:inset 3px 0 0 var(--teal);}
+  .flow-ctl{display:flex;align-items:center;gap:12px;margin:-8px 0 18px;font-size:.8rem;color:var(--sub);}
+  .flow-ctl button{appearance:none;background:var(--surface);border:1px solid var(--rule);border-radius:3px;
+    padding:4px 12px;font:inherit;font-size:.8rem;font-weight:600;color:var(--teal);cursor:pointer;}
+  .flow-ctl button:disabled{color:var(--sub);opacity:.5;cursor:default;}
+  .flow-ctl .pos{font-variant-numeric:tabular-nums;}
+  ul.clean{margin:12px 0;padding-left:0;list-style:none;}
+  ul.clean li{position:relative;padding-left:20px;margin:7px 0;}
+  ul.clean li::before{content:"";position:absolute;left:2px;top:.72em;width:6px;height:6px;background:var(--teal);border-radius:50%;}
+  ul.clean li.warn::before{background:var(--ochre);}
+  ul.clean li.good::before{background:var(--info);}
+  .def{border:1px solid var(--line);border-radius:5px;padding:2px 20px 6px;margin:16px 0;background:var(--surface);}
+  .def h3{margin-top:16px;}
+  details{border:1px solid var(--line);border-radius:5px;margin:12px 0;background:var(--surface);overflow:hidden;}
+  summary{cursor:pointer;padding:14px 18px;font-weight:600;font-size:.95rem;list-style:none;position:relative;padding-right:44px;}
+  summary::-webkit-details-marker{display:none;}
+  summary::after{content:"＋";position:absolute;right:18px;top:13px;color:var(--teal);font-weight:700;}
+  details[open] summary::after{content:"－";}
+  details[open] summary{border-bottom:1px solid var(--line);}
+  .qbody{padding:14px 18px;font-size:.92rem;}
+  .qbody p:first-child{margin-top:0;}
+  .doclist .grp{font-size:.82rem;font-weight:700;color:var(--teal-deep);letter-spacing:.04em;margin:18px 0 8px;}
+  .doclist a{display:block;padding:8px 0;border-bottom:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:.9rem;transition:.15s;}
+  .doclist a:hover{color:var(--teal);padding-left:6px;}
+  .doclist a .u{display:block;font-size:.74rem;color:var(--sub);}
+  .muted{color:var(--sub);font-size:.84rem;}
+  footer{border-top:1px solid var(--rule);margin-top:40px;padding-top:18px;color:var(--sub);font-size:.8rem;line-height:1.7;}
+  code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.86em;background:#efece4;padding:1px 5px;border-radius:3px;}
+  pre{background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:14px 18px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,monospace;font-size:.82rem;line-height:1.7;margin:16px 0;}
+  pre code{background:none;padding:0;font-size:1em;}
+  canvas{display:block;width:100%;height:auto;margin:14px 0 6px;}
+  .ctlrow{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;margin:12px 0;font-size:.82rem;color:var(--sub);}
+  .ctlrow label{display:flex;align-items:center;gap:8px;white-space:nowrap;}
+  .ctlrow b{color:var(--teal-deep);font-weight:600;font-variant-numeric:tabular-nums;min-width:4.6em;display:inline-block;}
+  input[type=range]{accent-color:var(--teal);width:130px;vertical-align:middle;}
+  .ctlrow button{font-family:inherit;font-size:.82rem;border:1px solid var(--rule);background:var(--surface);
+    color:var(--ink);padding:5px 12px;border-radius:3px;cursor:pointer;transition:.15s;}
+  .ctlrow button:hover{border-color:var(--teal);color:var(--teal-deep);}
+  .ctlrow button[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff;}
+  button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--teal);outline-offset:2px;}
+  @media(max-width:820px){
+    aside{display:none;}
+    .layout{padding:0 20px;}
+    .masthead .inner{padding:26px 20px 22px;}
+    main{padding:24px 0 60px;max-width:none;}
+    .masthead h1{font-size:1.5rem;}
+  }
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="inner">
+    <p class="kicker">unity-bci-pseudo-haptics / 実験プロトコル</p>
+    <h1>MRCP 想起オンセット同期システムの説明と実験プロトコル</h1>
+    <p>脳波から「握るイメージが始まる瞬間」を先読みし、その瞬間に仮想の手を握らせる。第 1 部で MRCP の知見と本研究の位置づけを、第 2 部でシステムの仕組みを、第 3 部で実験プロトコルを定める。設計判断の根拠は Cui &amp; MacKinnon (2009)、Jochumsen et al. (2019)、Suwandjieff et al. (2026) ほかの文献に置いた。</p>
+  </div>
+</div>
+
+<div class="layout">
+  <aside>
+    <p class="toc-title">目次</p>
+    <nav id="toc">
+      <details class="toc-part" open>
+        <summary>第1部　MRCP の知見<span class="part-progress">0/5</span></summary>
+        <ol>
+          <li><a href="#s1">1. MRCP とは何か</a></li>
+          <li><a href="#s2">2. パラダイム選択と前処理</a></li>
+          <li><a href="#s3">3. 単一試行検出の到達水準</a></li>
+          <li><a href="#s4">4. 機械学習とリアルタイム化</a></li>
+          <li><a href="#s5">5. 本研究の新規性</a></li>
+        </ol>
+      </details>
+      <details class="toc-part" open>
+        <summary>第2部　システム<span class="part-progress">0/3</span></summary>
+        <ol>
+          <li><a href="#s6">6. 構成と信号の流れ</a></li>
+          <li><a href="#s7">7. 想起オンセットの検出</a></li>
+          <li><a href="#s8">8. Unity 側の受信と設定</a></li>
+        </ol>
+      </details>
+      <details class="toc-part" open>
+        <summary>第3部　実験プロトコル<span class="part-progress">0/2</span></summary>
+        <ol>
+          <li><a href="#s9">9. デザインと当日の手順</a></li>
+          <li><a href="#s10">10. 計測・解析・まとめ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+
+  <main>
+
+    <div class="partmark"><span class="lbl">第1部</span><h2>MRCP の知見と本研究の位置づけ</h2></div>
+
+    <section id="s1">
+      <span class="secnum">SECTION 1</span>
+      <h2>MRCP とは何か</h2>
+      <hr class="h2rule">
+      <p class="lead">MRCP（運動関連皮質電位）は、随意運動の 1.5〜2 秒前から始まる緩やかな陰性電位である。本システムはこの坂を読んで「まだ始まっていない想起」を先読みする。</p>
+
+      <div class="def">
+        <h3>成分と時間経過</h3>
+        <canvas id="mrcpFig" width="760" height="300" aria-label="MRCP の成分と時間経過の模式図。早期 BP、後期 BP、ピーク陰性を帯で示す"></canvas>
+        <p class="muted">仕組みを説明するための模式図であり、実測データではない。</p>
+      </div>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>成分</th><th>時間</th><th>起源・分布</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">早期 BP（BP1）</td><td>オンセットの約 2 s 前から</td><td>傾きが緩やか。pre-SMA 起源とされ、正中中心部で最大</td></tr>
+            <tr><td class="rowhead">後期 BP（BP2 / NS'）</td><td>約 400〜500 ms 前から</td><td>傾きが急になる。一次運動野優位で、手の運動では対側優位</td></tr>
+            <tr><td class="rowhead">ピーク陰性（PN）</td><td>オンセット付近</td><td>最大陰性。連合性 BCI が求心性入力を合わせにいく標的</td></tr>
+            <tr><td class="rowhead">運動電位（MP）</td><td>オンセット直後</td><td>実行そのものを反映する</td></tr>
+            <tr><td class="rowhead">運動監視電位（MMP）</td><td>オンセット後</td><td>遂行の制御・監視を反映する</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>振幅は総じて 5〜30 µV である。計測部位は運動する身体部位で変わり、手指は C1 / C2、手は C3 / Cz / C4、足や下肢は Cz / CPz が最大になる。</p>
+
+      <div class="note">
+        <span class="lbl">本システムが成立する根拠</span>
+        <p><strong>運動を実行せず想像するだけでも、前期成分は実行時と同じように現れる。</strong>振幅・オンセット時刻・トポグラフィのいずれにも有意差がないという報告がある。仮想の手を握らせるのに被験者が実際に手を動かす必要はない。</p>
+      </div>
+
+      <div class="caution">
+        <span class="lbl">注意</span>
+        <p>ただし<strong>単一試行での検出性能は、実行課題より想像課題のほうが明確に低い</strong>。加算平均した波形が似ていることと、1 試行ずつ当てられることは別である。詳細は SECTION 3 の表を参照。</p>
+      </div>
+    </section>
+
+    <section id="s2">
+      <span class="secnum">SECTION 2</span>
+      <h2>パラダイム選択と前処理</h2>
+      <hr class="h2rule">
+      <p class="lead">「キューを出すと MRCP が出にくくなる」というのは正確ではない。効くのはキューの有無ではなく、<strong>キュー時刻が予測できるかどうかと、狙った時刻へどれだけ正確に始めることを求めるか</strong>である。</p>
+
+      <h3>自己ペースとキュー基準は別物ではない</h3>
+      <p>同じ緩電位を、自己ペース運動の文脈では Bereitschaftspotential（準備電位、BP）、キュー運動の文脈では Contingent Negative Variation（随伴陰性変動、CNV）と呼び分けているだけである。どちらも MRCP という総称の下位区分にあたる。生態学的に妥当な運動を対象とした scoping review では、自己ペース 28 件・キュー基準 28 件・両方 3 件とほぼ半々で採用されており、<strong>両者を直接比較した 2 件はいずれも MRCP 特性に有意差なしと報告している</strong>。</p>
+      <p>この「有意差なし」は、狙った時刻への精度を課さずに比べた場合の話である。精度を課すと結果が変わることを次節で見る。</p>
+
+      <div class="def">
+        <h3>効くのは時間的予測可能性である</h3>
+        <canvas id="paradigmFig" width="760" height="260" aria-label="自己ペース、固定間隔キュー、可変間隔キューの 3 条件で緩電位がどう変わるかの模式図"></canvas>
+        <p>先行研究では、自己ペース運動と<strong>固定間隔</strong>キューによる運動が同等の緩電位に先行され、キュー時刻が可変（時間的に予測不能）になるとこの緩電位が消えるとされてきた。MRP が反映しているのは「内発か外発か」ではなく「時間的に予測できる運動の準備」だという解釈である。</p>
+        <p><strong>Cui &amp; MacKinnon (2009) はこれをさらに一歩進めた。</strong>彼らは自己ペース / 不規則キュー / 規則キューの 3 条件を 87 電極で比較し、規則キュー条件では「1 単純反応時間以内の誤差で狙った時刻に動く」訓練を課した。結果はこうである。</p>
+        <ul class="clean">
+          <li>早期の緩やかな緩電位は<strong>運動オンセット時刻を事前に予測できるときにだけ</strong>現れた</li>
+          <li><strong>タイミング精度を要求された運動は、自己ペースより有意に大きい緩電位を生んだ</strong>（P &lt; 0.018）</li>
+          <li>不規則キューへの反応的な運動では、運動前活動が有意に減弱した（P &lt; 0.005）</li>
+        </ul>
+        <p>結論は「<strong>運動オンセット時刻への精度要求は、予測的な運動開始を担う神経回路の準備活動を著しく増強する</strong>」である。つまり固定間隔キューは自己ペースと同等どころか、<strong>精度を要求すれば自己ペースを上回りうる</strong>。</p>
+        <p class="muted">仕組みを説明するための模式図であり、実測データではない。</p>
+      </div>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>論点</th><th>自己ペース</th><th>キュー基準（固定間隔＋精度要求）</th><th>キュー基準（可変間隔）</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">呼称</td><td>BP（準備電位）</td><td>CNV（随伴陰性変動）</td><td>—</td></tr>
+            <tr><td class="rowhead">緩電位</td><td>出る</td><td><strong>出る。精度要求下では自己ペースより大きい</strong>（P &lt; 0.018）</td><td><strong>有意に減弱する</strong>（P &lt; 0.005）</td></tr>
+            <tr><td class="rowhead">真値の打刻</td><td>力プレート / EMG / ジャイロ。<strong>手段で PN が最大 1305 ms ずれる</strong>。純粋な想像では打刻手段が無い</td><td><strong>キュー時刻そのもの。曖昧さがない</strong></td><td>同左</td></tr>
+            <tr><td class="rowhead">真値の誤差</td><td>打刻手段に依存</td><td>被験者のばらつきが 100 ms 台（文献値 11.73 ± 165 ms は桁の目安）</td><td>同左</td></tr>
+            <tr><td class="rowhead">文献での採用</td><td>28 件</td><td>28 件（両方 3 件）</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <span class="lbl">本システムの設計判断</span>
+        <p><strong>固定間隔キューを採る。</strong>予告から t=0 までは 2.0 秒で固定し、ジッタは試行間（安静区間）にのみ置く。foreperiod にジッタを入れると、検出したい信号が有意に減弱するためである。</p>
+        <p><strong>あわせて被験者にタイミング精度を要求する。</strong>Cui &amp; MacKinnon (2009) で緩電位を最大にしたのは固定間隔そのものではなく、<strong>狙った時刻にどれだけ正確に動けるかを課したこと</strong>だった。したがって練習フェーズ（当日の手順 4）は単なる慣熟ではなく<strong>信号の大きさを決める工程</strong>である。「なるべく早く」ではなく「キューちょうどに」始めることを求め、練習で基準に届かない被験者にはブロックを追加する。</p>
+        <p>あわせて、<strong>キュー基準は真値の曖昧さを避けるための積極的な選択</strong>でもある。自己ペースでは運動オンセットをどう打刻するかで PN の時刻が 1 秒以上動くうえ、実際の運動を伴わない純粋な想像では打刻手段そのものが存在しない。</p>
+      </div>
+
+      <div class="info">
+        <span class="lbl">補足</span>
+        <p>Suwandjieff et al. (2026) はキュー基準の PN が −1.1 µV、自己ペースが −2.0 µV と報告している。ただしあちらのキューは matrix speller の行列ハイライト（1.6 秒）であり、予告 → Go の 2 段構えではない。本実験のような「3-2-1 カウントダウン → t=0」とは条件が違うため、そのまま一般化はしない。</p>
+      </div>
+
+      <h3>前処理の要件</h3>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>項目</th><th>設定</th><th>理由</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">帯域</td><td><strong>0.1–3 Hz</strong>（IIR / butter / 2 次）</td><td>文献の代表値は 0.05–10 Hz、0.5–3.5 Hz。0.1 Hz ハイパスを FIR で作ると次数が数万になるため IIR 一択</td></tr>
+            <tr><td class="rowhead">位相</td><td><code>phase: "causal"</code></td><td>学習と実機で群遅延を揃える。非因果な <code>filtfilt</code> は未来の情報を漏らすため潜時の測定が無意味になる</td></tr>
+            <tr><td class="rowhead">電極</td><td>FCz / Cz / C3 / C4 ＋ Fp1 / Fp2</td><td>MRCP は正中中心部が優位。Fp は眼電除去用</td></tr>
+            <tr><td class="rowhead">眼電除去</td><td>Fp 回帰 ＋ 振幅リジェクト（±100 µV 超を除外）</td><td>0.1–3 Hz は瞬きと眼球運動の主戦場</td></tr>
+            <tr><td class="rowhead">間引き</td><td>20–32 Hz へ decimate</td><td>3 Hz 以下の信号に毎秒 256 点は要らない。次元を 1/10 にして小標本 LDA を効かせる</td></tr>
+            <tr><td class="rowhead">分類器</td><td>shrinkage LDA（<code>solver: lsqr</code>, <code>shrinkage: auto</code>）</td><td>高次元・小標本の定番。特徴量はベースライン補正して間引いた時間振幅そのもの</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="caution">
+        <span class="lbl">注意</span>
+        <p>眼電対策を怠ると、モデルは MRCP ではなく瞬きを学習する。0.1–3 Hz 帯では眼由来の成分が脳由来の成分より桁で大きくなり得るため、この工程は省略できない。</p>
+      </div>
+    </section>
+
+    <section id="s3">
+      <span class="secnum">SECTION 3</span>
+      <h2>単一試行検出の到達水準</h2>
+      <hr class="h2rule">
+      <p class="lead">15 年分の報告を並べる。TPR は真陽性率（検出できた試行の割合）、FP は誤発火、潜時は負が「運動より前に検出」を意味する。</p>
+
+      <div class="tablewrap" data-collapse="7">
+        <table class="sortable">
+          <thead><tr><th>年</th><th>研究</th><th>手法</th><th>課題</th><th>TPR</th><th>FP</th><th>潜時</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">2011</td><td>Niazi et al.</td><td>Neyman-Pearson</td><td>実行</td><td>82.5%</td><td>—</td><td>-66.6 ms</td></tr>
+            <tr><td class="rowhead">2012</td><td>Lew et al.</td><td>LDA</td><td>実行（健常）</td><td>76%</td><td>—</td><td>-167 ms</td></tr>
+            <tr><td class="rowhead">2013</td><td>Jochumsen et al.</td><td>SVM</td><td>実行</td><td>80%</td><td>&lt; 1.5%</td><td>317 ms</td></tr>
+            <tr><td class="rowhead">2013</td><td>Niazi et al.（被験者独立）</td><td>大域テンプレート</td><td><strong>想像</strong></td><td><strong>65 ± 22%</strong></td><td>—</td><td>-196 ± 162 ms（実行）</td></tr>
+            <tr><td class="rowhead">2014</td><td>Xu et al.（低遅延検出）</td><td>LPP-LDA</td><td>実行</td><td>79%</td><td>1.4 /min</td><td>315 ms</td></tr>
+            <tr><td class="rowhead">2014</td><td><strong>Xu et al.（BCI-MAFO）</strong></td><td>LPP</td><td><strong>想像</strong></td><td><strong>73.0 ± 10.3%</strong></td><td>—</td><td>—</td></tr>
+            <tr><td class="rowhead">2015</td><td>Jiang et al.</td><td>ICA ＋ 整合フィルタ</td><td>歩行開始</td><td>76.9%</td><td>2.93 /min</td><td>-180 ms</td></tr>
+            <tr><td class="rowhead">2017</td><td>cICA</td><td>拘束付き ICA</td><td>想像</td><td>—</td><td>—</td><td>28 ± 16 ms</td></tr>
+            <tr><td class="rowhead">2019</td><td>Jochumsen et al.</td><td>自己ペース online</td><td><strong>想像</strong></td><td><strong>75 ± 3%</strong></td><td><strong>1.2 ± 0.7 /min</strong></td><td>—</td></tr>
+            <tr><td class="rowhead">2024</td><td>Dong et al.（下肢外骨格）</td><td>VGGNet ＋ 転移学習</td><td>実行</td><td>82.75%</td><td>—</td><td>-483.9 ± 11.9 ms</td></tr>
+            <tr><td class="rowhead">2026</td><td>Suwandjieff et al.（speller）</td><td>sLDA 0.5–3.5 Hz</td><td>ジェスチャ</td><td>27.1 → 63.6%</td><td>0.9 /min</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="muted">列見出しをクリックすると並べ替えられる。年で並べると、古典的な統計手法 → 深層学習 → 課題特化較正、という流れが見える。</p>
+
+      <div class="caution">
+        <span class="lbl">この表の読み方</span>
+        <p><strong>1. 想像課題は実行課題より難しく、ばらつきも大きい。</strong>TPR は実行で 8 割前後（79〜82.5%）に対し、想像では <strong>65〜75%</strong> である（被験者独立の大域テンプレートで 65 ± 22%、被験者内の自己ペース online で 75 ± 3%）。<strong>本システムは想像側にいる。</strong>被験者間の標準偏差が 22 ポイントに達する点も重い。<strong>3 割前後の試行では発火しない前提で設計する。</strong></p>
+        <p><strong>2. 潜時の符号規約が研究間で揺れる。</strong>この表では負を「運動より前に検出」に統一してある。原著をあたるときは各論文の定義を確認すること。</p>
+        <p><strong>3. オフラインの較正データだけでオンライン性能は決まらない。</strong>Suwandjieff et al. (2026) は、最初のオンラインセッションのデータで再学習することで TPR を 27.1% から 63.6% へ引き上げている。この差は手法の差ではなく、較正時とオンライン時で脳波の性質が変わることに由来する。</p>
+      </div>
+    </section>
+
+    <section id="s4">
+      <span class="secnum">SECTION 4</span>
+      <h2>機械学習とリアルタイム化</h2>
+      <hr class="h2rule">
+      <p class="lead">深層学習は MRCP でも成果を出しているが、リアルタイム性を決めているのは分類器ではなく配管のほうである。</p>
+
+      <h3>深層学習の現在地</h3>
+      <ul class="clean">
+        <li><strong>CNN ＋ 転移学習。</strong>Dong et al. (2024) は下肢外骨格向けに、VGGNet の低層を凍結して転移させたうえでオンライン推論する構成を報告している。健常 10 名で、運動オンセットの 483.9 ± 11.9 ms 前に精度 82.75% で予測している</li>
+        <li><strong>3D 畳み込み ＋ 再帰型。</strong>連続的な多クラス分類で、運動意図を途切れなく追う</li>
+        <li><strong>Transformer 系。</strong>EEG 復号への適用を整理したサーベイが 2025 年に出ている。長距離の時間依存と空間パターンを同時に扱える点が動機である</li>
+      </ul>
+
+      <h3>それでも古典手法が主力である理由</h3>
+      <ul class="clean">
+        <li><strong>標本が小さい。</strong>1 セッションで得られる試行は 100〜200 が現実的な上限であり、深層モデルの容量に見合わない</li>
+        <li><strong>causal 制約がある。</strong>未来のサンプルを使う操作（<code>filtfilt</code>、全区間正規化、双方向 RNN）はすべて禁じ手になる</li>
+        <li><strong>推論を 20 Hz で回す必要がある。</strong>1 推論あたりの計算量が直接タイミング精度に効く</li>
+      </ul>
+
+      <div class="note">
+        <span class="lbl">本システムの選択</span>
+        <p><strong>shrinkage LDA を使う。</strong><code>[-1.5, 0.0]</code> の 1 窓を二値に落とす問題で、学習データが 1 セッション約 150 試行しかない以上、これが現実的である。特徴抽出器（<code>erp</code>）と分類器は設定で差し替えられる構造にしてあるので、データが貯まった段階で EEGNet 等を試す余地は残っている。</p>
+      </div>
+
+      <div class="caution">
+        <span class="lbl">注意</span>
+        <p><strong>リアルタイム化のボトルネックは分類器ではない。</strong>最新データが届く間隔（量子化 Q）と、そこから画面が動くまでの所要時間（遅延 L）が決める。分類器を軽くしても Q は縮まない。詳細は SECTION 6 を参照。</p>
+      </div>
+    </section>
+
+    <section id="s5">
+      <span class="secnum">SECTION 5</span>
+      <h2>本研究の新規性はどこにあるか</h2>
+      <hr class="h2rule">
+      <p class="lead">文献に照らした結論を先に書く。<strong>要素技術に新規性はない。</strong>主張できるのは評価軸と組み合わせの 2 点に限られる。</p>
+
+      <h3>先行研究が既に埋めている領域</h3>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>領域</th><th>到達点</th><th>出典</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">MRCP による運動前検出</td><td>TPR 65–83%、潜時 -484 〜 +317 ms。15 年以上の蓄積</td><td>Niazi 2011 ほか</td></tr>
+            <tr><td class="rowhead">タイミング一致の重要性</td><td>求心性入力が PN と一致したときだけ可塑性が誘導される。早くても遅くても誘導されない</td><td>Mrachacz-Kersting 2012 / 2016</td></tr>
+            <tr><td class="rowhead">MRCP × 深層学習</td><td>CNN ＋ 転移学習でリアルタイム外骨格制御</td><td>Front Bioeng 2024</td></tr>
+            <tr><td class="rowhead">MI-BCI × VR × 行為主体感</td><td>一人称アバターの手は身体所有感を通じて行為主体感を高める（R² = 0.41）</td><td>Ziadeh 2021</td></tr>
+            <tr><td class="rowhead">視覚遅延と身体所有感</td><td>遅延 190 ms 未満で所有感・主体感がともに有意に高い。<strong>所有感のほうが厳しく、190 ms を超えると消える</strong></td><td>Shibuya 2016</td></tr>
+            <tr><td class="rowhead">BCI × 疑似触覚</td><td>2025 に登場。ただし注意レベル（beta 帯）で触覚強度を変調するもの</td><td>Behav Inf Technol 2025</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>最も近い先行研究 ― 連合性 BCI</h3>
+
+      <div class="caution">
+        <span class="lbl">本システムと同じ仕組みは既にある</span>
+        <p><strong>「運動イメージの開始をリアルタイムに MRCP から検出し、その瞬間に外部デバイスを発火させる」という構成そのものは、2012 年から確立している。</strong>連合性 BCI（associative BCI）と呼ばれる系で、ほぼ Aalborg 大学のグループによるものである。本システムはこの系譜の上にある。</p>
+      </div>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>研究</th><th>課題</th><th>発火先</th><th>オンライン性能</th><th>結果</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">Mrachacz-Kersting et al. (2012)</td><td>運動イメージ</td><td>末梢神経の電気刺激</td><td>―</td><td>求心性入力が PN と一致したときだけ可塑性が誘導される。早くても遅くても誘導されない</td></tr>
+            <tr><td class="rowhead"><strong>Xu et al. (2014) BCI-MAFO</strong></td><td><strong>足関節背屈の想像</strong></td><td><strong>電動足関節装具（受動的に足が動く）</strong></td><td><strong>TPR 73.0 ± 10.3%</strong></td><td>健常 9 名・約 15 分で MEP が有意に増大（p = 0.009）</td></tr>
+            <tr><td class="rowhead">Mrachacz-Kersting et al. (2016)</td><td>運動イメージ</td><td>電気刺激</td><td>―</td><td>慢性期脳卒中患者へ適用</td></tr>
+            <tr><td class="rowhead">Mrachacz-Kersting &amp; Aliakbaryhosseinabadi (2018)</td><td>キュー基準の運動イメージ</td><td>電気刺激（50 ms 先読みで PN に着弾させる）</td><td>TPR 71 ± 3%、FP 2.8 ± 0.7 /min</td><td>MEP 233 → 277 µV（p = 0.029）</td></tr>
+            <tr><td class="rowhead">Jochumsen et al. (2019)</td><td>自己ペースの運動イメージ</td><td>電気刺激</td><td>TPR 75 ± 3%、FP 1.2 ± 0.7 /min</td><td>MEP 直後 +93%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>では本システムは何が違うのか</h3>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>観点</th><th>連合性 BCI</th><th>本システム</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">検出</td><td colspan="2">MRCP からの運動イメージのオンライン単一試行検出。<strong>ここは同じ</strong></td></tr>
+            <tr><td class="rowhead">発火先</td><td>電気刺激・電動装具。<strong>体性感覚</strong>で、実際に身体が動く</td><td>VR の仮想の手。<strong>視覚のみ</strong>で、実身体は動かない</td></tr>
+            <tr><td class="rowhead">部位</td><td>足関節背屈が主</td><td>手の把持</td></tr>
+            <tr><td class="rowhead">同期の狙い</td><td>求心性入力を PN に着弾させる</td><td>描画をキュー時刻 t=0 に合わせる</td></tr>
+            <tr><td class="rowhead">目的</td><td>皮質可塑性の誘導</td><td>体験としての同期</td></tr>
+            <tr><td class="rowhead">評価</td><td>MEP、TPR、FP per min</td><td><strong>Δt と主観的一致度、行為主体感</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="caution">
+        <span class="lbl">この事実が新規性の主張に与える影響</span>
+        <p>差分は<strong>効果器（体性感覚 → 視覚）と評価軸（可塑性 → 体験）の 2 点だけ</strong>である。仕組みは新しくない。したがって本研究は「新しい BCI を作った」とは書けず、<strong>「既知の連合性 BCI の枠組みを、身体を動かさない視覚効果器へ移し、可塑性ではなく体験の側から評価した」</strong>と書くのが正確である。</p>
+        <p>加えて <strong>Xu et al. (2014) は非随伴の対照を既に実施している</strong>。「イメージのみ（発火なし）」（p = 0.38、有意でない）と「装具をランダムなタイミングで発火」（p = 0.15、有意でない）の 2 条件を置き、随伴的に発火したときにだけ効果が出ることを示した。<strong>本プロトコルが対照を置かないことは、この先行研究に照らすと弱い。</strong>ランダム発火条件は実装コストが低く（発火判定を乱数に差し替えるだけ）、査読では必ず問われる。</p>
+      </div>
+
+      <h3>空いている領域</h3>
+
+      <div class="def">
+        <h3>1. 想起開始とアプリ動作のズレを、客観と主観の対で評価すること</h3>
+        <p>既存の MRCP-BCI は TPR / FP per min / 検出潜時を報告する。しかしそれは<strong>検出器の性能指標であって、ユーザ体験としての同期精度ではない</strong>。連合性 BCI は PN との一致を狙うが、被験者が「自分のイメージと合っていたか」を測ってはいない。</p>
+        <p class="muted">ただし正直に書くと、Δt そのものは検出潜時と数学的にほぼ同じ量である。新しいのは指標ではなく、<strong>Δt と主観的一致度を対にして評価する枠組み</strong>のほうである。</p>
+      </div>
+
+      <div class="def">
+        <h3>2. MRCP × 一人称 VR アバターの手 × 行為主体感の組み合わせ</h3>
+        <p>Said et al. (2022) の系統レビューは、MRCP-BCI のリハビリ応用 18 件のうち <strong>VR を使ったものは 4 件のみ</strong>と数え、著者自身が "there is a great scarcity of literature" と明記している。そのうち一人称アバターの手で行為主体感を評価したものは見当たらない。Ziadeh (2021) は VR と主体感を扱ったが、SMR / 運動想像の分類でありタイミングは扱っていない。</p>
+      </div>
+
+      <div class="info">
+        <span class="lbl">今後の展開（本プロトコルの範囲外）</span>
+        <p><strong>疑似触覚への接続。</strong>BCI と疑似触覚の組み合わせは 2025 に 1 件出たが、注意レベルで触覚強度を変える構成である。MRCP のオンセット同期の上に C/D 比の疑似触覚を載せる構成には前例が見当たらない。本リポジトリの <code>PseudoHapticsExperiment</code> シーンがその受け皿になる。</p>
+      </div>
+
+      <h3>弱点</h3>
+
+      <div class="caution">
+        <span class="lbl">真値のノイズ床が要件より大きい</span>
+        <p>Jochumsen et al. (2019) はキュー基準条件で、被験者の運動がキューに対して <strong>11.73 ± 165 ms</strong> だったと報告している。平均はほぼ 0 だが <strong>標準偏差が 165 ms</strong> ある。「教示どおり t=0 に始めた」という仮定の実測値がこれであり、Δt にはこの分が不可避的に乗る。</p>
+        <p class="muted">ただし同論文はこの値のオンセットをどう判定したかを明記していない。<strong>桁の目安として扱い、確定値としては使わない。</strong>本実験では練習フェーズのキー押し誤差から被験者ごとの実測値を取り、そちらを基準にする。</p>
+        <p><strong>Δt が 0 を中心に集まっても、それだけでは「被験者のイメージと一致した」とは言えない。</strong>主観的一致度がこの隙間を埋める役割を負う。本研究で主観指標が装飾ではなく必須である理由でもある。</p>
+      </div>
+
+      <ul class="clean">
+        <li class="warn"><strong>想像のみの検出は実行より難しい。</strong>TPR は 65〜75% で、3 割前後の試行では発火しない前提で設計する</li>
+        <li class="warn"><strong>CNV と MRCP の内訳は分けられない。</strong>固定間隔の予告がある以上、<code>[-1.5, 0.0]</code> の緩電位には時間的期待に由来する成分が含まれる。これは避けるべき汚染ではなく使う信号の一部だが、運動準備由来と期待由来の寄与は本実験では分離できない</li>
+        <li class="warn"><strong>対照条件がないので「脳波で当てた」ことは示せない。</strong>固定間隔のキューであれば、脳波を一切見ない周期発火ベースラインが満点を取る。オフラインでの対照が必須になる</li>
+      </ul>
+
+      <div class="note">
+        <span class="lbl">位置づけの結論</span>
+        <p>本研究は<strong>神経科学の新知見ではなく、システム提案と実現可能性・体験評価</strong>である。国際会議のシステム論文やユーザスタディとして成立する水準にある。主張を強めるには (a) 疑似触覚まで含めた完全系にする、(b) 後続実験で人工遅延条件（±300 ms）を置いて「同期精度が体験に効く」ことを直接示す、の 2 つが効く。</p>
+      </div>
+    </section>
+
+    <div class="partmark"><span class="lbl">第2部</span><h2>システム</h2></div>
+
+    <section id="s6">
+      <span class="secnum">SECTION 6</span>
+      <h2>構成と信号の流れ</h2>
+      <hr class="h2rule">
+      <p class="lead">脳波が計測器から出て仮想の手が動くまでには、いくつもの段階がある。それぞれは短くても、積み上がると要件を超える。</p>
+
+      <div class="flow" data-steps>
+        <span class="node">取得<small>LSL チャンク</small></span>
+        <span class="sep">→</span>
+        <span class="node">フィルタ<small>0.1–3 Hz causal</small></span>
+        <span class="sep">→</span>
+        <span class="node">推論<small>[-1.5, 0.0] 窓の二値分類</small></span>
+        <span class="sep">→</span>
+        <span class="node">発火判定<small>θ 超えが連続 N 回</small></span>
+        <span class="sep">→</span>
+        <span class="node">UDP 送信<small>ポート 5001</small></span>
+        <span class="sep">→</span>
+        <span class="node">Unity 受信<small>把持レベルへ</small></span>
+        <span class="sep">→</span>
+        <span class="node">描画<small>指ボーンが閉じる</small></span>
+      </div>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>段</th><th>担当</th><th>そこで起きること</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">1. 取得</td><td>python: LSL 受信</td><td><code>chunk_size</code> サンプルが溜まるまで待つ。ここが量子化 Q の主因</td></tr>
+            <tr><td class="rowhead">2. フィルタ</td><td>python: IIR butter 2 次</td><td>0.1–3 Hz、causal。低周波 IIR は過渡応答が長いので warm-up が要る</td></tr>
+            <tr><td class="rowhead">3. 推論</td><td>python: <code>erp</code> ＋ shrinkage LDA</td><td>窓末尾を現在時刻として <code>[-1.5, 0.0]</code> を切り出し、想起準備かどうかを判定する</td></tr>
+            <tr><td class="rowhead">4. 発火判定</td><td>python: <code>onset_trigger</code>（未実装）</td><td>確信度が θ 以上の状態が連続 N 回続いたら発火する。不応期を持つ</td></tr>
+            <tr><td class="rowhead">5. 送信</td><td>python: <code>udp_dispatcher</code></td><td>JSON 1 オブジェクトを UTF-8 で送る。fire-and-forget で再送はしない</td></tr>
+            <tr><td class="rowhead">6. 受信</td><td>Unity: <code>UdpGraspSignalSource</code></td><td>専用スレッドが最新の 1 通だけを保持し、<code>Update</code> が取り出す</td></tr>
+            <tr><td class="rowhead">7. 平滑化</td><td>Unity: <code>GraspLevelController</code></td><td>BciDriven のときだけ読み、<code>closeSeconds</code> / <code>openSeconds</code> で時間方向に均す</td></tr>
+            <tr><td class="rowhead">8. 描画</td><td>Unity: <code>HandGraspAnimator</code></td><td>カーブを通して各指ボーンの <code>localRotation</code> を書く</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="def">
+        <h3>遅延 L と量子化 Q</h3>
+        <p><strong>L</strong> ― 窓末尾サンプルの時刻から、Unity が実際に描画するまでの<strong>所要時間</strong>。ほぼ定数で、<code>delay_ms</code> を添えた予約送信で補償できる。</p>
+        <p><strong>Q</strong> ― 窓末尾の時刻が更新される<strong>間隔</strong>。<code>max(chunk_size ÷ sfreq, interval)</code> で決まる。手元の最新データは最大 Q だけ古く、<strong>過去へは発火を予約できないため補償できない</strong>。タイミング精度の下限そのものである。</p>
+      </div>
+
+      <div class="def">
+        <h3>操作して確かめる：タイミング収支</h3>
+        <p class="muted">設定を変えると Δt の分布が変わる。破線は許容誤差 100 ms（内側）と、身体所有感が保たれる上限 190 ms（外側、Shibuya 2016）。</p>
+
+        <div class="ctlrow">
+          <span>chunk_size</span>
+          <button class="chunkBtn" data-n="32" aria-pressed="true">32（現行）</button>
+          <button class="chunkBtn" data-n="16" aria-pressed="false">16</button>
+          <button class="chunkBtn" data-n="8" aria-pressed="false">8（提案）</button>
+          <button class="chunkBtn" data-n="4" aria-pressed="false">4</button>
+        </div>
+        <div class="ctlrow">
+          <label>推論間隔 <input type="range" id="ivl" min="20" max="500" step="10" value="50"><b id="ivlVal">50 ms</b></label>
+          <label>検出器のばらつき σ <input type="range" id="sig" min="10" max="300" step="5" value="80"><b id="sigVal">80 ms</b></label>
+          <label><input type="checkbox" id="cmp" checked> delay_ms で L を補償</label>
+        </div>
+
+        <canvas id="latFig" width="760" height="340" aria-label="遅延 L の内訳と、そこから決まる発火時刻誤差の分布"></canvas>
+
+        <div class="tablewrap">
+          <table>
+            <tbody>
+              <tr><td class="rowhead">遅延 L</td><td id="roL">—</td><td class="rowhead">量子化 Q</td><td id="roQ">—</td></tr>
+              <tr><td class="rowhead">|Δt| ≤ 100 ms</td><td id="roR100">—</td><td class="rowhead">|Δt| ≤ 190 ms</td><td id="roR190">—</td></tr>
+              <tr><td class="rowhead">Δt の中央値</td><td id="roMed">—</td><td class="rowhead">Δt の標準偏差</td><td id="roSd">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="muted">仕組みを説明するための模式図であり、実測データではない。σ は実データを取るまで確定しない。</p>
+      </div>
+
+      <div class="caution">
+        <span class="lbl">注意</span>
+        <p><code>chunk_size: 32</code>（sfreq 256 Hz で 125 ms）が要件を破る理由は、L が大きくなるからではない。<strong>Q が 125 ms になり、手元の最新データが最大 125 ms 古くなる</strong>からである。交差が 100 ms 前に起きていたと分かっても、もう間に合わない。</p>
+        <p>ただし <code>chunk_size</code> を 8 より小さくしても Q は縮まない。そこから先は推論間隔 <code>interval</code> が下限を決める。</p>
+      </div>
+
+      <div class="note">
+        <span class="lbl">±100 ms という要件はどこから来るか</span>
+        <p>恣意的に決めたものではない。Shibuya et al. (2016) は、CG の手を自分の意思で動かす課題で視覚フィードバックの遅延を 90〜590 ms まで 100 ms 刻みに振り（健常 16 名）、<strong>190 ms 未満のときに身体所有感と行為主体感がともに有意に高い</strong>ことを示した。著者らは「自己身体像を構成する多感覚統合には 200 ms 未満の時間窓が決定的である」と結論している。</p>
+      <p>内訳を見ると<strong>所有感のほうが制約が厳しい</strong>。有意だったのは 90〜190 ms の遅延だけで、それを超えると消えた。行為主体感は 290〜490 ms まで（弱いながら）残っている。<strong>一人称アバターの手で所有感を稼ぐ本システムにとっては、厳しいほうの閾が効く。±100 ms は 190 ms に対して安全側に置いた設計目標</strong>である。</p>
+      <p>連合性 BCI の側からも、求心性入力が PN と一致したときにだけ可塑性が誘導され、早くても遅くても誘導されないという知見がある（Mrachacz-Kersting et al. 2012）。</p>
+      </div>
+
+      <h3>L の実測</h3>
+      <p>理論値を積み上げても当たらない。デバイス・ドライバ・マシン・Unity のビルドで変わるため、実際の構成で実測して定数として書き込む。<strong>セッション開始前の校正で 1 回測り、実験中は動かさない。</strong></p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>区間</th><th>計測方法</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">取得・伝送</td><td>LSL タイムスタンプと <code>pylsl.local_clock()</code> の差</td></tr>
+            <tr><td class="rowhead">フィルタ ＋ 推論</td><td><code>process_chunk</code> / <code>_run_inference</code> を <code>time.perf_counter()</code> で挟む</td></tr>
+            <tr><td class="rowhead">UDP 送信</td><td>send 呼び出し前後の差。別ホスト宛なら往復で測る</td></tr>
+            <tr><td class="rowhead">Unity 受信〜描画</td><td>Unity 側に echo を返す計測モードを設け、往復から求めて描画遅延 1〜2 フレームを加算する</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>L は 4 区間の<strong>中央値の和</strong>とする。平均ではなく中央値を使うのは、たまの外れ値に引きずられないためである。ただし <strong>L のばらつきはそのまま発火時刻のばらつきになる</strong>ので、中央値だけでなく IQR と最大値まで記録する。</p>
+
+      <ul class="clean">
+        <li class="warn">再校正が必須になる変更 ― <code>chunk_size</code> / <code>sfreq</code> / <code>interval</code></li>
+        <li class="warn">EEG デバイス・ドライバ・接続方式の変更</li>
+        <li class="warn">実行マシン、Unity のビルドやフレームレート設定の変更</li>
+        <li class="warn">同一ホストと別ホストの経路変更</li>
+      </ul>
+    </section>
+
+    <section id="s7">
+      <span class="secnum">SECTION 7</span>
+      <h2>想起オンセットの検出</h2>
+      <hr class="h2rule">
+      <p class="lead">Python 側が解くのは「想起準備の窓か、安静か」の二値問題である。入力は想起開始までの <code>[-1.5, 0.0]</code> 秒だけである。</p>
+
+      <h3>学習データの作り方</h3>
+      <ul class="clean">
+        <li><strong>陽性クラス</strong> ― 各試行の <code>[-1.5, 0.0]</code>。窓の末尾が t=0 に一致するので、リアルタイム側のリングバッファ（末尾＝現在）と座標系が揃う</li>
+        <li><strong>陰性クラス</strong> ― 同じ試行の安静区間から同じ幅で切り出す。試行あたり 1 個ずつ取ればクラスが均衡する</li>
+        <li class="warn"><strong>グレーゾーン</strong> ― <code>[-2.5, -1.5]</code> は学習から捨てる。準備が始まっているとも安静とも言い切れない区間で境界を濁らせないため</li>
+        <li class="warn"><strong>分割</strong> ― <code>trial_index</code> を group キーにした試行単位の分割を必ず入れる</li>
+      </ul>
+
+      <div class="caution">
+        <span class="lbl">注意</span>
+        <p>窓をスライドさせて水増しする場合、隣接する窓はほぼ同じ脳波を共有している。これを普通にシャッフルして訓練と評価に分けると、<strong>実質的に答えを見ながら採点する</strong>ことになり、精度が壊滅的に楽観化する。</p>
+        <p><strong>試行単位の分割は最初に入れること。</strong>後から入れると、それまでに出したすべての数字が信用できなくなる。</p>
+      </div>
+
+      <h3>発火判定</h3>
+      <p>確信度が θ 以上である状態が連続 N 回続いたら UDP を送出する。θ と N は較正データ上の grid 探索で決める。目的関数は「Δt の中央値が 0 に近い」かつ「|Δt| ≤ 100 ms の割合が最大」である。あわせて不応期を置き、1 試行内で複数回発火しないようにする。</p>
+
+      <div class="info">
+        <span class="lbl">補足</span>
+        <p>推論は離散的なティックでしか走らないため、条件を満たす最初のティックは真の交差時刻より最大 1 ティック早い。撃つ時点でそのずれ分は分かっているので、UDP には「いま発火」ではなく <code>delay_ms</code> を添えて送り、受信側がその時間だけ待って実行する。これで系統的な早発バイアスが消える。</p>
+      </div>
+
+      <div class="note">
+        <span class="lbl">CNV は汚染ではなく信号の一部である</span>
+        <p>SECTION 2 のとおり、固定間隔の予告がある以上 <code>[-1.5, 0.0]</code> の緩電位には時間的期待に由来する成分（CNV）が含まれる。これは<strong>除くべきものではなく、使う信号の一部</strong>である。予測可能性を壊せば信号自体が有意に減弱する。</p>
+      </div>
+
+      <div class="caution">
+        <span class="lbl">ただし内訳は分けられない</span>
+        <p>本実験の構成では、緩電位のうち「運動準備に由来する分」と「予告への時間的期待に由来する分」の寄与を分離できない。論文で「MRCP を検出した」と書くときは、この限界を併記する必要がある。</p>
+      </div>
+
+      <div class="def">
+        <h3>推奨オプション 1：NoGo 試行</h3>
+        <p>陰性クラスの一部を「予告は出るがイメージはしない」試行から取る。予告への視覚応答が両クラスに等しく載るため、<strong>分類器が予告への応答だけで解いていないか</strong>を確認できる。目的は交絡の除去ではなく内訳の切り分けである。追加負担は試行の 2 割程度で済む。</p>
+      </div>
+
+      <div class="def">
+        <h3>推奨オプション 2：課題特化の再学習</h3>
+        <p>Suwandjieff et al. (2026) に倣い、タスク第 1 ブロックのデータで分類器を再学習し、第 2 ブロック以降はそちらを使う。同研究ではこの手順で TPR が 27.1% から 63.6% へ上がっている。採用する場合はブロック 1 とブロック 2 以降を解析上区別すること。</p>
+      </div>
+    </section>
+
+    <section id="s8">
+      <span class="secnum">SECTION 8</span>
+      <h2>Unity 側の受信と設定</h2>
+      <hr class="h2rule">
+      <p class="lead">1 パケットに 1 個の JSON オブジェクトを UTF-8 で載せる。Unity 側はポート 5001 で待ち受け、<code>class</code> が <code>graspClass</code>（既定 2）のときだけ握る意図とみなす。</p>
+
+      <pre><code>{
+  "format_version": 1,
+  "name": "MI_Grasp",
+  "class": 2,             // 1 = 安静 / 2 = 握るイメージ
+  "confidence": 0.87,
+  "probabilities": { ... }  // 受信側は読まない
+}</code></pre>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>キー</th><th>扱い</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">format_version</td><td>1 以外のパケットは丸ごと捨てる。送信仕様が変わったことに気づけるようにするため</td></tr>
+            <tr><td class="rowhead">class</td><td>判定の主役。<code>graspClass</code> と一致したら握る。0 は「キーが無かった」と区別できないため 1 始まり</td></tr>
+            <tr><td class="rowhead">confidence</td><td><code>minConfidence</code> 未満なら握らない</td></tr>
+            <tr><td class="rowhead">name</td><td>ログ表示のみ。判定には使わない</td></tr>
+            <tr><td class="rowhead">probabilities</td><td>読まない。キーがクラス名で動的に変わるため <code>JsonUtility</code> では表現できず、判定にも不要である</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="caution">
+        <span class="lbl">送受信でキー名が非対称である</span>
+        <p>python-bci-platform から外部への<strong>送信</strong>は <code>format_version</code> / <code>name</code> / <code>class</code> / <code>confidence</code>、外部から platform への<strong>受信</strong>（トリガ打刻、ポート 5000）は <code>type</code> / <code>event_id</code> である。連携実装で最も踏みやすい落とし穴なので、キュー時刻の打刻を実装するときは必ず後者を使う。</p>
+      </div>
+
+      <h3>設定パラメータ</h3>
+      <p>実体は <code>Assets/Settings/HandExperimentSettings.asset</code>。実験中に被験者ごとに変えてよいのは <code>avatarHeadOffset</code> だけで、他は全被験者で固定する。</p>
+
+      <div class="tablewrap" data-collapse="8">
+        <table>
+          <thead><tr><th>パラメータ</th><th>既定値</th><th>意味</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">udpPort</td><td>5001</td><td>デコーダからのパケットを待ち受けるポート</td></tr>
+            <tr><td class="rowhead">graspClass</td><td>2</td><td>握るイメージとみなすクラス番号</td></tr>
+            <tr><td class="rowhead">minConfidence</td><td>0</td><td>これ未満の確信度は把持意図なしとして扱う</td></tr>
+            <tr><td class="rowhead">staleAfterSeconds</td><td>0.5</td><td>この秒数だけパケットが途絶えたらデコーダを利用不可とみなす</td></tr>
+            <tr><td class="rowhead">logPackets</td><td>false</td><td>受け入れたパケットを毎回コンソールに出す。疎通確認用</td></tr>
+            <tr><td class="rowhead">closeSeconds</td><td>0.6</td><td>完全に開いた状態から閉じ切るまでの秒数</td></tr>
+            <tr><td class="rowhead">openSeconds</td><td>0.4</td><td>閉じた状態から開くまでの秒数</td></tr>
+            <tr><td class="rowhead">curlResponse</td><td>EaseInOut</td><td>把持レベルを屈曲量へ写す形</td></tr>
+            <tr><td class="rowhead">proximalCurl / intermediateCurl / distalCurl</td><td>60 / 80 / 45</td><td>完全把持時の各指骨の屈曲角（度）</td></tr>
+            <tr><td class="rowhead">thumbCurlScale</td><td>0.45</td><td>親指に掛ける倍率</td></tr>
+            <tr><td class="rowhead">modeToggleKey</td><td>B</td><td>トラッキングと BCI 駆動の切り替え</td></tr>
+            <tr><td class="rowhead">handCalibrateKey</td><td>C</td><td>手首の回転オフセットを測り直す</td></tr>
+            <tr><td class="rowhead">deskCalibrateKey</td><td>D</td><td>仮想の机を実際の机に合わせる</td></tr>
+            <tr><td class="rowhead">graspKey</td><td>Space</td><td>把持意図の代役入力。デコーダ不在時のスタブ</td></tr>
+            <tr><td class="rowhead">avatarHeadOffset</td><td>(0,0,0)</td><td>カメラから見たアバター頭ボーンの位置ずれ。<strong>被験者ごとに調整する唯一の値</strong></td></tr>
+            <tr><td class="rowhead">clampClearance</td><td>0.02</td><td>手首と机の天板との間に保つ間隔（m）</td></tr>
+            <tr><td class="rowhead">countdownSeconds</td><td>3</td><td>机キャリブレーションのカウントダウン</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <span class="lbl">要点</span>
+        <p>受信が途絶えたときは、最後の値で固まるのではなく <code>IsAvailable</code> が false に落ち、手が脱力する。<strong>デコーダが落ちたまま握りっぱなしになる事故を防ぐための設計である。</strong></p>
+      </div>
+
+      <div class="caution">
+        <span class="lbl">注意</span>
+        <p><strong><code>B</code> キーで BciDriven モードに入らない限り、UDP は絶対に手へ届かない。</strong>Tracking モードでは信号源が読まれないうえ、<code>HandGraspAnimator</code> 側も開いた姿勢を捕捉する前は書き込みを行わない。二重に止まっている。</p>
+      </div>
+    </section>
+
+    <div class="partmark"><span class="lbl">第3部</span><h2>実験プロトコル</h2></div>
+
+    <section id="s9">
+      <span class="secnum">SECTION 9</span>
+      <h2>デザインと当日の手順</h2>
+      <hr class="h2rule">
+      <p class="lead">単一群のユーザスタディである。対照条件は置かず、システムの実現可能性と到達精度、そして被験者の主観を測る。</p>
+
+      <div class="def">
+        <h3>リサーチクエスチョン</h3>
+        <p>MRCP の先読みによる想起オンセット同期は、被験者が意図した想起開始時刻と仮想の手が握られる時刻を、どの程度の精度で一致させられるか。またそのとき被験者は、自分のイメージによって手が動いたと感じるか。</p>
+      </div>
+
+      <div class="caution">
+        <span class="lbl">この設計で言えないこと</span>
+        <p><strong>「脳波の情報を使って当てた」ことは示せない。</strong>試行の開始時刻がおおむね規則的である以上、脳波を一切見ずに一定間隔で発火するだけのベースラインが良い成績を取りうる。</p>
+        <p>実験デザインを変えずにこれを切り分けるため、<strong>周期発火ベースラインと EEG 試行間シャッフル対照をオフライン解析として必ず併走させる</strong>。この 2 つに有意に勝って初めて、BCI が機能していると言える。オフラインでの併走なので実験当日の負担は増えない。</p>
+      </div>
+
+      <p>被験者は健常成人から募る。目標 n = 12（最低 8）。BCI 使用経験の有無、利き手、矯正視力、神経疾患・頭部外傷の既往を記録する。</p>
+
+      <h3>当日の流れ</h3>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>#</th><th>手順</th><th>所要</th><th>備考</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">1</td><td>同意取得・スクリーニング</td><td>10 分</td><td>既往・矯正視力・利き手・BCI 経験を確認</td></tr>
+            <tr><td class="rowhead">2</td><td>電極装着・インピーダンス確認</td><td>20 分</td><td>FCz / Cz / C3 / C4 ＋ Fp1 / Fp2、5 kΩ 以下</td></tr>
+            <tr><td class="rowhead">3</td><td>HMD 装着・机キャリブレーション（<code>D</code>）・手首較正（<code>C</code>）</td><td>10 分</td><td><code>avatarHeadOffset</code> を被験者ごとに調整する</td></tr>
+            <tr><td class="rowhead">4</td><td>教示と練習（BCI 無し、<code>Space</code> 駆動で 10 試行）</td><td>10 分</td><td>予告 → t=0 で握るイメージ、というリズムを体で覚えてもらう。<strong>タイミング精度が緩電位の大きさを決める</strong>ため、キー押しで測った誤差が 10 試行中 5 試行以上で ±250 ms 以内に入るまで続ける</td></tr>
+            <tr><td class="rowhead">5</td><td><strong>トレーニング計測</strong></td><td>30 分</td><td>安静 → 指示 → イメージ。下記の試行構造で約 150 試行</td></tr>
+            <tr><td class="rowhead">6</td><td>モデル構築・θ と N の決定・レイテンシ L の実測</td><td>15 分</td><td>被験者は休憩。L はここで測り、以降固定する</td></tr>
+            <tr><td class="rowhead">7</td><td><strong>タスク 4 ブロック × 20 試行</strong></td><td>25 分</td><td>ブロック間 2 分休憩。ブロックごとに主観評価</td></tr>
+            <tr><td class="rowhead">8</td><td>事後アンケート</td><td>10 分</td><td>行為主体感・身体所有感、NASA-TLX、SSQ、自由記述</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>1 試行の構造</h3>
+
+      <pre><code>安静 3.0 s（±0.5 s ジッタ）  →  予告 2.0 s（3-2-1 カウントダウン、固定）  →  t=0 キュー
+   →  イメージ保持 3.0 s  →  復帰 2.0 s
+</code></pre>
+
+      <div class="def">
+        <h3>操作して確かめる：試行タイムライン</h3>
+        <p class="muted">2 つのスライダの役割はまったく違う。安静区間のジッタは緩電位に影響しないが、予告から t=0 までの間隔がばらつくと緩電位そのものが痩せていく。</p>
+
+        <div class="ctlrow">
+          <label>安静区間のジッタ <input type="range" id="jit" min="0" max="2" step="0.1" value="0.5"><b id="jitVal">±0.5 s</b></label>
+          <label>予告→t=0 のばらつき <input type="range" id="fpv" min="0" max="1.5" step="0.05" value="0"><b id="fpvVal">±0.00 s</b></label>
+        </div>
+
+        <canvas id="trialFig" width="760" height="330" aria-label="試行タイムラインと緩電位の模式図。学習窓、グレーゾーン、真値のばらつき帯を重ねて示す"></canvas>
+
+        <div class="tablewrap">
+          <table>
+            <tbody>
+              <tr><td class="rowhead">緩電位の残存</td><td id="roAmp">—</td><td class="rowhead">この設定の可否</td><td id="roVerdict">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="muted">仕組みを説明するための模式図であり、実測データではない。</p>
+      </div>
+
+      <div class="note">
+        <span class="lbl">なぜジッタを安静区間だけに置くのか</span>
+        <p>理由が 2 つある。<strong>予告から t=0 までを固定する</strong>のは、Cui &amp; MacKinnon (2009) のとおり、この間隔が可変だと運動前活動が有意に減弱するからである（P &lt; 0.005）。一方で<strong>安静区間にジッタを入れる</strong>のは、試行の開始時刻が完全に周期的だと周期発火ベースラインとの区別がつかなくなるからである。この 2 つは両立する。</p>
+        <p>なお Cui &amp; MacKinnon 自身が、規則的なキューの前に見える緩電位は「キュー時刻とたまたま一致した自己ペース運動の活動を見ているだけかもしれない」という交絡を指摘している。<strong>これは本実験の周期発火ベースラインの問題と同じ構図である。</strong>だからオフライン対照を外せない。</p>
+      </div>
+
+      <p>30 分からブロック間休憩を引いた実効時間は約 1500 秒で、<strong>約 150 試行</strong>（25 試行 × 6 ブロック、ブロック間 60〜90 秒）になる。陽性 150 窓・陰性 150 窓が得られる計算である。参考として Jochumsen et al. (2019) の自己ペース介入は 50 試行・平均運動間隔 11.48 ± 1.11 秒・約 14 分で、50 回の正しい対提示に 67 ± 3 回の運動を要している。</p>
+
+      <div class="note">
+        <span class="lbl">タスクはトレーニングと同一構造にする</span>
+        <p>違いは 2 点だけである。(a) BCI がリアルタイムに発火して仮想の手が握られる、(b) 試行直後に主観的一致度を回答する。<strong>構造を揃えるのは、トレーニングで作ったモデルの入力分布をタスクでずらさないため</strong>である。</p>
+      </div>
+
+      <h3>統制する条件</h3>
+      <ul class="clean">
+        <li>電極位置と帯域（FCz / Cz / C3 / C4、0.1–3 Hz）は全被験者で固定する</li>
+        <li>予告から t=0 までの 2.0 秒は動かさない。可変にすると運動前活動が有意に減弱する</li>
+        <li><code>closeSeconds</code> / <code>openSeconds</code> は固定する。手が閉じ切る速さが変わると主観評価が比較できなくなる</li>
+        <li>L はセッション前の校正で 1 回測り、実験中は動かさない。オンライン適応にするとオフライン評価と実機の再現性が失われる</li>
+        <li>部屋の照明・机の高さ・HMD の被り方は全被験者で揃える</li>
+        <li class="warn">被験者に「なるべく早く想像しろ」とは教示しない。<strong>キューちょうどに始めること</strong>だけを求める</li>
+      </ul>
+    </section>
+
+    <section id="s10">
+      <span class="secnum">SECTION 10</span>
+      <h2>計測・解析・実装ギャップ</h2>
+      <hr class="h2rule">
+      <p class="lead">タイミング・オフライン・オンライン・主観・EEG の 5 系統を取る。主要評価項目は発火時刻誤差 Δt である。</p>
+
+      <div class="tablewrap" data-collapse="8">
+        <table>
+          <thead><tr><th>系統</th><th>指標</th><th>定義・取得方法</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">タイミング</td><td><strong>発火時刻誤差 Δt</strong></td><td>Δt ＝ 描画時刻 − キュー時刻。中央値・IQR と、|Δt| ≤ 100 / 165 / 190 / 300 ms の割合。<strong>主要評価項目</strong></td></tr>
+            <tr><td class="rowhead">タイミング</td><td>検出率</td><td>t = −1.5 〜 +1.5 s に発火した試行の割合</td></tr>
+            <tr><td class="rowhead">タイミング</td><td>誤発火率 FP/min</td><td>試行間の安静区間での発火回数</td></tr>
+            <tr><td class="rowhead">タイミング</td><td>遅延 L の内訳</td><td>取得・伝送 / フィルタ＋推論 / UDP / Unity 受信〜描画 の 4 区間。中央値・IQR・最大</td></tr>
+            <tr><td class="rowhead">タイミング</td><td>量子化 Q</td><td><code>max(chunk_size ÷ sfreq, interval)</code>。設定から導出し、実測で確認する</td></tr>
+            <tr><td class="rowhead">オフライン</td><td>交差検証精度</td><td><code>trial_index</code> による group 5-fold。正解率 / AUC / 感度 / 特異度</td></tr>
+            <tr><td class="rowhead">オフライン</td><td>疑似オンライン評価</td><td>連続データ上を窓スライドさせた TPR・FP/min・潜時分布</td></tr>
+            <tr><td class="rowhead">オフライン</td><td>対照ベースライン</td><td>周期発火と EEG 試行間シャッフル。並べ替え検定で比較する</td></tr>
+            <tr><td class="rowhead">オンライン</td><td>把持到達時刻誤差</td><td>把持レベルが閾値を越えた時刻 − キュー時刻。Δt に <code>closeSeconds</code> が加わった量</td></tr>
+            <tr><td class="rowhead">オンライン</td><td>試行成功率</td><td>|Δt| ≤ 200 ms かつ発火が 1 回だけだった試行の割合</td></tr>
+            <tr><td class="rowhead">主観</td><td><strong>試行ごとのタイミング一致度</strong></td><td>「手が握られたのは自分のイメージより」−3 早すぎ 〜 0 ちょうど 〜 +3 遅すぎ</td></tr>
+            <tr><td class="rowhead">主観</td><td>行為主体感・身体所有感・一致感・苛立ち</td><td>ブロックごと 7 件法。Ziadeh et al. (2021) の 4 項目に準拠</td></tr>
+            <tr><td class="rowhead">主観</td><td>NASA-TLX / SSQ</td><td>セッション後。SSQ は HMD 使用のため安全性評価として必須</td></tr>
+            <tr><td class="rowhead">EEG</td><td>加算平均 MRCP</td><td>Cz / FCz / C3 / C4 の総加算平均。PN の時刻と振幅、早期・後期 BP の傾き</td></tr>
+            <tr><td class="rowhead">EEG</td><td>CNV の確認</td><td>予告刺激直後の陰性偏位。分類器が何を見ているかの傍証</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Unity が書く試行 CSV</h3>
+      <p>1 試行 1 行・11 列。記録開始のたびに新しいセッション ID とファイルを作るので 1 ブロック 1 ファイルになり、隣に設定のスナップショット JSON が並ぶ。</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>列</th><th>内容</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">trial_index / block_index</td><td>試行番号とブロック番号。いずれも自動採番</td></tr>
+            <tr><td class="rowhead">cue_unix</td><td>キューを提示した時刻。python 側へ打刻したのと同じ値</td></tr>
+            <tr><td class="rowhead">fire_unix</td><td>発火パケットを受信した時刻</td></tr>
+            <tr><td class="rowhead">applied_unix</td><td><code>delay_ms</code> 待機後、実際に把持を開始した時刻</td></tr>
+            <tr><td class="rowhead">delta_ms</td><td>Δt。<code>applied_unix − cue_unix</code> から導出する</td></tr>
+            <tr><td class="rowhead">grasp_reach_ms</td><td>把持レベルが閾値を越えるまでの時間</td></tr>
+            <tr><td class="rowhead">fire_count</td><td>その試行内での発火回数。2 以上なら不応期の設定を疑う</td></tr>
+            <tr><td class="rowhead">subjective_timing</td><td>試行ごとの主観的一致度（−3 〜 +3）。空欄は未回答</td></tr>
+            <tr><td class="rowhead">peak_grasp_level</td><td>その試行で到達した把持レベルの最大値</td></tr>
+            <tr><td class="rowhead">grasp_level_series</td><td>試行中の把持レベル時系列（<code>;</code> 区切り）</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="caution">
+        <span class="lbl">注意</span>
+        <p><strong>キュー時刻の UDP 打刻に失敗した試行は、その EEG が解析から落ちる。</strong>Unity 側の CSV と EEG の突合はイベント打刻を経由するしかない。送信失敗はその場で画面に出し、実験者が必ず確認すること。</p>
+      </div>
+
+      <h3>解析方法</h3>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>目的</th><th>方法</th><th>従属変数</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">主要</td><td>被験者ごとの中央値を 1 標本とし、ブートストラップ 95% 信頼区間</td><td>Δt</td></tr>
+            <tr><td class="rowhead">主要</td><td>Wilcoxon 符号順位検定（中央値が 0 と異なるか）</td><td>Δt</td></tr>
+            <tr><td class="rowhead">主要</td><td>記述統計（被験者ごとの割合）</td><td>|Δt| ≤ 100 / 165 / 190 ms 率</td></tr>
+            <tr><td class="rowhead"><strong>新規性の核</strong></td><td>被験者内で Spearman 相関を算出し、Fisher の z 変換で平均する</td><td>Δt と主観的一致度</td></tr>
+            <tr><td class="rowhead">学習・疲労</td><td>Friedman 検定（4 ブロック）</td><td>|Δt| ≤ 100 ms 率、検出率</td></tr>
+            <tr><td class="rowhead">妥当性</td><td>並べ替え検定</td><td>周期発火・シャッフル対照との差</td></tr>
+            <tr><td class="rowhead">操作チェック</td><td>総加算平均の目視と PN 振幅</td><td>Cz-MRCP</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="caution">
+        <span class="lbl">Δt が 0 に集まっても「一致した」ことにはならない</span>
+        <p>キュー基準での被験者側のばらつきは 100 ms 台に達する（Jochumsen et al. 2019 の報告値は 11.73 ± 165 ms。桁の目安）。<strong>Δt の IQR がこれを下回った時点で、システムの誤差は被験者側のばらつきに埋もれている。</strong>そこから先を「イメージと一致した」と言うには、客観的な Δt だけでは足りず、主観的一致度との対応が要る。</p>
+        <p>したがって解析では <strong>Δt の IQR を、練習フェーズで測った被験者ごとのキー押し誤差の SD と比較する</strong>（文献値 165 ms は横断的な参照値として併記する）。そのうえで、主観的一致度が Δt に追随しているかどうかを見る。</p>
+      </div>
+
+      <h3>結果の提示</h3>
+      <ul class="clean">
+        <li>被験者ごとの Δt ヒストグラムを重ね描きし、±100 / ±190 ms の線と、その被験者の練習フェーズ実測ばらつきの帯を添える</li>
+        <li>遅延 L の 4 区間内訳を積み上げ棒で示し、実測の IQR をエラーバーで載せる</li>
+        <li>ブロック別の |Δt| ≤ 100 ms 率の推移を、被験者ごとの線で結ぶ</li>
+        <li>Cz / FCz / C3 / C4 の総加算平均 MRCP を、予告時刻と t=0 を基準線として重ねる</li>
+        <li>Δt と主観的一致度の散布図（被験者ごとに色分け）</li>
+      </ul>
+
+      <h3>実装ギャップ</h3>
+
+      <div class="caution">
+        <span class="lbl">本プロトコルを回すのに必要で、まだ無いもの</span>
+        <p>現時点で <code>Assets/Scripts/</code> には CSV 書き出しも UDP 送信も存在しない。受信経路だけが完成している状態である。</p>
+      </div>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>#</th><th>対象</th><th>内容</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">1</td><td>Unity（新規）</td><td><code>ExperimentRunner</code> ― 試行タイムラインの駆動とキュー提示 UI（カウントダウン）</td></tr>
+            <tr><td class="rowhead">2</td><td>Unity（新規）</td><td>イベント UDP 送信 ― キュー時刻を <code>{"type":"cue","event_id":1}</code> で python 側 5000 番へ打刻する。<strong>これが無いと EEG とイベントを対応付けられない</strong></td></tr>
+            <tr><td class="rowhead">3</td><td>Unity（新規）</td><td>試行 CSV ロガーと設定スナップショット JSON</td></tr>
+            <tr><td class="rowhead">4</td><td>Unity（新規）</td><td>発火イベントの受信と <code>delay_ms</code> 待機。現状の <code>UdpGraspSignalSource</code> は連続分類パケットしか解さない</td></tr>
+            <tr><td class="rowhead">5</td><td>Unity（新規）</td><td>試行ごとの主観的一致度の入力 UI</td></tr>
+            <tr><td class="rowhead">6</td><td>Unity ＋ Python</td><td>時計合わせ（echo 計測モード）と 4 区間レイテンシの実測スクリプト</td></tr>
+            <tr><td class="rowhead">7</td><td>Python</td><td><code>onset_trigger</code>（発火判定の状態機械）と <code>onset_evaluator</code>（潜時分布・FP/min・対照ベースライン）</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <span class="lbl">要点</span>
+        <p>発火判定は<strong>オフライン評価と実機で同じクラスを共有する</strong>こと。二重実装すると、論文に書いた数字と実際の挙動が食い違う。</p>
+      </div>
+
+      <h3>まとめ</h3>
+      <ul class="clean">
+        <li>検出ではなく<strong>予測</strong>。<code>[-1.5, 0.0]</code> の緩電位から想起開始を先読みし、遅延ぶん早く発火する</li>
+        <li>キュー基準は弱点ではなく<strong>設計判断</strong>。効くのはキューの有無ではなく時間的予測可能性と、狙った時刻への精度要求である</li>
+        <li>予告から t=0 は<strong>固定</strong>、ジッタは<strong>安静区間だけ</strong>。理由は別々にある</li>
+        <li>タイミング精度を縛るのは遅延 L ではなく量子化 Q。L は補償できるが Q はできない</li>
+        <li>±100 ms という要件は Shibuya (2016) の 190 ms に対して安全側に置いたもの。所有感はこの閾を超えると消える</li>
+        <li class="warn">試行単位のグループ分割を最初に入れる。窓単位の分割は精度を嘘にする</li>
+        <li class="warn">想像課題の TPR は 65〜75%。3 割前後の試行が発火しない前提で設計する</li>
+        <li class="warn">真値のノイズ床は 100 ms 台。Δt が 0 に集まるだけでは主張にならない。被験者ごとに実測する</li>
+        <li class="warn">周期発火ベースラインとシャッフル対照をオフラインで必ず併走させる</li>
+      </ul>
+
+      <h3>Q&amp;A</h3>
+
+      <details>
+        <summary>なぜ検出ではなく予測なのですか</summary>
+        <div class="qbody">
+          <p>「想起が始まった」と気づいてから動かすのでは、原理的に間に合わないからです。脳波の取得からフィルタ、推論、UDP 送信、描画までの各段階はそれぞれ短くても、積み上がると要件を超えます。MRCP が想起開始の 1.5〜2 秒前から立ち上がることを利用して、その坂を読み、遅延ぶんだけ早く発火命令を出します。命令が Unity に届くころに、ちょうど t=0 が来ます。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>なぜ自己ペースではなくキュー基準にしたのですか</summary>
+        <div class="qbody">
+          <p>真値の曖昧さを避けるためです。自己ペースでは「いつ想起が始まったか」を別の手段で打刻する必要がありますが、その手段によってピーク陰性の時刻が最大 1305 ms もずれることが報告されています。力プレート、EMG、ジャイロで結果が変わるのです。</p>
+          <p>さらに本課題は<strong>実際の運動を伴わない純粋な想像</strong>なので、そもそも打刻できる身体的な事象が存在しません。Libet 風の回転時計で被験者に報告させる手もありますが、時計への注視自体が課題を変えてしまいます。キュー基準なら真値はキュー提示時刻そのもので、曖昧さがありません。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>キューを使うと MRCP が出にくくならないのですか</summary>
+        <div class="qbody">
+          <p>なりません。呼称が Bereitschaftspotential から Contingent Negative Variation に変わるだけで、別の現象ではありません。生態学的に妥当な運動の scoping review では自己ペース 28 件・キュー基準 28 件とほぼ半々で採用されており、両者を直接比較した 2 件はいずれも MRCP 特性に有意差なしと報告しています。</p>
+          <p>ただし<strong>キュー時刻が予測できることが条件</strong>です。Cui &amp; MacKinnon (2009) は、早期の緩電位が現れるのは運動オンセット時刻を事前に予測できるときだけで、不規則キューでは運動前活動が有意に減弱すると示しました（P &lt; 0.005）。だから本プロトコルは予告から t=0 までを 2.0 秒で固定します。</p>
+          <p>さらに同研究では、<strong>タイミング精度を要求された運動が自己ペースより有意に大きい緩電位を生んで</strong>います（P &lt; 0.018）。キューを使うことは信号にとって不利どころか、精度を要求すれば有利に働きます。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>キュー時刻を真値にしてよいのですか</summary>
+        <div class="qbody">
+          <p>厳密には、Δt は「キューからの発火誤差」であって「イメージ開始からのズレ」ではありません。被験者が教示どおり t=0 に想起を始めたという仮定に依存しています。</p>
+          <p>その仮定の桁の目安が <strong>11.73 ± 165 ms</strong>（Jochumsen et al. 2019。ただし同論文はオンセットの判定方法を明記していないため確定値としては使えません）です。平均はほぼ 0 なので系統的なバイアスは小さいものの、100 ms 台のばらつきは残ります。<strong>これは本研究の限界であり、論文でも明記すべき点です。</strong>だからこそ練習フェーズで被験者ごとの実測値を取り、あわせて主観的一致度を対で取ります。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>対照条件を置かずに何が言えるのですか</summary>
+        <div class="qbody">
+          <p>言えるのは「このシステムがどの程度の精度で動くか」と「そのとき被験者がどう感じるか」までです。随伴性の効果、つまり「被験者自身の脳波で動いたからこそ主体感が生まれた」ことは示せません。それを示すには、脳波と無関係なタイミングで手が握られる非随伴条件が要ります。</p>
+          <p>ただし「脳波の情報を使っている」ことだけなら、オフラインの対照（周期発火ベースラインと EEG 試行間シャッフル）で議論できます。この 2 つに有意差をつけられれば、少なくともランダムではないと言えます。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>予告刺激があると MRCP ではなく CNV を見ているのではないですか</summary>
+        <div class="qbody">
+          <p>その指摘は正しく、<strong>本実験の構成では両者を分離できません</strong>。ただし CNV は除くべき汚染ではなく、使っている信号の一部です。予測可能性を壊せば信号自体が有意に減弱するので、「CNV を除いた純粋な MRCP」を取り出すという方向は成立しません。</p>
+          <p>内訳を切り分けたい場合は、陰性クラスの一部を「予告は出るがイメージはしない」NoGo 試行から取ります。予告への視覚応答が両クラスに等しく載るため、分類器が予告応答だけで解いていないかを確認できます。論文で「MRCP を検出した」と書くときは、この限界を併記します。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>この研究に新規性はあるのですか</summary>
+        <div class="qbody">
+          <p><strong>要素技術にはありません。</strong>MRCP による運動前検出は 15 年の蓄積があり、深層学習との組み合わせもリアルタイム外骨格制御まで到達しています。VR と BCI の組み合わせも、疑似触覚との組み合わせも既にあります。</p>
+          <p>空いているのは 2 点です。第一に、<strong>想起開始とアプリ動作のズレを、客観値と主観評価の対で測る枠組み</strong>。既存研究は検出器の性能（TPR・潜時）は報告しますが、それをユーザ体験としての同期精度に接続していません。第二に、<strong>MRCP × 一人称 VR アバターの手 × 行為主体感</strong>という組み合わせ。系統レビューでは MRCP-BCI 18 件中 VR は 4 件のみで、著者自身が文献の乏しさを明記しています。</p>
+          <p>正直に言えば、Δt そのものは検出潜時と数学的にほぼ同じ量です。新しいのは指標ではなく評価の枠組みのほうで、位置づけとしては神経科学の新知見ではなくシステム提案とユーザスタディです。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>なぜ深層学習を使わないのですか</summary>
+        <div class="qbody">
+          <p>学習データが 1 セッションで約 150 試行しかなく、深層モデルの容量に見合わないからです。加えてリアルタイム制約から未来のサンプルを使う操作が一切禁じられ、推論を 20 Hz で回す必要もあります。<code>[-1.5, 0.0]</code> の 1 窓を二値に落とす問題では、高次元・小標本に強い shrinkage LDA が現実的です。</p>
+          <p>ただし特徴抽出器と分類器は設定で差し替えられる構造にしてあるので、被験者間でデータが貯まった段階で EEGNet 等を試す余地は残しています。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>トレーニング 30 分・150 試行で足りますか</summary>
+        <div class="qbody">
+          <p>陽性 150 窓・陰性 150 窓は、間引き後の次元に対して shrinkage LDA を効かせるには足ります。参考として Jochumsen et al. (2019) の介入は 50 試行で成立しています。</p>
+          <p>足りない可能性が高いのはむしろ<strong>オンラインへの転移</strong>のほうです。Suwandjieff et al. (2026) は、較正データだけで学習した分類器の TPR が 27.1% だったのに対し、最初のオンラインセッションのデータで再学習すると 63.6% に上がったと報告しています。タスク第 1 ブロックで再学習する運用を推奨オプションとして用意してあるのはこのためです。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>TPR が 6 割なら 4 割の試行は発火しませんが、実験として成立しますか</summary>
+        <div class="qbody">
+          <p>成立します。<strong>検出率と Δt は別々に報告する指標</strong>だからです。発火しなかった試行は検出率の分母に入り、発火した試行だけが Δt の分布を作ります。両方を報告すれば「4 割は反応しないが、反応したときは ±100 ms に入る」という形で正確に記述できます。</p>
+          <p>ただし被験者体験としては問題になります。だから主観評価に「苛立ち」の項目を入れ、検出率と主観の関係も見ます。Ziadeh et al. (2021) は、成績が行為主体感を予測する強い因子であることを示しています。</p>
+        </div>
+      </details>
+
+      <h3>参考文献</h3>
+      <div class="doclist">
+        <p class="grp">主軸</p>
+        <a href="https://doi.org/10.1016/j.clinph.2006.04.025" target="_blank">Shibasaki, H. &amp; Hallett, M. (2006). What is the Bereitschaftspotential?<span class="u">Clinical Neurophysiology, 117(11), 2341-2356 ― BP1 / BP2 の定義と時間経過の基準文献</span></a>
+        <a href="https://doi.org/10.1155/2015/346217" target="_blank">Shakeel, A. et al. (2015). A Review of Techniques for Detection of Movement Intention Using Movement-Related Cortical Potentials<span class="u">Computational and Mathematical Methods in Medicine, 2015, 346217 ― 検出手法と性能の総覧</span></a>
+        <a href="https://doi.org/10.3390/bios12121134" target="_blank">Said, R. R., Heyat, M. B. B., Song, K., Tian, C. &amp; Wu, Z. (2022). A Systematic Review of Virtual Reality and Robot Therapy as Recent Rehabilitation Technologies Using EEG-BCI Based on MRCP<span class="u">Biosensors, 12(12), 1134 ― MRCP-BCI 18 件中 VR は 4 件のみ</span></a>
+        <a href="https://doi.org/10.3389/fnins.2021.721387" target="_blank">Electroencephalographic Recording of the MRCP in Ecologically Valid Movements: A Scoping Review (2021)<span class="u">Frontiers in Neuroscience, 15, 721387 ― BP と CNV の呼称、打刻手段の比較</span></a>
+
+        <p class="grp">パラダイム選択</p>
+        <a href="https://doi.org/10.1007/s00221-009-1725-5" target="_blank">Cui, R. &amp; MacKinnon, C. D. (2009). The effect of temporal accuracy constraints on movement-related potentials<span class="u">Experimental Brain Research, 194(3), 477-488 ― 自己ペース / 不規則キュー / 規則キューの 3 条件、87 電極。早期緩電位はオンセット時刻を予測できるときだけ現れ、精度要求下では自己ペースより大きい（P &lt; 0.018）。不規則キューでは有意に減弱（P &lt; 0.005）</span></a>
+        <a href="https://doi.org/10.3390/brainsci9060127" target="_blank">Jochumsen, M. et al. (2019). Self-Paced Online vs. Cue-Based Offline Brain-Computer Interfaces for Inducing Neural Plasticity<span class="u">Brain Sciences, 9(6), 127 ― キュー基準でのオンセットばらつき 11.73 ± 165 ms（判定方法は原著に記載なし）、自己ペース TPR 75 ± 3% / FP 1.2 ± 0.7 per min</span></a>
+
+        <p class="grp">検出手法</p>
+        <a href="https://doi.org/10.1088/1741-2560/8/6/066009" target="_blank">Niazi, I. K. et al. (2011). Detection of movement intention from single-trial movement-related cortical potentials<span class="u">Journal of Neural Engineering, 8(6), 066009</span></a>
+        <a href="https://doi.org/10.1007/s11517-012-1018-1" target="_blank">Niazi, I. K. et al. (2013). Detection of movement-related cortical potentials based on subject-independent training<span class="u">Medical &amp; Biological Engineering &amp; Computing, 51(5), 507-512 ― 被験者独立の大域テンプレート。想像 65 ± 22%、実行 69 ± 21%</span></a>
+        <a href="https://doi.org/10.3389/fneng.2012.00013" target="_blank">Lew, E. et al. (2012). Detection of self-paced reaching movement intention from EEG signals<span class="u">Frontiers in Neuroengineering, 5, 13</span></a>
+        <a href="https://doi.org/10.1109/TBME.2013.2294203" target="_blank">Xu, R., Jiang, N., Lin, C., Mrachacz-Kersting, N., Dremstrup, K. &amp; Farina, D. (2014). Enhanced Low-Latency Detection of Motor Intention From EEG for Closed-Loop Brain-Computer Interface Applications<span class="u">IEEE Transactions on Biomedical Engineering, 61(2), 288-296 ― LPP-LDA。性能表の 79% / 1.4 per min / 315 ms はこちら</span></a>
+        <a href="https://doi.org/10.1016/j.clinph.2014.05.003" target="_blank">Jiang, N. et al. (2015). A brain-computer interface for single-trial detection of gait initiation from movement related cortical potentials<span class="u">Clinical Neurophysiology, 126(1), 154-159</span></a>
+        <a href="https://doi.org/10.3389/fnins.2017.00356" target="_blank">Detection of Movement Related Cortical Potentials from EEG Using Constrained ICA (2017)<span class="u">Frontiers in Neuroscience, 11, 356 ― 想像課題での潜時 28 ± 16 ms</span></a>
+
+        <p class="grp">連合性 BCI（最も近い先行研究）</p>
+        <a href="https://doi.org/10.1109/TBME.2014.2313867" target="_blank">Xu, R., Jiang, N., Mrachacz-Kersting, N., Lin, C., Asin Prieto, G., Moreno, J. C. et al. (2014). A Closed-Loop Brain-Computer Interface Triggering an Active Ankle-Foot Orthosis for Inducing Cortical Neural Plasticity<span class="u">IEEE Transactions on Biomedical Engineering, 61(7), 2092-2101 ― <strong>想像した背屈をオンライン検出して装具を発火。TPR 73.0 ± 10.3%。イメージのみ / ランダム発火の 2 対照を実施</strong></span></a>
+        <a href="https://doi.org/10.3389/fnins.2018.00455" target="_blank">Mrachacz-Kersting, N. &amp; Aliakbaryhosseinabadi, S. (2018). Comparison of the Efficacy of a Real-Time and Offline Associative Brain-Computer-Interface<span class="u">Frontiers in Neuroscience, 12, 455 ― オンライン単一試行の PN 検出、50 ms 先読みで刺激。TPR 71 ± 3%、FP 2.8 ± 0.7 per min</span></a>
+
+        <p class="grp">最新・機械学習・リアルタイム</p>
+        <a href="https://doi.org/10.1088/1741-2552/ae6bef" target="_blank">Suwandjieff, P., Crell, M. R., Kostoglou, K. &amp; Müller-Putz, G. R. (2026). Turning motor intentions into words: an MRCP-based BCI speller for motor-impaired users enhanced by task-specific calibration<span class="u">Journal of Neural Engineering, 23(3), 036018 ― 課題特化の再学習で TPR 27.1% → 63.6%</span></a>
+        <a href="https://doi.org/10.3389/fbioe.2024.1448903" target="_blank">Dong, R. et al. (2024). Cross-domain prediction approach of human lower limb voluntary movement intention for exoskeleton robot based on EEG signals<span class="u">Frontiers in Bioengineering and Biotechnology, 12, 1448903 ― VGGNet ＋ 転移学習。健常 10 名、483.9 ± 11.9 ms 前に精度 82.75%</span></a>
+        <a href="https://doi.org/10.1007/s11571-024-10164-3" target="_blank">Decoding of movement-related cortical potentials at different speeds (2024)<span class="u">Cognitive Neurodynamics ― 運動速度による MRCP の違いを復号する</span></a>
+        <a href="https://doi.org/10.3390/biomimetics10080506" target="_blank">Improved Automatic Deep Model for Automatic Detection of Movement Intention from EEG Signals (2025)<span class="u">Biomimetics, 10(8), 506</span></a>
+        <a href="https://arxiv.org/abs/2507.02320" target="_blank">Zhang, H. &amp; Li, H. (2025). Transformer-based EEG Decoding: A Survey<span class="u">arXiv:2507.02320 ― Transformer の EEG 復号への適用を整理</span></a>
+
+        <p class="grp">身体性・行為主体感・疑似触覚</p>
+        <a href="https://doi.org/10.1113/jphysiol.2011.222851" target="_blank">Mrachacz-Kersting, N., Kristensen, S. R., Niazi, I. K. &amp; Farina, D. (2012). Precise temporal association between cortical potentials evoked by motor imagination and afference induces cortical plasticity<span class="u">The Journal of Physiology, 590(7), 1669-1682 ― <strong>「早くても遅くても可塑性は誘導されない」の出典</strong></span></a>
+        <a href="https://doi.org/10.1152/jn.00918.2015" target="_blank">Mrachacz-Kersting, N. et al. (2016). Efficient neuroplasticity induction in chronic stroke patients by an associative brain-computer interface<span class="u">Journal of Neurophysiology, 115(3), 1410-1421 ― 連合性 BCI の慢性期脳卒中患者への適用</span></a>
+        <a href="https://doi.org/10.3389/fpsyg.2021.806424" target="_blank">Ziadeh, H. et al. (2021). "Mine Works Better": Examining the Influence of Embodiment in Virtual Reality on the Sense of Agency During a Binary Motor Imagery Task With a Brain-Computer Interface<span class="u">Frontiers in Psychology, 12, 806424 ― 主観 4 項目の 7 件法、R² = 0.41</span></a>
+        <a href="https://doi.org/10.1371/journal.pone.0159619" target="_blank">Shibuya, S. et al. (2016). 'Robot' Hand Illusion under Delayed Visual Feedback: Relationship between the Senses of Ownership and Agency<span class="u">PLOS ONE, 11(7), e0159619 ― CG の手、健常 16 名、遅延 90〜590 ms。所有感は 90〜190 ms でのみ有意、主体感は 290〜490 ms まで残る</span></a>
+        <a href="https://doi.org/10.1371/journal.pone.0245191" target="_blank">Caspar, E. A. et al. (2021). How using brain-machine interfaces influences the human sense of agency<span class="u">PLOS ONE, 16(1), e0245191</span></a>
+        <a href="https://doi.org/10.1145/3290605.3300550" target="_blank">Samad, M., Gatti, E., Hermes, A., Benko, H. &amp; Parise, C. (2019). Pseudo-Haptic Weight: Changing the Perceived Weight of Virtual Objects By Manipulating Control-Display Ratio<span class="u">CHI 2019 ― C/D 比による重さ知覚。本リポジトリの疑似触覚の基礎</span></a>
+        <a href="https://doi.org/10.1080/0144929X.2025.2555323" target="_blank">Enhancing user experience in virtual reality through BCI-modulated pseudo-haptic feedback (2025)<span class="u">Behaviour &amp; Information Technology ― BCI × 疑似触覚。ただし注意レベルによる変調</span></a>
+
+        <p class="grp">内部資料</p>
+        <a href="../開発/mrcp-onset-detection-design.html" target="_blank">想起オンセット先読みの検討とクラス定義機構<span class="u">python-bci-platform / 検討メモ。遅延 L と量子化 Q、多クラス方式の検討</span></a>
+        <a href="./bci-golf-experiment-protocol.html" target="_blank">AR スポットライト型 SMR ニューロフィードバックの実験プロトコル<span class="u">unity-bci-golf ― 本資料の構成の元にしたプロトコル</span></a>
+      </div>
+    </section>
+
+
+
+
+    <footer>
+      unity-bci-pseudo-haptics の実験プロトコル。第 1 部の文献値は上記参考文献に基づく。第 2 部の設定値は <code>Assets/Settings/HandExperimentSettings.asset</code> と <code>Assets/Scripts/Signals/</code> の現行実装に基づく。<br>
+      図はいずれも仕組みを説明するための模式図であり、実測データではない。しきい値 θ・連続回数 N・遅延 L・検出器のばらつき σ は暫定値で、実データ取得後に確定させる。<br>
+      SECTION 10 の実装ギャップ 7 件は未実装である。本プロトコルを実行するには先にこれらが要る。<br>
+      作成日：2026-08-10
+    </footer>
+  </main>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var seen = {};
+
+  function updateParts() {
+    document.querySelectorAll('#toc .toc-part').forEach(function (part) {
+      var items = Array.prototype.slice.call(part.querySelectorAll('a'));
+      var done = items.filter(function (a) { return seen[a.getAttribute('href').slice(1)]; }).length;
+      var counter = part.querySelector('.part-progress');
+      if (counter) counter.textContent = done + '/' + items.length;
+      var current = items.some(function (a) { return a.classList.contains('active'); });
+      part.classList.toggle('current', current);
+      if (current) part.open = true;
+    });
+  }
+
+  if (typeof IntersectionObserver === 'function') {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        seen[entry.target.id] = true;
+        links.forEach(function (a) { a.classList.remove('active'); });
+        if (byId[entry.target.id]) byId[entry.target.id].classList.add('active');
+        updateParts();
+      });
+    }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+    document.querySelectorAll('main section').forEach(function (s) { observer.observe(s); });
+  }
+
+  function applyCollapse(wrap) {
+    if (!wrap || !wrap.dataset.collapse || !wrap.dataset.expanded) return;
+    var limit = parseInt(wrap.dataset.collapse, 10);
+    var rows = Array.prototype.slice.call(wrap.querySelectorAll('tbody tr'));
+    var expanded = wrap.dataset.expanded === 'true';
+    rows.forEach(function (row, index) { row.hidden = !expanded && index >= limit; });
+    var button = wrap.querySelector('.rowmore');
+    if (!button) return;
+    button.textContent = expanded ? '折りたたむ' : '残り ' + (rows.length - limit) + ' 行を表示';
+    button.setAttribute('aria-expanded', String(expanded));
+  }
+
+  document.querySelectorAll('.tablewrap[data-collapse]').forEach(function (wrap) {
+    var limit = parseInt(wrap.dataset.collapse, 10);
+    var rows = wrap.querySelectorAll('tbody tr');
+    if (!limit || rows.length <= limit) return;
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'rowmore';
+    button.addEventListener('click', function () {
+      wrap.dataset.expanded = wrap.dataset.expanded === 'true' ? 'false' : 'true';
+      applyCollapse(wrap);
+    });
+    wrap.appendChild(button);
+    wrap.dataset.expanded = 'false';
+    applyCollapse(wrap);
+  });
+
+  function cellValue(row, index) {
+    var cell = row.cells[index];
+    return cell ? cell.textContent.trim() : '';
+  }
+
+  var NUMERIC = /^[+-]?\d[\d,]*(?:\.\d+)?$/;
+
+  function compareValues(x, y) {
+    if (NUMERIC.test(x) && NUMERIC.test(y)) {
+      return parseFloat(x.replace(/,/g, '')) - parseFloat(y.replace(/,/g, ''));
+    }
+    return x.localeCompare(y, 'ja', { numeric: true });
+  }
+
+  function comparator(index, descending) {
+    return function (a, b) {
+      var result = compareValues(cellValue(a, index), cellValue(b, index));
+      return descending ? -result : result;
+    };
+  }
+
+  document.querySelectorAll('table.sortable').forEach(function (table) {
+    if (!table.tHead || !table.tBodies.length) return;
+    var headers = Array.prototype.slice.call(table.tHead.rows[0].cells);
+    headers.forEach(function (th, index) {
+      th.setAttribute('tabindex', '0');
+      th.setAttribute('role', 'button');
+      function sort() {
+        var descending = th.getAttribute('aria-sort') === 'ascending';
+        headers.forEach(function (other) { other.removeAttribute('aria-sort'); });
+        th.setAttribute('aria-sort', descending ? 'descending' : 'ascending');
+        var body = table.tBodies[0];
+        Array.prototype.slice.call(body.rows)
+          .sort(comparator(index, descending))
+          .forEach(function (row) { body.appendChild(row); });
+        applyCollapse(table.closest('.tablewrap'));
+      }
+      th.addEventListener('click', sort);
+      th.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
+        sort();
+      });
+    });
+  });
+
+  document.querySelectorAll('.flow[data-steps]').forEach(function (flow) {
+    var nodes = Array.prototype.slice.call(flow.querySelectorAll('.node'));
+    if (nodes.length < 3) return;
+    var parts = Array.prototype.slice.call(flow.children);
+    var position = 0;
+
+    var control = document.createElement('div');
+    control.className = 'flow-ctl';
+    var prev = document.createElement('button');
+    prev.type = 'button';
+    prev.textContent = '前へ';
+    var next = document.createElement('button');
+    next.type = 'button';
+    next.textContent = '次へ';
+    var label = document.createElement('span');
+    label.className = 'pos';
+    control.appendChild(prev);
+    control.appendChild(label);
+    control.appendChild(next);
+    flow.parentNode.insertBefore(control, flow.nextSibling);
+
+    function render() {
+      var head = nodes[position];
+      var passed = false;
+      parts.forEach(function (part) {
+        part.classList.toggle('ahead', passed);
+        part.classList.toggle('now', part === head);
+        if (part === head) passed = true;
+      });
+      label.textContent = (position + 1) + ' / ' + nodes.length;
+      prev.disabled = position === 0;
+      next.disabled = position === nodes.length - 1;
+    }
+
+    prev.addEventListener('click', function () { position = Math.max(0, position - 1); render(); });
+    next.addEventListener('click', function () { position = Math.min(nodes.length - 1, position + 1); render(); });
+    flow.dataset.ready = 'true';
+    render();
+  });
+})();
+</script>
+
+<script>
+(function () {
+  "use strict";
+
+  var MONO = '"SFMono-Regular",Consolas,monospace';
+
+  function tok(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  /* 論理座標で描くための下ごしらえ。devicePixelRatio を吸収し、
+     CSS 幅から高さを比率で決める。 */
+  function fit(cv, ratio, minH) {
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(cv.getBoundingClientRect().width, 300);
+    /* 幅が狭いときは比率どおりだと潰れて読めなくなるので、下限を設けて縦に伸ばす */
+    var h = Math.max(w / ratio, minH || 0);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(h * dpr);
+    cv.style.height = h + 'px';
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    ctx.textBaseline = 'middle';
+    ctx.font = '11px ' + MONO;
+    return { ctx: ctx, w: w, h: h };
+  }
+
+  /* 決定論的な擬似ノイズ。スライダを動かしても波形が揺れない。 */
+  function noise(x) {
+    var s = Math.sin(x * 127.1) * 43758.5453;
+    return (s - Math.floor(s)) * 2 - 1;
+  }
+
+  /* ============ SECTION 1: MRCP の成分と時間経過 ============ */
+
+  var mrcpCv = document.getElementById('mrcpFig');
+
+  /* 早期 BP は -2.0 s から緩やかに、後期 BP は -0.5 s から急に立ち上がり、
+     t=0 でピーク陰性に達する。振幅は 1.0 を最大陰性として正規化してある。 */
+  function mrcpWave(t) {
+    var v = 0;
+    if (t <= -2.0) v = 0;
+    else if (t <= -0.5) v = -0.38 * Math.pow((t + 2.0) / 1.5, 1.6);
+    else if (t <= 0) v = -0.38 - 0.62 * Math.pow((t + 0.5) / 0.5, 1.3);
+    else v = -Math.exp(-t * 2.6);
+    return v + 0.03 * noise(t * 41.7);
+  }
+
+  function drawMrcp() {
+    if (!mrcpCv) return;
+    var f = fit(mrcpCv, 760 / 300, 230), ctx = f.ctx, W = f.w, H = f.h;
+    var T0 = -3.0, T1 = 1.0;
+    var padL = 54, padR = 12, padT = 26, padB = 40;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    var x = function (t) { return padL + (t - T0) / (T1 - T0) * plotW; };
+    var yBase = padT + plotH * 0.22;
+    var yScale = plotH * 0.66;
+    var y = function (v) { return yBase - v * yScale; };
+
+    var sub = tok('--sub'), ink = tok('--ink'), teal = tok('--teal');
+    var tealDeep = tok('--teal-deep'), tealTint = tok('--teal-tint');
+    var ochre = tok('--ochre'), ochreTint = tok('--ochre-tint');
+    var line = tok('--line'), infoTint = tok('--info-tint');
+
+    /* 成分の帯 */
+    ctx.fillStyle = infoTint;
+    ctx.fillRect(x(-2.0), padT, x(-0.5) - x(-2.0), plotH);
+    ctx.fillStyle = ochreTint;
+    ctx.fillRect(x(-0.5), padT, x(0) - x(-0.5), plotH);
+
+    /* 学習窓 */
+    ctx.strokeStyle = teal;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 3]);
+    ctx.strokeRect(x(-1.5) + 0.5, padT + 0.5, x(0) - x(-1.5) - 1, plotH - 1);
+    ctx.setLineDash([]);
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = sub;
+    if (x(-0.5) - x(-2.0) > 80) ctx.fillText('早期 BP', (x(-2.0) + x(-0.5)) / 2, padT + 12);
+    ctx.fillStyle = ochre;
+    if (x(0) - x(-0.5) > 60) ctx.fillText('後期 BP', (x(-0.5) + x(0)) / 2, padT + 12);
+    ctx.fillStyle = tealDeep;
+    ctx.fillText('学習窓 [-1.5, 0.0]', (x(-1.5) + x(0)) / 2, padT + plotH - 10);
+
+    /* 時間軸 */
+    ctx.strokeStyle = line;
+    ctx.fillStyle = sub;
+    for (var t = -3; t <= 1; t += 1) {
+      ctx.beginPath();
+      ctx.moveTo(x(t), padT);
+      ctx.lineTo(x(t), padT + plotH);
+      ctx.stroke();
+      ctx.fillText(t + ' s', x(t), padT + plotH + 16);
+    }
+
+    /* 基線 */
+    ctx.strokeStyle = line;
+    ctx.beginPath();
+    ctx.moveTo(padL, y(0));
+    ctx.lineTo(padL + plotW, y(0));
+    ctx.stroke();
+
+    /* 波形 */
+    ctx.strokeStyle = teal;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (var i = 0; i <= plotW; i++) {
+      var tt = T0 + (i / plotW) * (T1 - T0);
+      var yy = y(mrcpWave(tt));
+      if (i === 0) ctx.moveTo(padL + i, yy); else ctx.lineTo(padL + i, yy);
+    }
+    ctx.stroke();
+
+    /* ピーク陰性 */
+    ctx.fillStyle = tealDeep;
+    ctx.beginPath();
+    ctx.arc(x(0), y(mrcpWave(-0.001)), 4.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.textAlign = 'left';
+    ctx.fillText('ピーク陰性 (PN)', x(0) + 8, y(mrcpWave(-0.001)));
+
+    /* t=0 線 */
+    ctx.strokeStyle = ink;
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    ctx.moveTo(x(0), padT - 6);
+    ctx.lineTo(x(0), padT + plotH + 6);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = ink;
+    ctx.textAlign = 'right';
+    ctx.fillText('t = 0  想起開始', x(0) - 8, padT - 12);
+
+    /* 縦軸 */
+    ctx.fillStyle = sub;
+    ctx.textAlign = 'right';
+    ctx.fillText('陰性', padL - 10, y(0.85));
+    ctx.fillText('5-30 µV', padL - 10, y(0.62));
+    ctx.fillText('基線', padL - 10, y(0));
+  }
+
+  /* ============ SECTION 2: パラダイム 3 条件 ============ */
+
+  var paradigmCv = document.getElementById('paradigmFig');
+
+  var PARADIGMS = [
+    { name: '自己ペース', sub: 'BP（準備電位）', amp: 0.82, cue: null, verdict: '出る' },
+    { name: '固定間隔キュー＋精度要求', sub: 'CNV（随伴陰性変動）', amp: 1.0, cue: -2.0, verdict: '最も大きい' },
+    { name: '可変間隔キュー', sub: '時間的に予測不能', amp: 0.12, cue: -2.0, verdict: '有意に減弱' }
+  ];
+
+  function drawParadigm() {
+    if (!paradigmCv) return;
+    var f = fit(paradigmCv, 760 / 260, 210), ctx = f.ctx, W = f.w, H = f.h;
+    var gap = 14, padT = 28, padB = 34;
+    var panelW = (W - gap * 2) / 3;
+    var plotH = H - padT - padB;
+    var T0 = -3.0, T1 = 0.6;
+
+    var sub = tok('--sub'), ink = tok('--ink'), teal = tok('--teal');
+    var tealDeep = tok('--teal-deep'), ochre = tok('--ochre');
+    var line = tok('--line'), surface = tok('--surface'), rule = tok('--rule');
+
+    PARADIGMS.forEach(function (p, k) {
+      var ox = k * (panelW + gap);
+      var x = function (t) { return ox + 6 + (t - T0) / (T1 - T0) * (panelW - 12); };
+      var yBase = padT + plotH * 0.26;
+      var yScale = plotH * 0.58;
+      var y = function (v) { return yBase - v * yScale; };
+
+      ctx.fillStyle = surface;
+      ctx.fillRect(ox, padT, panelW, plotH);
+      ctx.strokeStyle = rule;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(ox + 0.5, padT + 0.5, panelW - 1, plotH - 1);
+
+      /* 見出し */
+      ctx.textAlign = 'center';
+      ctx.font = '700 12px ' + MONO;
+      ctx.fillStyle = p.amp > 0.5 ? tealDeep : ochre;
+      ctx.fillText(p.name, ox + panelW / 2, 11);
+      ctx.font = '10px ' + MONO;
+      ctx.fillStyle = sub;
+      ctx.fillText(p.sub, ox + panelW / 2, 24);
+      ctx.font = '11px ' + MONO;
+
+      /* 基線 */
+      ctx.strokeStyle = line;
+      ctx.beginPath();
+      ctx.moveTo(x(T0), y(0));
+      ctx.lineTo(x(T1), y(0));
+      ctx.stroke();
+
+      /* 予告キュー */
+      if (p.cue !== null) {
+        ctx.strokeStyle = sub;
+        ctx.setLineDash([2, 2]);
+        ctx.beginPath();
+        ctx.moveTo(x(p.cue), padT + 2);
+        ctx.lineTo(x(p.cue), padT + plotH - 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = sub;
+        ctx.textAlign = 'left';
+        ctx.fillText('予告', x(p.cue) + 3, padT + plotH - 22);
+      }
+
+      /* 波形 */
+      ctx.strokeStyle = p.amp > 0.5 ? teal : ochre;
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      var span = x(T1) - x(T0);
+      for (var i = 0; i <= span; i++) {
+        var tt = T0 + (i / span) * (T1 - T0);
+        var v = mrcpWave(tt) * p.amp;
+        /* 予測不能な条件では準備電位が立たず、雑音だけが残る */
+        if (p.amp < 0.5) v = 0.055 * noise(tt * 63.1 + k * 11);
+        var yy = y(v);
+        if (i === 0) ctx.moveTo(x(T0) + i, yy); else ctx.lineTo(x(T0) + i, yy);
+      }
+      ctx.stroke();
+
+      /* t=0 */
+      ctx.strokeStyle = ink;
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(x(0), padT + 2);
+      ctx.lineTo(x(0), padT + plotH - 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      /* 判定 */
+      ctx.textAlign = 'center';
+      ctx.font = '700 12px ' + MONO;
+      ctx.fillStyle = p.amp > 0.5 ? tealDeep : ochre;
+      ctx.fillText(p.verdict, ox + panelW / 2, padT + plotH + 16);
+      ctx.font = '11px ' + MONO;
+    });
+  }
+
+  /* ============ SECTION 6: タイミング収支 ============ */
+
+  var SFREQ = 256;
+  var L_STAGES = [
+    { name: '取得・伝送', ms: 3.0 },
+    { name: 'フィルタ', ms: 2.0 },
+    { name: '特徴抽出＋推論', ms: 4.0 },
+    { name: 'UDP 送信', ms: 1.0 },
+    { name: 'Unity 描画', ms: 16.7, neutral: true }
+  ];
+  var L_TOTAL = L_STAGES.reduce(function (a, s) { return a + s.ms; }, 0);
+
+  var latCv = document.getElementById('latFig');
+  var elIvl = document.getElementById('ivl');
+  var elSig = document.getElementById('sig');
+  var elCmp = document.getElementById('cmp');
+  var chunkN = 32;
+
+  /* 一様分布 U(0,Q) と正規分布 N(off, σ) の畳み込みを数値で作る。
+     Q は量子化（補償できない）、σ は検出器そのもののばらつきを表す。 */
+  function deltaDensity(xs, off, Q, sigma) {
+    var STEPS = 40, out = [];
+    for (var i = 0; i < xs.length; i++) {
+      var acc = 0;
+      for (var s = 0; s < STEPS; s++) {
+        var u = Q * (s + 0.5) / STEPS;
+        var z = (xs[i] - off - u) / sigma;
+        acc += Math.exp(-0.5 * z * z) / sigma;
+      }
+      out.push(acc / STEPS / Math.sqrt(2 * Math.PI));
+    }
+    return out;
+  }
+
+  function drawLat() {
+    if (!latCv) return;
+    var intervalMs = parseFloat(elIvl.value);
+    var sigma = parseFloat(elSig.value);
+    var compensate = elCmp.checked;
+    var chunkMs = chunkN / SFREQ * 1000;
+    var Q = Math.max(chunkMs, intervalMs);
+    var off = compensate ? 0 : L_TOTAL;
+
+    document.getElementById('ivlVal').textContent = intervalMs.toFixed(0) + ' ms';
+    document.getElementById('sigVal').textContent = sigma.toFixed(0) + ' ms';
+
+    var f = fit(latCv, 760 / 340, 300), ctx = f.ctx, W = f.w, H = f.h;
+    var sub = tok('--sub'), ink = tok('--ink'), teal = tok('--teal');
+    var tealDeep = tok('--teal-deep'), tealTint = tok('--teal-tint');
+    var ochre = tok('--ochre'), info = tok('--info');
+    var line = tok('--line'), surface = tok('--surface');
+
+    /* ---- 上段: L の内訳 ---- */
+    var padL = 8, padR = 8, plotW = W - padL - padR;
+    var barY = 30, barH = 26, maxL = 60;
+
+    ctx.textAlign = 'left';
+    ctx.font = '700 12px ' + MONO;
+    ctx.fillStyle = tealDeep;
+    ctx.fillText('遅延 L = ' + L_TOTAL.toFixed(1) + ' ms' + (compensate ? '（delay_ms で補償済み）' : '（補償なし）'), padL, 12);
+    ctx.font = '11px ' + MONO;
+
+    var cursor = padL, idx = 0;
+    L_STAGES.forEach(function (s) {
+      var w = s.ms / maxL * (plotW * 0.55);
+      ctx.fillStyle = s.neutral ? info : (idx % 2 ? tealDeep : teal);
+      ctx.fillRect(cursor, barY, Math.max(w, 1.5), barH);
+      if (w > 34) {
+        ctx.fillStyle = surface;
+        ctx.textAlign = 'center';
+        ctx.fillText(s.ms.toFixed(0), cursor + w / 2, barY + barH / 2);
+      }
+      cursor += w;
+      idx++;
+    });
+    ctx.textAlign = 'left';
+    ctx.fillStyle = sub;
+    ctx.fillText('取得 / フィルタ / 推論 / UDP / 描画', cursor + 10, barY + barH / 2);
+
+    /* ---- 中段: Q ---- */
+    var qY = barY + barH + 20;
+    var qOver = Q > 100;
+    ctx.font = '700 12px ' + MONO;
+    ctx.fillStyle = qOver ? ochre : tealDeep;
+    ctx.fillText('量子化 Q = ' + Q.toFixed(1) + ' ms' + (qOver ? '　補償できない粒度が要件を超える' : '　要件内'), padL, qY + 6);
+    ctx.font = '11px ' + MONO;
+    ctx.fillStyle = sub;
+    ctx.fillText('max( chunk ' + chunkMs.toFixed(1) + ' ms, interval ' + intervalMs.toFixed(0) + ' ms )', padL, qY + 22);
+
+    /* ---- 下段: Δt の分布 ---- */
+    var dTop = qY + 40;
+    var dH = H - dTop - 42;
+    var roomy = plotW > 480;
+    var X0 = -300, X1 = 700;
+    var px = function (ms) { return padL + (ms - X0) / (X1 - X0) * plotW; };
+
+    var xs = [], STEP = 4;
+    for (var v = X0; v <= X1; v += STEP) xs.push(v);
+    var dens = deltaDensity(xs, off, Q, sigma);
+    var peak = Math.max.apply(null, dens) || 1;
+
+    /* 面 */
+    ctx.beginPath();
+    ctx.moveTo(px(X0), dTop + dH);
+    for (var i = 0; i < xs.length; i++) {
+      ctx.lineTo(px(xs[i]), dTop + dH - dens[i] / peak * (dH - 14));
+    }
+    ctx.lineTo(px(X1), dTop + dH);
+    ctx.closePath();
+    ctx.fillStyle = tealTint;
+    ctx.fill();
+    ctx.strokeStyle = teal;
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    for (i = 0; i < xs.length; i++) {
+      var yy = dTop + dH - dens[i] / peak * (dH - 14);
+      if (i === 0) ctx.moveTo(px(xs[i]), yy); else ctx.lineTo(px(xs[i]), yy);
+    }
+    ctx.stroke();
+
+    /* 目盛り */
+    ctx.strokeStyle = line;
+    ctx.lineWidth = 1;
+    ctx.fillStyle = sub;
+    ctx.textAlign = 'center';
+    for (var g = -300; g <= 700; g += 100) {
+      ctx.beginPath();
+      ctx.moveTo(px(g), dTop);
+      ctx.lineTo(px(g), dTop + dH);
+      ctx.stroke();
+      if (g % 200 === 0 || g === 100 || g === -100) ctx.fillText(g + '', px(g), dTop + dH + 14);
+    }
+
+    /* 基準線 */
+    function guide(ms, color, label) {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.4;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(px(ms), dTop);
+      ctx.lineTo(px(ms), dTop + dH);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      if (label && roomy) {
+        ctx.fillStyle = color;
+        ctx.textAlign = ms < 0 ? 'right' : 'left';
+        ctx.fillText(label, px(ms) + (ms < 0 ? -4 : 4), dTop + 8);
+      }
+    }
+    guide(-100, teal, '');
+    guide(100, teal, '±100 ms');
+    guide(-190, ochre, '');
+    guide(190, ochre, '±190 ms');
+
+    ctx.strokeStyle = ink;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(px(0), dTop);
+    ctx.lineTo(px(0), dTop + dH);
+    ctx.stroke();
+    if (roomy) {
+      ctx.fillStyle = ink;
+      ctx.textAlign = 'right';
+      ctx.fillText('Δt = 0', px(0) - 5, dTop + 8);
+    }
+    ctx.textAlign = 'left';
+    ctx.fillStyle = sub;
+    ctx.fillText('発火時刻誤差 Δt [ms]', padL, dTop + dH + 30);
+
+    /* 読み出し */
+    function rate(lim) {
+      var total = 0, hit = 0;
+      for (var j = 0; j < xs.length; j++) {
+        total += dens[j];
+        if (Math.abs(xs[j]) <= lim) hit += dens[j];
+      }
+      return total > 0 ? hit / total : 0;
+    }
+    var r100 = rate(100), r190 = rate(190);
+    var median = off + Q / 2;
+    var sd = Math.sqrt(sigma * sigma + Q * Q / 12);
+
+    document.getElementById('roL').textContent = L_TOTAL.toFixed(1) + ' ms' + (compensate ? '（補償済み）' : '（そのまま乗る）');
+    document.getElementById('roQ').textContent = Q.toFixed(1) + ' ms' + (qOver ? '（要件外）' : '（要件内）');
+    document.getElementById('roR100').textContent = (r100 * 100).toFixed(1) + ' %';
+    document.getElementById('roR190').textContent = (r190 * 100).toFixed(1) + ' %';
+    document.getElementById('roMed').textContent = median.toFixed(1) + ' ms';
+    document.getElementById('roSd').textContent = sd.toFixed(1) + ' ms';
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.chunkBtn'), function (btn) {
+    btn.addEventListener('click', function () {
+      chunkN = parseInt(btn.getAttribute('data-n'), 10);
+      Array.prototype.forEach.call(document.querySelectorAll('.chunkBtn'), function (b) {
+        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+      });
+      drawLat();
+    });
+  });
+  [elIvl, elSig, elCmp].forEach(function (el) {
+    if (el) el.addEventListener('input', drawLat);
+  });
+
+  /* ============ SECTION 9: 試行タイムライン ============ */
+
+  var trialCv = document.getElementById('trialFig');
+  var elJit = document.getElementById('jit');
+  var elFpv = document.getElementById('fpv');
+
+  function drawTrial() {
+    if (!trialCv) return;
+    var jit = parseFloat(elJit.value);
+    var fpv = parseFloat(elFpv.value);
+    document.getElementById('jitVal').textContent = '±' + jit.toFixed(1) + ' s';
+    document.getElementById('fpvVal').textContent = '±' + fpv.toFixed(2) + ' s';
+
+    /* 予告から t=0 までの間隔がばらつくほど時間的予測が効かなくなり、
+       緩電位が痩せる。Cui & MacKinnon (2009) の知見（不規則キューでは運動前活動が
+       有意に減弱、P < 0.005）を模式化したもの。 */
+    var amp = Math.exp(-fpv / 0.45);
+
+    var f = fit(trialCv, 760 / 330, 290), ctx = f.ctx, W = f.w, H = f.h;
+    var sub = tok('--sub'), ink = tok('--ink'), teal = tok('--teal');
+    var tealDeep = tok('--teal-deep'), tealTint = tok('--teal-tint');
+    var ochre = tok('--ochre'), ochreTint = tok('--ochre-tint');
+    var info = tok('--info'), infoTint = tok('--info-tint');
+    var line = tok('--line'), rule = tok('--rule'), surface = tok('--surface');
+
+    var T0 = -6.0, T1 = 3.5;
+    var padL = 10, padR = 10, padT = 22;
+    var plotW = W - padL - padR;
+    var x = function (t) { return padL + (t - T0) / (T1 - T0) * plotW; };
+
+    var bandY = padT, bandH = 34;
+    var waveTop = bandY + bandH + 24;
+    var waveH = H - waveTop - 40;
+    var yBase = waveTop + waveH * 0.24;
+    var yScale = waveH * 0.6;
+    var y = function (v) { return yBase - v * yScale; };
+
+    /* 位相の帯 */
+    function band(t0, t1, fill, stroke, label) {
+      ctx.fillStyle = fill;
+      ctx.fillRect(x(t0), bandY, x(t1) - x(t0), bandH);
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x(t0) + 0.5, bandY + 0.5, x(t1) - x(t0) - 1, bandH - 1);
+      if (x(t1) - x(t0) > 60) {
+        ctx.fillStyle = sub;
+        ctx.textAlign = 'center';
+        ctx.fillText(label, (x(t0) + x(t1)) / 2, bandY + bandH / 2);
+      }
+    }
+    band(-5.0 - jit, -2.0, surface, rule, '安静 3.0 s');
+    band(-2.0, 0, infoTint, rule, '予告 2.0 s');
+    band(0, 3.0, tealTint, rule, 'イメージ保持 3.0 s');
+
+    /* 安静側のジッタ範囲 */
+    if (jit > 0.01) {
+      ctx.fillStyle = ochreTint;
+      ctx.fillRect(x(-5.0 - jit), bandY, x(-5.0) - x(-5.0 - jit), bandH);
+      ctx.strokeStyle = ochre;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x(-5.0 - jit) + 0.5, bandY + 0.5, x(-5.0) - x(-5.0 - jit) - 1, bandH - 1);
+      ctx.fillStyle = ochre;
+      ctx.textAlign = 'left';
+      ctx.fillText('ジッタ', x(-5.0 - jit) + 4, bandY + bandH + 14);
+    }
+
+    /* 予告から t=0 までがばらつくと、キュー時刻そのものが予測できなくなる */
+    if (fpv > 0.01) {
+      ctx.fillStyle = ochre;
+      ctx.globalAlpha = 0.22;
+      ctx.fillRect(x(-fpv), bandY, x(fpv) - x(-fpv), bandH);
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = ochre;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 2]);
+      ctx.strokeRect(x(-fpv) + 0.5, bandY + 0.5, x(fpv) - x(-fpv) - 1, bandH - 1);
+      ctx.setLineDash([]);
+      ctx.fillStyle = ochre;
+      ctx.textAlign = 'left';
+      ctx.fillText('キュー時刻がばらつく', x(fpv) + 8, bandY + bandH + 14);
+    }
+
+    /* 予告のカウントダウン刻み */
+    ctx.strokeStyle = info;
+    ctx.lineWidth = 1;
+    ['3', '2', '1'].forEach(function (n, i) {
+      var t = -2.0 + i * (2.0 / 3);
+      ctx.beginPath();
+      ctx.moveTo(x(t), bandY + bandH);
+      ctx.lineTo(x(t), bandY + bandH + 6);
+      ctx.stroke();
+      ctx.fillStyle = info;
+      ctx.textAlign = 'center';
+      ctx.fillText(n, x(t), bandY + bandH + 14);
+    });
+
+    /* 解析窓 */
+    ctx.fillStyle = ochreTint;
+    ctx.fillRect(x(-2.5), waveTop, x(-1.5) - x(-2.5), waveH);
+    ctx.fillStyle = tealTint;
+    ctx.fillRect(x(-1.5), waveTop, x(0) - x(-1.5), waveH);
+    ctx.strokeStyle = teal;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 3]);
+    ctx.strokeRect(x(-1.5) + 0.5, waveTop + 0.5, x(0) - x(-1.5) - 1, waveH - 1);
+    ctx.setLineDash([]);
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = ochre;
+    ctx.fillText('除外', (x(-2.5) + x(-1.5)) / 2, waveTop + 12);
+    ctx.fillStyle = tealDeep;
+    ctx.fillText('学習窓 [-1.5, 0.0]', (x(-1.5) + x(0)) / 2, waveTop + 12);
+
+    /* 基線 */
+    ctx.strokeStyle = line;
+    ctx.beginPath();
+    ctx.moveTo(padL, y(0));
+    ctx.lineTo(padL + plotW, y(0));
+    ctx.stroke();
+
+    /* 緩電位 */
+    ctx.strokeStyle = amp > 0.4 ? teal : ochre;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (var i = 0; i <= plotW; i++) {
+      var tt = T0 + (i / plotW) * (T1 - T0);
+      var v = mrcpWave(tt) * amp + 0.035 * noise(tt * 57.3);
+      var yy = y(v);
+      if (i === 0) ctx.moveTo(padL + i, yy); else ctx.lineTo(padL + i, yy);
+    }
+    ctx.stroke();
+
+    /* 真値のばらつき帯。文献値 165 ms は桁の目安であり、実験では被験者ごとに実測する */
+    ctx.fillStyle = info;
+    ctx.globalAlpha = 0.18;
+    ctx.fillRect(x(-0.165), waveTop, x(0.165) - x(-0.165), waveH);
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = info;
+    ctx.textAlign = 'left';
+    ctx.fillText('オンセットのばらつき ±165 ms（文献値の目安）', x(0.165) + 6, waveTop + waveH - 12);
+
+    /* t=0 */
+    ctx.strokeStyle = ink;
+    ctx.lineWidth = 1.6;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    ctx.moveTo(x(0), bandY - 6);
+    ctx.lineTo(x(0), waveTop + waveH + 6);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = ink;
+    ctx.textAlign = 'center';
+    ctx.fillText('t = 0  キュー', x(0), 10);
+
+    /* 時間軸 */
+    ctx.fillStyle = sub;
+    ctx.textAlign = 'center';
+    for (var g = -6; g <= 3; g += 1) {
+      ctx.fillText(g + ' s', x(g), waveTop + waveH + 22);
+    }
+
+    /* 読み出し */
+    var pct = Math.round(amp * 100);
+    document.getElementById('roAmp').textContent = pct + ' %';
+    var verdict = document.getElementById('roVerdict');
+    if (fpv <= 0.05) {
+      verdict.textContent = '良好。本プロトコルの設定';
+      verdict.style.color = tealDeep;
+    } else if (amp >= 0.4) {
+      verdict.textContent = '低下。検出性能が落ちる';
+      verdict.style.color = tok('--sub');
+    } else {
+      verdict.textContent = '検出困難。運動前活動が有意に減弱する';
+      verdict.style.color = ochre;
+    }
+  }
+
+  [elJit, elFpv].forEach(function (el) {
+    if (el) el.addEventListener('input', drawTrial);
+  });
+
+  /* ============ 描画と再描画 ============ */
+
+  function redrawAll() {
+    drawMrcp();
+    drawParadigm();
+    drawLat();
+    drawTrial();
+  }
+
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(redrawAll, 120);
+  });
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(redrawAll);
+  }
+  redrawAll();
+})();
+</script>
+
+</body>
+</html>

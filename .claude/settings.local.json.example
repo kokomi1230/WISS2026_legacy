@@ -1,0 +1,102 @@
+{
+  "_comment": "個人ごとの設定上書き例。コピーして .claude/settings.local.json として保存してください（.gitignore 対象）。hooks レシピは全て _ プレフィックス付き＝無効化状態で同梱。利用したいものはキーから先頭の _ を外す（例: _PostToolUse_prettier → PostToolUse）。",
+
+  "permissions": {
+    "allow": [
+      "Bash(npm:*)",
+      "Bash(pnpm:*)",
+      "Bash(yarn:*)",
+      "Bash(npx:*)",
+      "Bash(node:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(pip:*)",
+      "Bash(pytest:*)",
+      "Bash(uv:*)",
+      "Bash(ruff:*)",
+      "Bash(black:*)",
+      "Bash(prettier:*)",
+      "Bash(eslint:*)",
+      "Bash(gofmt:*)",
+      "Bash(go test:*)",
+      "Bash(cargo test:*)",
+      "Bash(make:*)"
+    ]
+  },
+
+  "_hooks_README": "以下は hooks のレシピ集。`_` プレフィックスを外したキーだけが Claude Code に読み込まれます。docs/OPERATION_TIPS.md Tip 10/24 も参照。",
+
+  "hooks": {
+    "_PostToolUse_prettier_example": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(printf '%s' \"$CLAUDE_TOOL_INPUT_FILE_PATH\" 2>/dev/null || echo); case \"$FILE\" in *.ts|*.tsx|*.js|*.jsx|*.json|*.md|*.yml|*.yaml) command -v prettier >/dev/null 2>&1 && prettier --write \"$FILE\" >/dev/null 2>&1 || true ;; esac"
+          }
+        ]
+      }
+    ],
+    "_PostToolUse_black_example": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(printf '%s' \"$CLAUDE_TOOL_INPUT_FILE_PATH\" 2>/dev/null || echo); case \"$FILE\" in *.py) command -v black >/dev/null 2>&1 && black --quiet \"$FILE\" 2>/dev/null || true ;; esac"
+          }
+        ]
+      }
+    ],
+    "_PostToolUse_gofmt_example": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(printf '%s' \"$CLAUDE_TOOL_INPUT_FILE_PATH\" 2>/dev/null || echo); case \"$FILE\" in *.go) command -v gofmt >/dev/null 2>&1 && gofmt -w \"$FILE\" 2>/dev/null || true ;; esac"
+          }
+        ]
+      }
+    ],
+    "_PreToolUse_block_destructive_example": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "CMD=\"${CLAUDE_TOOL_INPUT_COMMAND:-}\"; if printf '%s' \"$CMD\" | grep -Eq 'rm -rf /([^a-zA-Z0-9_./-]|$)|rm -rf ~([^a-zA-Z0-9_./-]|$)|git push (--force|-f)|:\\(\\)\\{ :\\|: ?& ?\\};:'; then printf '{\"decision\":\"block\",\"reason\":\"危険コマンドはブロックされました\"}'; fi"
+          }
+        ]
+      }
+    ],
+    "_Stop_notify_macos_example": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v osascript >/dev/null 2>&1 && osascript -e 'display notification \"Claude セッション終了\" with title \"Claude Code\"' >/dev/null 2>&1 || true"
+          }
+        ]
+      }
+    ],
+    "_Stop_notify_linux_example": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v notify-send >/dev/null 2>&1 && notify-send 'Claude Code' 'セッション終了' || true"
+          }
+        ]
+      }
+    ]
+  },
+
+  "_enabledPlugins_README": "個人が常に enable したいプラグインの上書き例。settings.json は T-007 で空 ({}) にリセット済みのため、ここで補完してください。`_enabledPlugins` から先頭の `_` を外すと反映されます。settings.json と settings.local.json はマージされ、local 側が優先されます。",
+
+  "_enabledPlugins": {
+    "notion@claude-plugins-official": true,
+    "slack@claude-plugins-official": true
+  }
+}

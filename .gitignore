@@ -1,0 +1,51 @@
+# Claude Code local files
+.claude/settings.local.json
+.claude/cache/
+.claude/.UNUSED
+.claude/skills/**/.UNUSED
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# Logs
+*.log
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Notion ミラー（実体は ~/.notion-mirror/。リポジトリ内に参照用シンボリックリンクを
+# 置く場合に備えたエントリ。ミラーは派生物なので git 管理しない）
+knowledge/
+.notion-mirror/
+
+# Python (.claude/scripts/ はモジュール import があり、通常運用でも生成される)
+__pycache__/
+
+# Dependencies (uncomment as needed for each project)
+# node_modules/
+# .venv/
+# venv/
+# target/
+# dist/
+# build/
+
+# Redistribution: uncomment if publishing this template publicly
+# (Document Skills are source-available and not redistributable)
+# .claude/skills/document/
+
+# タスクチケット。実チケット (T-NNN-*.md) はプロジェクト固有なので追跡しないが、
+# 雛形とディレクトリ構造は clone 先で /ticket-create が動くために必要である。
+tasks/*
+!tasks/_template.md
+!tasks/_done/
+tasks/_done/*
+!tasks/_done/.gitkeep
